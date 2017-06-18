@@ -7,11 +7,9 @@ A simulator for Robocup Junior Soccer Open written in python.
   
 # Install
 
-  git pull https://github.com/teeheee/RobocupSoccerSimulator
-  
-  cd RobocupSoccerSimulator
-  
-  ... install python and the dependencies ;-)
+  > git clone https://github.com/teeheee/RobocupSoccerSimulator
+  > cd RobocupSoccerSimulator
+  > echo "... install python and the dependencies ;-)"
   
 # Run
 

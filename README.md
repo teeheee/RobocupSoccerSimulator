@@ -1,2 +1,2 @@
 # RobocupSoccerSimulator
-A Simulator for Robocup Soccer Open A written in python.
+A simulator for Robocup Junior Soccer Open written in python.

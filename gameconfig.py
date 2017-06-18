@@ -1,3 +1,4 @@
+#Field Dimensions
 
 OUTER_FIELD_WIDTH = 182
 OUTER_FIELD_LENGTH = 243

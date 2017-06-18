@@ -31,8 +31,9 @@ class BallGrafik:
 
 
 class RobotGrafik:
-	def __init__(self,_display,_id):
+	def __init__(self,_display,_id,_color):
 		self.display = _display
+		self.color = _color
 		self.ppcm = self.display.get_height()/gameconfig.OUTER_FIELD_WIDTH
 		self.y_position_offset = self.display.get_height()/(2*self.ppcm)
 		self.x_position_offset = self.display.get_width()/(2*self.ppcm)
@@ -44,7 +45,7 @@ class RobotGrafik:
 
 	def draw(self):
 		pos = int((self.x_position+self.x_position_offset)*self.ppcm), int((self.y_position+self.y_position_offset)*self.ppcm)
-		pygame.draw.circle(self.display,GREY,pos,10*self.ppcm)
+		pygame.draw.circle(self.display,self.color,pos,10*self.ppcm)
 		pos = pos[0]-5 , pos[1]-8
 		text = self.font.render(str(self.id), True, WHITE)
 		text = pygame.transform.rotate(text, self.orientation)
@@ -64,6 +65,8 @@ class FeldGrafik:
 		self.goal_size = (gameconfig.GOAL_DEEP,gameconfig.GOAL_WIDTH)
 		self.linewidth = 1
 		self.ppcm = self.display.get_height()/self.outer_size[1]
+		self.spielStand = (0,0)
+		self.font = pygame.font.SysFont('Calibri', 20, True, False)
 
 	def draw(self):
 		self.display.fill(GREEN)
@@ -106,3 +109,9 @@ class FeldGrafik:
 		pygame.draw.circle(self.display,BLACK,p3,1*self.ppcm)
 		pygame.draw.circle(self.display,BLACK,p4,1*self.ppcm)
 		pygame.draw.circle(self.display,BLACK,p5,1*self.ppcm)
+
+		text = self.font.render(str(self.spielStand[0])+" "+str(self.spielStand[1]), True, RED)
+		self.display.blit(text,(self.display.get_width()/2,10))
+
+	def setSpielstand(self, a, b):
+		self.spielStand = (a,b)

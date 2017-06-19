@@ -24,8 +24,8 @@ class ThreadedTCPRequestHandler(SocketServer.StreamRequestHandler):
 					bodensensor[int(np.degrees(np.arctan2(p[0],p[1]))*16/360)] = 1
 
 				response = str(robot.pos[0]) + "," + \
-						   str(robot.pos[1]) + "," + \
-						   str(robot.pos[2]) + "," + \
+							str(robot.pos[1]) + "," + \
+							str(robot.pos[2]) + "," + \
 						   str(ball.pos[0]) + "," + \
 						   str(ball.pos[1])
 				for s in bodensensor:
@@ -39,7 +39,7 @@ class ThreadedTCPRequestHandler(SocketServer.StreamRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 	allow_reuse_address = True
 
-	def addstuff(self, _robots,_ball,_field):
+	def addstuff(self, _robots, _ball, _field):
 		self.robots = _robots
 		self.ball = _ball
 		self.field = _field

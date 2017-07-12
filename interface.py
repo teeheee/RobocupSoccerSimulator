@@ -1,35 +1,44 @@
 import numpy as np
 import threading
 import SocketServer
+import subprocess
 
 
 class ThreadedTCPRequestHandler(SocketServer.StreamRequestHandler):
 
 	def handle(self):
+		print "robot joined"
 		while(True):
 			if self.server.off:
 				dline = self.rfile.readline()
+				print "server recv:" + dline
 				recvlist = [x.strip() for x in dline.split(',')]
-				print "number of elements"+str(len(recvlist))
 				if len(recvlist) is not 5:
+					print "server: wrong package length"
 					break
 				robotid = int(recvlist[0])
-				robot = self.server.robots[robotid]
-				robot.motorSpeed(int(recvlist[1]),int(recvlist[2]),int(recvlist[3]),int(recvlist[4]))
+				if robotid < 1 or robotid > 4:
+					print "server: wrong robot id"
+					break
+				robot = self.server.robots[robotid-1]
+				robot.motorSpeed(float(recvlist[1]),
+								float(recvlist[2]),
+								float(recvlist[3]),
+								float(recvlist[4]))
 				ball = self.server.ball
 				field = self.server.field
 				points = field.getIntersectingPoints(robot)
 				bodensensor = np.zeros(16)
 				for p in points:
-					bodensensor[int(np.degrees(np.arctan2(p[0],p[1]))*16/360)] = 1
-
+					bodensensor[int(np.degrees(np.arctan2(p[0], p[1]))*16/360)] = 1
 				response = str(robot.pos[0]) + "," + \
 							str(robot.pos[1]) + "," + \
 							str(robot.pos[2]) + "," + \
-						   str(ball.pos[0]) + "," + \
-						   str(ball.pos[1])
+							str(ball.pos[0]) + "," + \
+							str(ball.pos[1])
 				for s in bodensensor:
 					response += ","+str(s)
+				print "server send:" + response
 				self.wfile.write(response)
 			else:
 				break
@@ -46,13 +55,13 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 
 class robot_interface_sockets:
-	def __init__(self,robots,ball,field):
+	def __init__(self, robots, ball, field):
 		# Port 0 means to select an arbitrary unused port
 		HOST, PORT = "localhost", 9996
 
 		self.server = ThreadedTCPServer((HOST, PORT), ThreadedTCPRequestHandler)
 		ip, port = self.server.server_address
-		self.server.addstuff(robots,ball,field)
+		self.server.addstuff(robots, ball, field)
 		self.server.off = True
 
 		# Start a thread with the server -- that thread will then start one
@@ -62,11 +71,31 @@ class robot_interface_sockets:
 		server_thread.daemon = True
 		server_thread.start()
 
+		self.processes = list()
+
+	def startRobot(self, robotpath, _id):
+		args = ["python", robotpath, str(_id)]
+		self.processes.append(subprocess.Popen(args))
+
 	def shutdown(self):
+		for p in self.processes:
+			p.terminate()
+			p.wait()
 		self.server.off = False
 		self.server.server_close()
 		print "server shutting down"
 		self.server.shutdown()
+
+
+
+
+
+
+
+
+
+
+### test interface... needs to be overcome :-D
 
 
 class robot_interface:

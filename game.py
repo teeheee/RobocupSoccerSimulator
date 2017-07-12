@@ -167,7 +167,6 @@ class Game:
 	def __init__(self, _display):
 		self.spielstand = [0, 0]
 		self.isgoal = False
-		self.autopilot = True
 
 		self.time = 0
 		self.balltimeout = 0
@@ -200,6 +199,7 @@ class Game:
 						NeutralSpot((-gc.INNER_FIELD_LENGTH/2+45, -gc.GOAL_WIDTH/2)),
 						NeutralSpot((0, 0))]
 
+		self.autopilot = True
 		#Robot interface
 		if self.autopilot:
 			self.ris = [robot_interface(self, self.robots[0], 180),
@@ -210,6 +210,10 @@ class Game:
 		self.robotinterface = robot_interface_sockets(self.robots,
 														self.ball,
 														self.field)
+		#self.robotinterface.startRobot(gc.ROBOT_PATHS[0], 1)
+		#self.robotinterface.startRobot(gc.ROBOT_PATHS[1], 2)
+		#self.robotinterface.startRobot(gc.ROBOT_PATHS[2], 3)
+		#self.robotinterface.startRobot(gc.ROBOT_PATHS[3], 4)
 
 	def tick(self, dt):
 		self.time += dt 										# Sielzeit hochzaelen

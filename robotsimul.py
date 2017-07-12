@@ -12,7 +12,7 @@ class App:
     def __init__(self):
         self._running = True
         self._display_surf = None
-        self.size = self.weight, self.height = 243*3,182*3
+        self.size = self.weight, self.height = 243*3, 182*3
 
     def on_init(self):
         pygame.init()
@@ -30,8 +30,8 @@ class App:
         self.game.tick(0.5)
 
     def on_render(self):
-		self.game.draw()
-		pygame.display.update()
+        self.game.draw()
+        pygame.display.update()
 
     def on_cleanup(self):
         self.game.shutdown()
@@ -45,13 +45,13 @@ class App:
             for event in pygame.event.get():
                 self.on_event(event)
             self.on_loop()
-            I=I+1
+            I = I + 1
             if I > 20:
                 self.on_render()
                 time.sleep(1/30)
-                I=0
+                I = 0
         self.on_cleanup()
 
-if __name__ == "__main__" :
+if __name__ == "__main__":
     theApp = App()
     theApp.on_execute()

@@ -4,14 +4,16 @@ import socketserver
 import subprocess
 
 
-class threadedtcprequesthandler(socketserver.BaseRequestHandler): #TODO python interface
+class threadedtcprequesthandler(socketserver.StreamRequestHandler): #TODO python interface
     def handle(self):
         print("robot joined")
         while (True):
             if self.server.off:
                 dline = self.rfile.readline()
-                print("server recv:" + dline)
-                recvlist = [x.strip() for x in dline.split(',')]
+                print("server recv:" + str(dline))
+                splited = dline.split(',') ### TODO HERE IS THE INTERFACE ERROR!!!!
+                for x in splited:### TODO HERE IS THE INTERFACE ERROR!!!!
+                    recvlist = [x.strip()]### TODO HERE IS THE INTERFACE ERROR!!!!
                 if len(recvlist) is not 5:
                     print("server: wrong package length")
                     break
@@ -72,7 +74,7 @@ class robot_interface_sockets:
 
         self.processes = list()
 
-    def startrobot(self, robotpath, _id):
+    def startRobot(self, robotpath, _id):
         args = ["python", robotpath, str(_id)]
         self.processes.append(subprocess.Popen(args))
 
@@ -85,9 +87,16 @@ class robot_interface_sockets:
         print("server shutting down")
         self.server.shutdown()
 
+##############################################################
+##############################################################
+##############################################################
 
 ### test interface... needs to be overcome :-d
 
+##############################################################
+##############################################################
+##############################################################
+##############################################################
 
 class robot_interface:
     def __init__(self, _game, _robot, _spielrichtung):

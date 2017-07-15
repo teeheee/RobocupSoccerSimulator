@@ -34,7 +34,7 @@ class Robot:
     # testet ob der Roboter nicht mehr defekt ist. (timeout vorbei)
     def isDefekt(self, time):
         if self.physik.defekt:
-            if time - self.defektTime > 2000:
+            if time - self.defektTime > 24000:
                 self.physik.defekt = False
                 return False
         return True
@@ -61,10 +61,15 @@ class Robot:
 
     # gibt True zurueck wenn der Roboter von diesem Object beruehrt wird
     def isPushedBy(self, _object):
-        return self.physik.isPushedBy(_object.physik)
+        if type(_object) is Ball:
+            return self.physik.isPushedByBall(_object.physik)
+        else:
+            return self.physik.isPushedByRobot(_object.physik)
 
     # gibt True zurueck wenn der Roboter nicht mehr im Spielfeld ist
     def isOutOfBounce(self):
+        if self.physik.defekt:
+            return False
         if self.pos[0] > (gc.INNER_FIELD_LENGTH / 2 + self.radius) or \
                         self.pos[0] < -(gc.INNER_FIELD_LENGTH / 2 + self.radius) or \
                         self.pos[1] > (gc.INNER_FIELD_WIDTH / 2 + self.radius) or \
@@ -198,7 +203,7 @@ class Game:
                        NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
                        NeutralSpot((0, 0))]
 
-        self.autopilot = True
+        self.autopilot = False
         # Robot interface
         if self.autopilot:
             self.ris = [robot_interface(self, self.robots[0], 180),
@@ -210,12 +215,12 @@ class Game:
                                                       self.ball,
                                                       self.field)
 
-    # self.robotinterface.startRobot(gc.ROBOT_PATHS[0], 1)
-    # self.robotinterface.startRobot(gc.ROBOT_PATHS[1], 2)
-    # self.robotinterface.startRobot(gc.ROBOT_PATHS[2], 3)
-    # self.robotinterface.startRobot(gc.ROBOT_PATHS[3], 4)
+        self.robotinterface.startRobot(gc.ROBOT_PATHS[0], 1)
+      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[1], 2)
+      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[2], 3)
+      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[3], 4)
 
-    def tick(self, dt):
+    def tick(self, dt): #TODO make it faster somehow....
         self.time += dt  # Sielzeit hochzaelen
         self.space.step(dt)  # Physik engine einen Tick weiter laufen lassen
         self.ball.tick()  # Ball updaten
@@ -244,7 +249,7 @@ class Game:
                 ri.tick()  # Roboter program laufen lassen
 
     # Alle Objekte auf das Display zeichnen
-    def draw(self):
+    def draw(self): #TODO make it faster somehow....
         self.field.draw()
         self.ball.draw()
         for robot in self.robots:
@@ -295,7 +300,7 @@ class Game:
             self.balltimeout = self.time
 
     # wenn der Roboter ausserhalb vom Spielfeld steht wird er als defekt markiert
-    # und verschwindet fuer 1 min aus dem Spiel (TODO: 1 min korrigieren)
+    # und verschwindet fuer 1 min aus dem Spiel
     def isOutOfBounce(self, robot):
         if robot.isOutOfBounce():
             for otherrobot in self.robots:

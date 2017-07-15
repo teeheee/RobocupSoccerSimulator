@@ -28,7 +28,6 @@ class App:
 
     def on_loop(self):
         self.game.tick(0.5)
-        pass
 
     def on_render(self):
         self.game.draw()
@@ -38,7 +37,7 @@ class App:
         self.game.shutdown()
         pygame.quit()
 
-    def on_execute(self): #TODO make it faster somehow....
+    def on_execute(self):
         if self.on_init() is False:
             self._running = False
         I = 0
@@ -49,7 +48,6 @@ class App:
             I = I + 1
             if I > 20:
                 self.on_render()
-                time.sleep(1/30)
                 I = 0
         self.on_cleanup()
 

@@ -1,4 +1,4 @@
-from socket import socket
+import socket
 import numpy as np
 import main as m
 import sys
@@ -8,7 +8,7 @@ from time import sleep
 
 class robotRemote:
 	def __init__(self, _id):
-		self.sock = socket()
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect(('127.0.0.1', 9996))
 		self.motors = np.zeros(4)
 		self.bodensensoren = np.zeros(16)
@@ -21,9 +21,9 @@ class robotRemote:
 					str(self.motors[0]) + "," + str(self.motors[1]) + "," +\
 					str(self.motors[2]) + "," + str(self.motors[3]) + "\r\n"
 		self.sock.sendall(sendpack)
-		print "robot"+str(self.id)+" sendet: " + sendpack
+		print("robot"+str(self.id)+" sendet: " + sendpack)
 		for line in self.sock.makefile('r'):
-			print "robot"+str(self.id)+" recv: " + line
+			print("robot"+str(self.id)+" recv: " + line)
 			n = line.split(",", 1)
 			self.pos[0] = float(n[0])
 			self.pos[1] = float(n[1])

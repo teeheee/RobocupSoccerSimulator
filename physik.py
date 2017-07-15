@@ -26,13 +26,27 @@ class RobotPhysik:
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
         self.body.position = ((self.robotgrafik.x_position, self.robotgrafik.y_position))
         self.body.angle = np.radians(self.robotgrafik.orientation)
-        self.shape = pymunk.Circle(self.body, self.radius, (0, 0))
-        self.shape.elasticity = 0
-        self.shape.friction = 0.9
 
-        self.shape.collision_type = collision_types["robot"]
+        polygonlist1 = [[3,5],[5,3],[3,1],[3,-1],[-5,-1],[-5,3],[-3,5]]
+        polygonlist2 = [[3,1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,1]]
+        scale = 10 / 5.83
+        newpolygon1 = []
+        for p in polygonlist1:
+            newpolygon1.append([p[0]*scale,p[1]*scale])
+        newpolygon2 = []
+        for p in polygonlist2:
+                newpolygon2.append([p[0] * scale, p[1] * scale])
 
-        self.space.add(self.body, self.shape)
+        self.shape1 = pymunk.Poly(self.body, newpolygon1)
+        self.shape1.elasticity = 0
+        self.shape1.friction = 0.9
+        self.shape1.collision_type = collision_types["robot"]
+        self.shape2 = pymunk.Poly(self.body, newpolygon2)
+        self.shape2.elasticity = 0
+        self.shape2.friction = 0.9
+        self.shape2.collision_type = collision_types["robot"]
+
+        self.space.add(self.body, self.shape1 ,self.shape2)
 
     def motorSpeed(self, a, b, c, d):
         self.motor = np.array([a, b, c, d])
@@ -60,9 +74,19 @@ class RobotPhysik:
             self.body.torque = f_soll[2]
             self.body.force = tuple(f_soll[0:2])
 
-    def isPushedBy(self, robot):
-        p = self.shape.shapes_collide(robot.shape)
-        if len(p.points) > 0:
+    def isPushedByRobot(self, robot):
+        p1 = self.shape1.shapes_collide(robot.shape1)
+        p2 = self.shape1.shapes_collide(robot.shape2)
+        p3 = self.shape2.shapes_collide(robot.shape1)
+        p4 = self.shape2.shapes_collide(robot.shape2)
+        if len(p1.points) > 0 or len(p2.points) > 0 or len(p3.points) > 0 or len(p4.points) > 0:
+            return True
+        return False
+
+    def isPushedByBall(self, ball):
+        p1 = self.shape1.shapes_collide(ball.shape)
+        p2 = self.shape2.shapes_collide(ball.shape)
+        if len(p1.points) > 0 or len(p2.points) > 0:
             return True
         return False
 
@@ -139,7 +163,7 @@ class FieldPhysik:
     def getIntersectingPoints(self, robot):
         points = []
         for linie in self.auslinien:
-            p = linie.shapes_collide(robot.shape)
+            p = linie.shapes_collide(robot.shape1)
             if len(p.points) > 0:
                 points.append(p.points[0].point_a - robot.body.position)
                 points.append(p.points[0].point_b - robot.body.position)

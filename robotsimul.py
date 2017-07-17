@@ -1,11 +1,7 @@
 #!/usr/bin/env python2
 
 
-import pygame
-from pygame.locals import *
-from grafik import *
 from game import *
-import time
 
 
 class App:

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#TODO check out https://pythonprogramming.net/converting-pygame-executable-cx_freeze/ could be better
+
 from distutils.core import setup
 
 setup(name='RobocupSimulator',

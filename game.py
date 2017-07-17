@@ -1,10 +1,11 @@
-import numpy as np
-import gameconfig as gc
-from interface import *
 from grafik import *
 from physik import *
-from pymunk import *
 import pymunk
+
+import Team1.robot1.robotRemote as r1
+import Team1.robot2.robotRemote as r2
+import Team2.robot1.robotRemote as r3
+import Team2.robot2.robotRemote as r4
 
 
 class Robot:
@@ -203,22 +204,12 @@ class Game:
                        NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
                        NeutralSpot((0, 0))]
 
-        self.autopilot = False
-        # Robot interface
-        if self.autopilot:
-            self.ris = [robot_interface(self, self.robots[0], 180),
+
+        self.ris = [robot_interface(self, self.robots[0], 180),
                         robot_interface(self, self.robots[1], 180),
                         robot_interface(self, self.robots[2], 0),
                         robot_interface(self, self.robots[3], 0)]
 
-        self.robotinterface = robot_interface_sockets(self.robots,
-                                                      self.ball,
-                                                      self.field)
-
-        self.robotinterface.startRobot(gc.ROBOT_PATHS[0], 1)
-      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[1], 2)
-      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[2], 3)
-      #  self.robotinterface.startRobot(gc.ROBOT_PATHS[3], 4)
 
     def tick(self, dt): #TODO make it faster somehow....
         self.time += dt  # Sielzeit hochzaelen
@@ -244,9 +235,10 @@ class Game:
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
             self.isgoal = False
 
-        if self.autopilot:
-            for ri in self.ris[0:4]:
-                ri.tick()  # Roboter program laufen lassen
+        r1.tick(self.ris[0])  # Roboter program laufen lassen
+        r2.tick(self.ris[1])  # Roboter program laufen lassen
+        r3.tick(self.ris[2])  # Roboter program laufen lassen
+        r4.tick(self.ris[3])  # Roboter program laufen lassen
 
     # Alle Objekte auf das Display zeichnen
     def draw(self): #TODO make it faster somehow....
@@ -257,7 +249,7 @@ class Game:
 
     # schliest alle Threads die im Hintergrund laufen
     def shutdown(self):
-        self.robotinterface.shutdown()
+        pass
 
     # setzt den Ball auf den naechsten neutralen Punkt, der nicht besetzt ist
     def setzteBallaufNeutralenPunkt(self):

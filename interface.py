@@ -1,5 +1,5 @@
 import numpy as np
-
+import random
 
 class robot_interface:
     def __init__(self, _game, _robot, _spielrichtung):
@@ -19,11 +19,12 @@ class robot_interface:
 
     # Returns a list of 4 Distance measurements in all 4 directions
     # Numbering starts at the front and goes clockwise
-    def getUltraschall(self): #TODO getUltraschall
-        if self.spielrichtung == 180:
-            return np.array([-self.robot.pos[0], -self.robot.pos[1]])
-        else:
-            return np.array([self.robot.pos[0], self.robot.pos[1]])
+    def getUltraschall(self): #TODO getUltraschall ist noch nicht fertig
+        pass
+        #if self.spielrichtung == 180:
+        #    return np.array([int(-self.robot.pos[0]), int(-self.robot.pos[1])])
+        #else:
+        #    return np.array([int(self.robot.pos[0]), int(self.robot.pos[1])])
 
     # Returns a List of Blocks of detected Objects
     # Attributes of each object is signature, x and y Position in camera vision
@@ -31,31 +32,31 @@ class robot_interface:
     # 2 is own Goal
     # 3 is opponent Goal
     # 4-9 are the Landmarks
-    def getPixy(self): #TODO getPixy
+    def getPixy(self): #TODO getPixy ist noch nicht fertig
         pass
 
     # Returns a list of 16 IR sensors. Value corresponds to distance from the Ball
     # Numbering starts at the front and goes clockwise
     def getIRBall(self):
         irsensors = np.zeros(16)
-        if self.spielrichtung == 180:
-            ballposition = (-self.game.ball.pos[0], -self.game.ball.pos[1])
-        else:
-            ballposition = self.game.ball.pos
-        ball_relative_robot = np.array(ballposition - self.robot.pos)
+        ball_relative_robot = np.subtract(self.game.ball.pos,self.robot.pos[0:2])
         distanz = np.linalg.norm(ball_relative_robot)
-        ballrichtung = np.degrees(np.arctan2(ball_relative_robot[0], ball_relative_robot[1]))
-        irsensors[int(ballrichtung * 16 / 360)] = distanz
+        ballrichtung = np.degrees(np.arctan2(ball_relative_robot[0], ball_relative_robot[1])) + random.gauss(0,5)
+        irsensors[int(ballrichtung * 16 / 360)] = int(distanz)
         return irsensors
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise
     def getKompass(self):
-        kompass = (np.degrees(self.robot.pos[2]) + self.spielrichtung) % 360
-        return kompass
+        kompass = (np.degrees(self.robot.pos[2]) + self.spielrichtung + 180) % 360
+        return int(kompass + random.gauss(0, 3))
 
     # Sets the Motor speeds to this Value Motors rotate the Robot counter clockwise.
     # Numbering starts at the front and goes clockwise
     def setMotorSpeed(self,m0,m1,m2,m3):
+        m0 = m0 * random.gauss(1,0.02)
+        m1 = m1 * random.gauss(1,0.02)
+        m2 = m2 * random.gauss(1,0.02)
+        m3 = m3 * random.gauss(1,0.02)
         if m0 > 100:
             m0 = 100
         if m0 < -100:

@@ -11,6 +11,7 @@ collision_types = {
     "auslinie": 4
 }
 
+#TODO more comments
 
 class RobotPhysik:
     def __init__(self, _space, _robotgrafik):
@@ -65,7 +66,7 @@ class RobotPhysik:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
             A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])
             f = A.dot(self.motor)
-            theta = self.body.angle
+            theta = self.body.angle -  np.radians(45+180)
             c, s = np.cos(theta), np.sin(theta)
             R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
             v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])

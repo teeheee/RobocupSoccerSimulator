@@ -13,8 +13,9 @@ class Robot:
     # space ist der pymunk Raum
     # _id is die Roboter ID
     # color ist die Farbe des Roboters
-    def __init__(self, display, space, _id, color):
-        self.grafik = RobotGrafik(display, _id, color)  # Physik
+    def __init__(self, display, space, _id, color ,direction):
+        self.direction = direction
+        self.grafik = RobotGrafik(display, _id, color, direction)  # Physik
         self.physik = RobotPhysik(space, self.grafik)
         # Roboter ID (setzt fest, welche Nummer auf dem Roboter steht)
         self.id = _id
@@ -173,6 +174,7 @@ class Game:
         self.spielstand = [0, 0]
         self.isgoal = False
 
+        self.srRobot = 0
         self.time = 0
         self.balltimeout = 0
         self.display = _display
@@ -187,10 +189,10 @@ class Game:
         BLUE = 0, 0, 255
         RED = 255, 0, 0
 
-        self.robots = [Robot(self.display, self.space, 1, BLUE),
-                       Robot(self.display, self.space, 2, BLUE),
-                       Robot(self.display, self.space, 3, RED),
-                       Robot(self.display, self.space, 4, RED)]
+        self.robots = [Robot(self.display, self.space, 1, BLUE, 180),
+                       Robot(self.display, self.space, 2, BLUE, 180),
+                       Robot(self.display, self.space, 3, RED,    0),
+                       Robot(self.display, self.space, 4, RED,    0)]
 
         # Todo flexible starting Position
         self.robots[0].moveto(13, 1, 180)
@@ -235,12 +237,15 @@ class Game:
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
             self.isgoal = False
 
-        r1.tick(self.ris[0])  # Roboter program laufen lassen
-        r2.tick(self.ris[1])  # Roboter program laufen lassen
-        r3.tick(self.ris[2])  # Roboter program laufen lassen
-        r4.tick(self.ris[3])  # Roboter program laufen lassen
+        self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
+        if self.srRobot > 20:
+            r1.tick(self.ris[0])  # Roboter program laufen lassen
+            r2.tick(self.ris[1])  # Roboter program laufen lassen
+            r3.tick(self.ris[2])  # Roboter program laufen lassen
+            r4.tick(self.ris[3])  # Roboter program laufen lassen
+            self.srRobot = 0
 
-    # Alle Objekte auf das Display zeichnen
+        # Alle Objekte auf das Display zeichnen
     def draw(self): #TODO make it faster somehow....
         self.field.draw()
         self.ball.draw()
@@ -269,7 +274,7 @@ class Game:
                     and not nspot.isOccupied(self.robots, self.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], robot.pos[2])
+        robot.moveto(pos[0], pos[1], robot.direction)
 
     # setzt den Roboter auf den neutralen Punkt,
     # der am weitesten vom Ball entfernt ist und nicht besetzt ist
@@ -280,7 +285,7 @@ class Game:
                     and not nspot.isOccupied(self.robots, self.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], 0)
+        robot.moveto(pos[0], pos[1], robot.direction)
 
     # bei zu wenig Ballbewegung wird setzteBallaufNeutralenPunkt() ausgefuehrt
     def lagofProgress(self):

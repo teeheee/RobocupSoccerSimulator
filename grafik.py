@@ -12,6 +12,7 @@ RED = 255, 0, 0
 YELLOW = 255, 255, 0
 ORANGE = 255, 69, 0
 
+#TODO more comments
 
 class BallGrafik:
     def __init__(self, _display):
@@ -32,10 +33,10 @@ class BallGrafik:
         self.y_position = y
 
 
-class RobotGrafik: #TODO Display Motor speed
-
-    def __init__(self, _display, _id, _color):
+class RobotGrafik:
+    def __init__(self, _display, _id, _color, _direction):
         self.display = _display
+        self.direction = _direction
         self.color = _color
         self.ppcm = self.display.get_height() / gameconfig.OUTER_FIELD_WIDTH
         self.y_position_offset = self.display.get_height() / (2 * self.ppcm)
@@ -62,7 +63,7 @@ class RobotGrafik: #TODO Display Motor speed
         pygame.draw.polygon(self.display, self.color, newpolygon, 0)
         pos = (pos[0] - 5, pos[1] - 8)
         text = self.font.render(str(self.id), True, WHITE)
-        text = pygame.transform.rotate(text, self.orientation)
+        text = pygame.transform.rotate(text, self.orientation+self.direction)
         self.display.blit(text, pos)
 
     def moveto(self, x, y, d):

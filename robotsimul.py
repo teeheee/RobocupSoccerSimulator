@@ -1,8 +1,8 @@
-#!/usr/bin/env python2
-
+#!/usr/bin/env python3
 
 from game import *
 
+#TODO more comments
 
 class App:
     def __init__(self):

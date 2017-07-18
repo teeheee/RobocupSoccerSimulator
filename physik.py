@@ -47,7 +47,9 @@ class RobotPhysik:
         self.shape2.friction = 0.9
         self.shape2.collision_type = collision_types["robot"]
 
-        self.space.add(self.body, self.shape1 ,self.shape2)
+        self.shape3 = pymunk.Circle(self.body,7)
+
+        self.space.add(self.body, self.shape1 ,self.shape2,self.shape3)
 
     def motorSpeed(self, a, b, c, d):
         self.motor = np.array([a, b, c, d])
@@ -164,7 +166,7 @@ class FieldPhysik:
     def getIntersectingPoints(self, robot):
         points = []
         for linie in self.auslinien:
-            p = linie.shapes_collide(robot.shape1)
+            p = linie.shapes_collide(robot.shape3)
             if len(p.points) > 0:
                 points.append(p.points[0].point_a - robot.body.position)
                 points.append(p.points[0].point_b - robot.body.position)
@@ -207,7 +209,7 @@ class TorPhysik:
 
         tor_balken_1.collision_type = collision_types["tor"]
         tor_balken_2.collision_type = collision_types["tor"]
-
+        #TODO Torbalken sollte wieder funktionieren...
         # def nurball(arbiter, space, data):
         #     return False
         #

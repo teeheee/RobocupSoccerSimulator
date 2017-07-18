@@ -148,13 +148,11 @@ class FeldGrafik: #TODO linien nicht korrekt
         pygame.draw.circle(self.background_display, BLACK, p4, int(1 * self.ppcm))
         pygame.draw.circle(self.background_display, BLACK, p5, int(1 * self.ppcm))
 
-        text = self.font.render(
-            str(self.spielStand[0]) + " " + str(self.spielStand[1]), True, RED)
-
-        self.display.blit(text, (self.background_display.get_width() / 2, 10))
 
     def draw(self):
         self.display.blit(self.background_display, (0, 0))
+        text = self.font.render(str(self.spielStand[0]) + " " + str(self.spielStand[1]), True, BLUE)
+        self.display.blit(text, (self.display.get_width() / 2, 10))
 
     def setSpielstand(self, a, b):
         self.spielStand = (a, b)

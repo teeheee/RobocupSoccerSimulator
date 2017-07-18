@@ -17,6 +17,7 @@ class Robot:
         self.direction = direction
         self.grafik = RobotGrafik(display, _id, color, direction)  # Physik
         self.physik = RobotPhysik(space, self.grafik)
+        self.orientation = direction
         # Roboter ID (setzt fest, welche Nummer auf dem Roboter steht)
         self.id = _id
         # Roboter Position in (x, y, rotation) Mittelpunkt ist x=0 y=0
@@ -56,6 +57,7 @@ class Robot:
         self.pos = np.array([self.physik.body.position.x,
                              self.physik.body.position.y,
                              self.physik.body.angle])
+        self.orientation = np.rad2deg(self.pos[2])
 
     # Zeichnet den Roboter
     def draw(self):
@@ -163,7 +165,7 @@ class NeutralSpot:
                 print("occupied by robot")
                 return True
         d = np.linalg.norm(ball.pos[0:2] - self.pos)
-        if d < 20:
+        if d < 5:
             print("occupied by ball")
             return True
         return False
@@ -239,7 +241,7 @@ class Game:
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
         if self.srRobot > 20:
-            r1.tick(self.ris[0])  # Roboter program laufen lassen
+            #r1.tick(self.ris[0])  # Roboter program laufen lassen
             r2.tick(self.ris[1])  # Roboter program laufen lassen
             r3.tick(self.ris[2])  # Roboter program laufen lassen
             r4.tick(self.ris[3])  # Roboter program laufen lassen

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from game import *
+from debugger import Debugger
 
 #TODO more comments
 
@@ -9,13 +10,16 @@ class App:
         self._running = True
         self._display_surf = None
         self.size = self.weight, self.height = 243*3, 182*3
+        self.pause = False
 
     def on_init(self):
         pygame.init()
-        self._display_surf = pygame.display.set_mode(self.size, pygame.DOUBLEBUF)
+        self._display_surf = pygame.display.set_mode((self.weight+self.height, self.height), pygame.DOUBLEBUF)
+        self._game_display = pygame.Surface( self.size )
         self._display_surf.set_alpha(None)
         self._running = True
-        self.game = Game(self._display_surf)
+        self.game = Game(self._game_display)
+        self.debugger = Debugger(self._display_surf,self.game.ris)
         pygame.mixer.quit()
 
     def on_event(self, event):
@@ -23,10 +27,44 @@ class App:
             self._running = False
 
     def on_loop(self):
-        self.game.tick(0.5)
+        if not self.pause:
+            self.game.tick(0.5)
+        speed = 0.5
+        motor = np.array([0, 0, 0, 0])
+        key = pygame.key.get_pressed()
+        if key[pygame.K_UP]:
+            motor = motor + np.array([-speed, -speed, speed, speed])
+        if key[pygame.K_DOWN]:
+            motor = motor + np.array([speed, speed, -speed, -speed])
+        if key[pygame.K_RIGHT]:
+            motor = motor + np.array([speed/2, 0, speed/2, 0])
+        if key[pygame.K_LEFT]:
+            motor = motor + np.array([-speed/2, 0, -speed/2, 0])
+        if key[pygame.K_m]:
+            motor = motor + np.array([-speed, speed, speed, -speed])
+        if key[pygame.K_j]:
+            motor = motor + np.array([speed, -speed, -speed, speed])
+        if key[pygame.K_1]:
+            self.debugger.setFocusedRobot(0)
+        if key[pygame.K_2]:
+            self.debugger.setFocusedRobot(1)
+        if key[pygame.K_3]:
+            self.debugger.setFocusedRobot(2)
+        if key[pygame.K_4]:
+            self.debugger.setFocusedRobot(3)
+        if key[pygame.K_p]:
+            self.pause = True
+        else:
+            self.pause = False
+
+        motor = motor*100
+        self.game.ris[0].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
 
     def on_render(self):
+        self._display_surf.fill(GREEN)
         self.game.draw()
+        self._display_surf.blit(self._game_display,(0, 0))
+        self.debugger.draw()
         pygame.display.update()
 
     def on_cleanup(self):

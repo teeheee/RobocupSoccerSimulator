@@ -1,16 +1,13 @@
 import numpy as np
 # robot is from class interface
 
-bounce = 0
-lastdirection = 0
+
+letzterichtung = -1
 
 def tick(robot):
     #this is static
-    global bounce
-    global lastdirection
+    global letzterichtung
 
-    geschwindigkeit = 50
-    p_faktor = 0.5
 
     # gather information
     ballsensors = robot.getIRBall()
@@ -24,11 +21,15 @@ def tick(robot):
     bodensensor1 = -1
     for i in range(0,16):
         if boden[i] > 0:
-            bodensensor1 = i * 360/16
+            bodensensor1 = i
 
+    if letzterichtung > -1:
+        bodenrichtung = letzterichtung
     if bodensensor1 > -1:
-        bodenrichtung = bodensensor1
-        bounce = 2
+        bodenrichtung = (bodensensor1 * 360/16)%360
+        bodenrichtung = letzterichtung = bodenrichtung
+    else:
+        letzterichtung = -1
 
 
 
@@ -36,8 +37,8 @@ def tick(robot):
     ballrichtung = -1 #finale fahrrtichtung für ballsensor
     for i in range(0,16):
         if ballsensors[i] > 0:
-            ballrichtung = (i*360/16+180)%360
-            if np.abs(ballrichtung-180) > 20: # umfahren
+            ballrichtung = (i*360/16+180) % 360
+            if np.absolute(ballrichtung-180) > 5: # umfahren
                 if ballrichtung > 180:
                     ballrichtung = (ballrichtung + 90)% 360
                 else:
@@ -45,23 +46,21 @@ def tick(robot):
 
 
     # Statemachine
-    if bounce > 0:
-        bounce=bounce-1
-        fahrtrichtung  = lastdirection
-    elif bodenrichtung > -1:
-        fahrtrichtung = (bodenrichtung+180)%360
-        lastdirection = fahrtrichtung
-    else:
-        fahrtrichtung = (360-ballrichtung)%360
+    if bodenrichtung > -1: #linie
+        fahrtrichtung = bodenrichtung
+        geschwindigkeit = 100
+    else: #ball
+        fahrtrichtung = ballrichtung
+        geschwindigkeit = 100
 
 
     # calculate driving direction 180 is front
-
+    p_faktor = 1
     drall = p_faktor * (180-kompass)
-
-    robot.setMotorSpeed(-geschwindigkeit*np.sin(fahrtrichtung-45)+drall,
-                        -geschwindigkeit * np.sin(fahrtrichtung-135)+drall,
-                        -geschwindigkeit * np.sin(fahrtrichtung-225)+drall,
-                        -geschwindigkeit * np.sin(fahrtrichtung-315)+drall)
+    fahrtrichtung = np.deg2rad(fahrtrichtung)
+    robot.setMotorSpeed(-geschwindigkeit*np.cos(fahrtrichtung-135)+drall,
+                        -geschwindigkeit * np.cos(fahrtrichtung-225)+drall,
+                        -geschwindigkeit * np.cos(fahrtrichtung-315)+drall,
+                        -geschwindigkeit * np.cos(fahrtrichtung-45)+drall)
 
 

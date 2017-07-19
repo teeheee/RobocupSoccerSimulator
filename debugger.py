@@ -70,8 +70,15 @@ class Debugger:
             self._display.blit(text, tmp)
 
         #Kompass
-
         kompass = self._robots[self._id].getKompass()
         tmp = (pos[0] -40, pos[1] )
         text = self.font.render("cmp: " + str(int(kompass)), True, BLACK)
         self._display.blit(text, tmp)
+
+        #ultraschall
+        US = self._robots[self._id].getUltraschall()
+        for i in range(0,4):
+            winkel = np.deg2rad(i*360/4)
+            tmp = (pos[0]+np.cos(winkel)*200-30, pos[1]+np.sin(winkel)*160+20)
+            text = self.font.render("US"+str(i)+": "+str(int(US[i])), True, BLACK)
+            self._display.blit(text, tmp)

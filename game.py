@@ -1,6 +1,7 @@
 from grafik import *
 from physik import *
 import pymunk
+import random
 
 import Team1.robot1.robotRemote as r1
 import Team1.robot2.robotRemote as r2
@@ -175,6 +176,7 @@ class Game:
     def __init__(self, _display):
         self.spielstand = [0, 0]
         self.isgoal = False
+        self.lastgoalteam = 0
 
         self.srRobot = 0
         self.time = 0
@@ -196,11 +198,10 @@ class Game:
                        Robot(self.display, self.space, 3, RED,    0),
                        Robot(self.display, self.space, 4, RED,    0)]
 
-        # Todo flexible starting Position
-        self.robots[0].moveto(13, 1, 180)
-        self.robots[1].moveto(80, -1, 180)
-        self.robots[2].moveto(-40, 3, 0)
-        self.robots[3].moveto(-80, 2, 0)
+        self.robots[0].moveto(13, random.gauss(0,2), 180)
+        self.robots[1].moveto(80, random.gauss(0,2), 180)
+        self.robots[2].moveto(-40, random.gauss(0,2), 0)
+        self.robots[3].moveto(-80, random.gauss(0,2), 0)
 
         self.nspots = [NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, gc.GOAL_WIDTH / 2)),
                        NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, -gc.GOAL_WIDTH / 2)),
@@ -215,7 +216,7 @@ class Game:
                         robot_interface(self, self.robots[3], 0)]
 
 
-    def tick(self, dt): #TODO make it faster somehow....
+    def tick(self, dt):
         self.time += dt  # Sielzeit hochzaelen
         self.space.step(dt)  # Physik engine einen Tick weiter laufen lassen
         self.ball.tick()  # Ball updaten
@@ -223,32 +224,38 @@ class Game:
             robot.tick()  # Roboter updaten
             self.isOutOfBounce(robot)  # roboter auf OutofBounce testen
             if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
-                self.setzteRobotaufNeutralenPunkt(robot)  # TODO kann man schoner machen
+                self.setzteRobotwiederinsSpiel(robot)
 
         self.lagofProgress()  # Lag of Progress testen
         self.checkGoal()  # Tor testen
         self.doubleDefense()  # check double defense
         self.pushing()  # check for pushing
-        if self.isgoal:  # TODO Startposition variabel?
+        if self.isgoal:
             for robot in self.robots:
                 robot.physik.defekt = False
-            self.robots[0].moveto(13, 1, 180)
-            self.robots[1].moveto(80, -1, 180)
-            self.robots[2].moveto(-40, 1, 0)
-            self.robots[3].moveto(-80, -1, 0)
+            if self.lastgoalteam == 2:
+                self.robots[0].moveto(13, random.gauss(0,2), 180)
+                self.robots[1].moveto(80, random.gauss(0,2), 180)
+                self.robots[2].moveto(-40,random.gauss(0,2), 0)
+                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+            if self.lastgoalteam == 1:
+                self.robots[0].moveto(40, random.gauss(0,2), 180)
+                self.robots[1].moveto(80, random.gauss(0,2), 180)
+                self.robots[2].moveto(-13, random.gauss(0,2), 0)
+                self.robots[3].moveto(-80, random.gauss(0,2), 0)
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
             self.isgoal = False
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
         if self.srRobot > 20:
-            #r1.tick(self.ris[0])  # Roboter program laufen lassen
+            r1.tick(self.ris[0])  # Roboter program laufen lassen
             r2.tick(self.ris[1])  # Roboter program laufen lassen
             r3.tick(self.ris[2])  # Roboter program laufen lassen
             r4.tick(self.ris[3])  # Roboter program laufen lassen
             self.srRobot = 0
 
         # Alle Objekte auf das Display zeichnen
-    def draw(self): #TODO make it faster somehow....
+    def draw(self):
         self.field.draw()
         self.ball.draw()
         for robot in self.robots:
@@ -260,6 +267,7 @@ class Game:
 
     # setzt den Ball auf den naechsten neutralen Punkt, der nicht besetzt ist
     def setzteBallaufNeutralenPunkt(self):
+        random.shuffle(self.nspots)
         bestspot = self.nspots[0]
         for nspot in self.nspots:
             if nspot.distance(self.ball) < bestspot.distance(self.ball) \
@@ -270,6 +278,7 @@ class Game:
 
     # setzt den Roboter auf den naechsten neutralen Punkt, der nicht besetzt ist
     def setzteRobotaufNeutralenPunkt(self, robot):
+        random.shuffle(self.nspots)
         bestspot = self.nspots[0]
         for nspot in self.nspots:
             if nspot.distance(robot) < bestspot.distance(robot) \
@@ -281,13 +290,14 @@ class Game:
     # setzt den Roboter auf den neutralen Punkt,
     # der am weitesten vom Ball entfernt ist und nicht besetzt ist
     def setzteRobotwiederinsSpiel(self, robot):
+        random.shuffle(self.nspots)
         bestspot = self.nspots[0]
         for nspot in self.nspots:
             if nspot.distance(self.ball) > bestspot.distance(self.ball) \
                     and not nspot.isOccupied(self.robots, self.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], robot.direction)
+        robot.moveto(pos[0], pos[1], robot.direction+180)
 
     # bei zu wenig Ballbewegung wird setzteBallaufNeutralenPunkt() ausgefuehrt
     def lagofProgress(self):
@@ -366,6 +376,7 @@ class Game:
             self.spielstand[0] = self.spielstand[0] + 1
             print("GOAL")
             self.isgoal = True
+            self.lastgoalteam = 1
 
         if self.ball.pos[0] > gc.INNER_FIELD_LENGTH / 2 \
                 and self.ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP \
@@ -374,4 +385,5 @@ class Game:
             self.spielstand[1] = self.spielstand[1] + 1
             print("GOAL")
             self.isgoal = True
+            self.lastgoalteam = 2
         self.field.setSpielstand(self.spielstand[1], self.spielstand[0])

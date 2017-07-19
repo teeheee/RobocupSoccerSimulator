@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import gameconfig
 
 class robot_interface:
     def __init__(self, _game, _robot, _spielrichtung):
@@ -10,29 +11,31 @@ class robot_interface:
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
-    def getBodenSensors(self):# TODO geht nicht
+    def getBodenSensors(self):
         bodensensor = np.zeros(16)
         points = self.game.field.getIntersectingPoints(self.robot)
         i=0
         for p in points:
+            p = p / 4
             w = np.rad2deg(np.arctan2(p[0], p[1]))
-            print(p)
-            if p[0] < 0:
-                w += 180
-            winkel = 360-(w+self.robot.orientation)%360
+            winkel = 360-(w+self.robot.orientation+270)%360
             i+=1
-            print(str(i)+" "+str(winkel))
             bodensensor[int(winkel * 16 / 360)%16] = 1
         return bodensensor
 
     # Returns a list of 4 Distance measurements in all 4 directions
     # Numbering starts at the front and goes clockwise
-    def getUltraschall(self): #TODO getUltraschall ist noch nicht fertig
-        pass
-        #if self.spielrichtung == 180:
-        #    return np.array([int(-self.robot.pos[0]), int(-self.robot.pos[1])])
-        #else:
-        #    return np.array([int(self.robot.pos[0]), int(self.robot.pos[1])])
+    def getUltraschall(self): #TODO getUltraschall ist noch nicht fertig hindernisse fehlen
+        if self.spielrichtung == 180:
+            pos = np.array([int(-self.robot.pos[0]), int(-self.robot.pos[1])])
+        else:
+            pos = np.array([int(self.robot.pos[0]), int(self.robot.pos[1])])
+        US = []
+        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_WIDTH/2 + gameconfig.OUTER_FIELD_WIDTH-pos[0]-10+random.gauss(0,5) )))
+        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_LENGTH/2 + gameconfig.OUTER_FIELD_LENGTH-pos[1]-10+random.gauss(0,5)  )))
+        US.append(np.absolute(int( gameconfig.OUTER_FIELD_WIDTH/2 + pos[0]-10+random.gauss(0,5) )))
+        US.append(np.absolute(int( gameconfig.OUTER_FIELD_LENGTH/2 + pos[1]-10+random.gauss(0,5) )))
+        return US
 
     # Returns a List of Blocks of detected Objects
     # Attributes of each object is signature, x and y Position in camera vision
@@ -52,7 +55,7 @@ class robot_interface:
         ballrichtung = (np.degrees(np.arctan2(ball_relative_robot[0], ball_relative_robot[1])) + random.gauss(0,5) + 270) % 360
         ballrichtung = (ballrichtung + self.robot.orientation)%360
         ballrichtung = 360-ballrichtung
-        irsensors[int(ballrichtung * 16 / 360)%16] = int(distanz)
+        irsensors[int(ballrichtung * 16 / 360)%16] = int(1000/distanz)
         return irsensors
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise
@@ -63,9 +66,9 @@ class robot_interface:
     # Sets the Motor speeds to this Value Motors rotate the Robot counter clockwise.
     # Numbering starts at the front and goes clockwise
     def setMotorSpeed(self,m0,m1,m2,m3):
-        m0 = m0 * random.gauss(1,0.01)
-        m1 = m1 * random.gauss(1,0.01)
-        m2 = m2 * random.gauss(1,0.01)
+        m0 = m0 * random.gauss(1,0.02)
+        m1 = m1 * random.gauss(1,0.02)
+        m2 = m2 * random.gauss(1,0.02)
         if m0 > 100:
             m0 = 100
         if m0 < -100:

@@ -13,6 +13,7 @@ collision_types = {
 
 #TODO more comments
 
+
 class RobotPhysik:
     def __init__(self, _space, _robotgrafik):
         self.robotgrafik = _robotgrafik
@@ -47,9 +48,7 @@ class RobotPhysik:
         self.shape2.friction = 0.9
         self.shape2.collision_type = collision_types["robot"]
 
-        self.shape3 = pymunk.Circle(self.body,7)
-
-        self.space.add(self.body, self.shape1 ,self.shape2,self.shape3)
+        self.space.add(self.body, self.shape1 ,self.shape2)
 
     def motorSpeed(self, a, b, c, d):
         self.motor = np.array([a, b, c, d])
@@ -59,7 +58,7 @@ class RobotPhysik:
         self.body.angle = np.radians(d)
         self.space.reindex_shapes_for_body(self.body)
 
-    def tick(self): #TODO better omniwheel Physics
+    def tick(self):
         if self.defekt:
             self.motor = np.array([0, 0, 0, 0])
             self.body.torque = 0
@@ -68,7 +67,7 @@ class RobotPhysik:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
             A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])
             f = A.dot(self.motor)
-            theta = self.body.angle -  np.radians(45+180)
+            theta = self.body.angle -  np.deg2rad(45+180)
             c, s = np.cos(theta), np.sin(theta)
             R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
             v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
@@ -166,10 +165,25 @@ class FieldPhysik:
     def getIntersectingPoints(self, robot):
         points = []
         for linie in self.auslinien:
-            p = linie.shapes_collide(robot.shape3)
-            if len(p.points) > 0:
-                points.append(p.points[0].point_a - robot.body.position)
-                points.append(p.points[0].point_b - robot.body.position)
+            A = np.array(linie.a)
+            B = np.array(linie.b)
+            C = np.array(robot.body.position)
+            R = 8
+
+            LAB = np.linalg.norm(A-B)
+            D = (B - A) / LAB
+            t = D * ( C - A )
+            E = t * D + A
+            LEC = np.linalg.norm(E - C)
+
+            if LEC < R:
+                dt = np.sqrt(R-LEC)
+                F = (t - dt) * D + A
+                G = (t + dt) * D + A
+                points.append(F-C)
+                points.append(G-C)
+            elif LEC == R:
+                points.append(E-C)
         return points
 
 
@@ -178,21 +192,24 @@ class TorPhysik:
         self.isgoal = False
         self.space = _space
         static_body = self.space.static_body
-        static_lines_tor1 = [pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2) 		, (gc. INNER_FIELD_LENGTH / 2+gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
-                             pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                            (gc.
-                                             INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0)
-            , pymunk.
-                                 Segment(static_body, (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), (
-                gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
-        static_lines_tor2 = [pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2) 		, (-gc. INNER_FIELD_LENGTH / 2-gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
-                             pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                            (- gc.
-                                             INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0)
-            , pymunk.
-                                 Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
-                                         (-
-                                          gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
+        static_lines_tor1 = [pymunk.Segment(static_body,
+                                (gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                             pymunk.Segment(static_body,
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                             pymunk.Segment(static_body,
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
+        static_lines_tor2 = [pymunk.Segment(static_body,
+                                (-gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                             pymunk.Segment(static_body,
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                             pymunk.Segment(static_body,
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
         tor_balken_1 = pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
             gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2), 0.0)
         tor_balken_2 = pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
@@ -209,19 +226,16 @@ class TorPhysik:
 
         tor_balken_1.collision_type = collision_types["tor"]
         tor_balken_2.collision_type = collision_types["tor"]
-        #TODO Torbalken sollte wieder funktionieren...
-        # def nurball(arbiter, space, data):
-        #     return False
-        #
-        # def nurroboter(arbiter, space, data):
-        #     return True
-        #
-        # h1 = self.space.add_collision_handler(collision_types["ball"], collision_types["tor"])
-        # h1.begin = nurball
-        # h2 = self.space.add_collision_handler(collision_types["robot"], collision_types["tor"])
-        # h2.begin = nurroboter
-        # self.space.add(tor_balken_1)
-        # self.space.add(tor_balken_2)
+        def nurball(arbiter, space, data):
+            return False
+
+        h1 = self.space.add_collision_handler(collision_types["ball"], collision_types["tor"] )
+        h1.begin = nurball
+
+        self.space.add(tor_balken_1)
+        self.space.add(tor_balken_2)
 
     def isGoal(self):
         return self.isgoal
+
+

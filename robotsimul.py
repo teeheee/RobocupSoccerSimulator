@@ -8,6 +8,8 @@ from debugger import Debugger
 class App:
     def __init__(self):
         self._running = True
+        self.robotcontrol = False
+        self.focusedrobot = 0
         self._display_surf = None
         self.size = self.weight, self.height = 243*3, 182*3
         self.pause = False
@@ -45,20 +47,29 @@ class App:
         if key[pygame.K_j]:
             motor = motor + np.array([speed, -speed, -speed, speed])
         if key[pygame.K_1]:
+            self.focusedrobot = 0
             self.debugger.setFocusedRobot(0)
         if key[pygame.K_2]:
+            self.focusedrobot = 1
             self.debugger.setFocusedRobot(1)
         if key[pygame.K_3]:
+            self.focusedrobot = 2
             self.debugger.setFocusedRobot(2)
         if key[pygame.K_4]:
+            self.focusedrobot = 3
             self.debugger.setFocusedRobot(3)
         if key[pygame.K_p]:
             self.pause = True
         else:
             self.pause = False
+        if key[pygame.K_SPACE]:
+            self.robotcontrol=True
+        else:
+            self.robotcontrol=False
 
-        motor = motor*100
-        self.game.ris[0].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
+        if self.robotcontrol:
+            motor = motor*100
+            self.game.ris[self.focusedrobot].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
 
     def on_render(self):
         self._display_surf.fill(GREEN)
@@ -76,13 +87,17 @@ class App:
             self._running = False
         I = 0
         while(self._running):
+
             for event in pygame.event.get():
                 self.on_event(event)
+
             self.on_loop()
+
             I = I + 1
             if I > 20:
                 self.on_render()
                 I = 0
+
         self.on_cleanup()
 
 if __name__ == "__main__":

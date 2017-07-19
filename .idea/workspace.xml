@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6134db4c-940a-44b8-8780-ff74172b8487" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -436,7 +435,14 @@
       <option name="project" value="LOCAL" />
       <updated>1500455886096</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="edit readme">
+      <created>1500456666166</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1500456666166</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TodoView">
@@ -499,7 +505,8 @@
     <MESSAGE value="new interface" />
     <MESSAGE value="debugger fenster hinzugefügt" />
     <MESSAGE value="noch mehr bug fixes." />
-    <option name="LAST_COMMIT_MESSAGE" value="noch mehr bug fixes." />
+    <MESSAGE value="edit readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

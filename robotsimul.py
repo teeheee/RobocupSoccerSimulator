@@ -94,7 +94,7 @@ class App:
             self.on_loop()
 
             I = I + 1
-            if I > 20:
+            if I > 50:
                 self.on_render()
                 I = 0
 

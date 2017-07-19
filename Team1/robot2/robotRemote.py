@@ -1,7 +1,7 @@
 import numpy as np
 # robot is from class interface
 
-
+# Torwart
 letzterichtung = -1
 
 def tick(robot):
@@ -37,17 +37,19 @@ def tick(robot):
     ballrichtung = -1 #finale fahrrtichtung für ballsensor
     for i in range(0,16):
         if ballsensors[i] > 0:
-            ballrichtung = (i*360/16+180) % 360
-            if np.absolute(ballrichtung-180) > 5: # umfahren
-                if ballrichtung > 180:
-                    ballrichtung = (ballrichtung + 90)% 360
-                else:
-                    ballrichtung = (ballrichtung + 270)%360
+            ballrichtung = (i*360/16+180 + 10) % 360
+
+    usrichtung = -1
+    if ultraschall[2]>30:
+        usrichtung = 0
 
 
     # Statemachine
     if bodenrichtung > -1: #linie
         fahrtrichtung = bodenrichtung
+        geschwindigkeit = 100
+    elif usrichtung > -1:
+        fahrtrichtung = usrichtung
         geschwindigkeit = 100
     else: #ball
         fahrtrichtung = ballrichtung

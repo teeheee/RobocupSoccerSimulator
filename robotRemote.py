@@ -1,5 +1,4 @@
 import threading
-import Team1.robot1.main as m
 import numpy as np
 
 
@@ -91,17 +90,18 @@ class RobotControl:
 
 
 class robotThread (threading.Thread):
-   def __init__(self, control):
+   def __init__(self, control, mainfunction):
         threading.Thread.__init__(self)
         self._control = control
+        self._mainfunction = mainfunction
    def run(self):
-        m.main(self._control)
+        self._mainfunction(self._control)
         print("WTF!! robot %d finished his loop" % self._robotInterface.id)
 
 
 def init(robotInterface):
     robotInterface.control = RobotControl(robotInterface)
-    robotInterface.thread = robotThread(robotInterface.control)
+    robotInterface.thread = robotThread(robotInterface.control,robotInterface.main)
     robotInterface.thread.daemon = True
     robotInterface.thread.start()
 

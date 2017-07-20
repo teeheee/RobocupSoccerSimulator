@@ -1,6 +1,7 @@
+from robotRemote import RobotControl
 import numpy as np
 
-def main(robot):
+def main(robot:RobotControl):
     letzterichtung = -1
     last_kompass = 0
     i_kompass = 0

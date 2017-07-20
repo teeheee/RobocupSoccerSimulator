@@ -1,12 +1,14 @@
-from grafik import *
-from physik import *
-import pymunk
 import random
 
-import Team1.robot1.robotRemote as r1
-import Team1.robot2.robotRemote as r2
-import Team2.robot1.robotRemote as r3
-import Team2.robot2.robotRemote as r4
+import pymunk
+
+import Team1.robot1.main as r1
+import Team1.robot2.main as r2
+import Team2.robot1.main as r3
+import Team2.robot2.main as r4
+import robotRemote
+from grafik import *
+from physik import *
 
 
 class Robot:
@@ -215,10 +217,15 @@ class Game:
                         robot_interface(self, self.robots[2], 0),
                         robot_interface(self, self.robots[3], 0)]
 
-        r1.init(self.ris[0])  # Roboter program initialisieren
-        r2.init(self.ris[1])  # Roboter program initialisieren
-        r3.init(self.ris[2])  # Roboter program initialisieren
-        r4.init(self.ris[3])  # Roboter program initialisieren
+        self.ris[0].main = r1.main
+        self.ris[1].main = r2.main
+        self.ris[2].main = r3.main
+        self.ris[3].main = r4.main
+
+        robotRemote.init(self.ris[0])  # Roboter program initialisieren
+        robotRemote.init(self.ris[1])  # Roboter program initialisieren
+        robotRemote.init(self.ris[2])  # Roboter program initialisieren
+        robotRemote.init(self.ris[3])  # Roboter program initialisieren
 
 
     def tick(self, dt):
@@ -253,10 +260,10 @@ class Game:
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
         if self.srRobot > 20:
-            r1.tick(self.ris[0])  # Roboter program laufen lassen
-            r2.tick(self.ris[1])  # Roboter program laufen lassen
-            r3.tick(self.ris[2])  # Roboter program laufen lassen
-            r4.tick(self.ris[3])  # Roboter program laufen lassen
+            robotRemote.tick(self.ris[0])  # Roboter program initialisieren
+            robotRemote.tick(self.ris[1])  # Roboter program initialisieren
+            robotRemote.tick(self.ris[2])  # Roboter program initialisieren
+            robotRemote.tick(self.ris[3])  # Roboter program initialisieren
             self.srRobot = 0
 
         # Alle Objekte auf das Display zeichnen

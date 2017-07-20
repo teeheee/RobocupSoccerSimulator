@@ -1,11 +1,9 @@
-from robotRemote import RobotControl
 import numpy as np
 
-def main(robot : RobotControl):
+def main(robot):
     letzterichtung = -1
 
     while True:
-
         # gather information
         ballsensors = robot.getIRBall()
         kompass = robot.getKompass()
@@ -54,3 +52,5 @@ def main(robot : RobotControl):
                             -geschwindigkeit * np.cos(fahrtrichtung - 225) + drall,
                             -geschwindigkeit * np.cos(fahrtrichtung - 315) + drall,
                             -geschwindigkeit * np.cos(fahrtrichtung - 45) + drall)
+
+

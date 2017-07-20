@@ -4,6 +4,9 @@ import numpy as np
 
 letzterichtung = -1
 
+def init(robot):
+    pass
+
 def tick(robot):
     #this is static
     global letzterichtung

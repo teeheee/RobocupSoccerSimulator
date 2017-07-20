@@ -5,6 +5,7 @@ import gameconfig
 class robot_interface:
     def __init__(self, _game, _robot, _spielrichtung):
         self.robot = _robot
+        self.id = _robot.id
         self.game = _game
         self.spielrichtung = _spielrichtung
         self.motor = np.array([0, 0, 0, 0])
@@ -55,7 +56,8 @@ class robot_interface:
         ballrichtung = (np.degrees(np.arctan2(ball_relative_robot[0], ball_relative_robot[1])) + random.gauss(0,5) + 270) % 360
         ballrichtung = (ballrichtung + self.robot.orientation)%360
         ballrichtung = 360-ballrichtung
-        irsensors[int(ballrichtung * 16 / 360)%16] = int(1000/distanz)
+        if distanz > 0:
+            irsensors[int(ballrichtung * 16 / 360)%16] = int(1000/distanz)
         return irsensors
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise

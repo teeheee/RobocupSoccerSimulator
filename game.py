@@ -215,6 +215,11 @@ class Game:
                         robot_interface(self, self.robots[2], 0),
                         robot_interface(self, self.robots[3], 0)]
 
+        r1.init(self.ris[0])  # Roboter program initialisieren
+        r2.init(self.ris[1])  # Roboter program initialisieren
+        r3.init(self.ris[2])  # Roboter program initialisieren
+        r4.init(self.ris[3])  # Roboter program initialisieren
+
 
     def tick(self, dt):
         self.time += dt  # Sielzeit hochzaelen

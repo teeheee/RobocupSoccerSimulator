@@ -14,7 +14,7 @@ cd RobocupSoccerSimulator
 ```  
 # Install windows
 
-download robocupsoccersimulator_win32.exe and install
+download [build/rss_win32_setup.exe](https://github.com/teeheee/RobocupSoccerSimulator/raw/master/build/rss_win32_setup.exe) and install
   
 # Run
 ```  
@@ -32,7 +32,6 @@ or just start the robotsimul.exe in the windows installation directory
 
 ## Program-Interface-rules
 - edit the main.py in the corresponding Teamx/robotx folders
-- call function with robot.<functionname>
 ```python
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise

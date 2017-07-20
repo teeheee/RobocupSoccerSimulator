@@ -1,14 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-#TODO check out https://pythonprogramming.net/converting-pygame-executable-cx_freeze/ could be better
+import sys
+from cx_Freeze import setup, Executable
 
-from distutils.core import setup
 
-setup(name='RobocupSimulator',
-      version='1.0',
-      description='Nothing interesting...',
-      author='Alexander Ulbrich',
-      author_email='alexander.ulbrich@uni-ulm.de',
-      url='https://github.com/teeheee/RobocupSoccerSimulator',
-      install_requires=['numpy','pymunk','pygame']
-     )
+setup(
+    name="Robocup Simulator",
+    options={"build_exe": {"packages":["pygame","numpy","pymunk"]}},
+    executables = [Executable("robotsimul.py", base = "Win32GUI")]
+    )

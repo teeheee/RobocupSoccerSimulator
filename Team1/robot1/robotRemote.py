@@ -1,8 +1,8 @@
 import numpy as np
 # robot is from class interface
 
-
-letzterichtung = -1
+#Feldspieler
+letzterichtung =  -1
 
 def tick(robot):
     #this is static
@@ -23,15 +23,13 @@ def tick(robot):
         if boden[i] > 0:
             bodensensor1 = i
 
-    if letzterichtung > -1:
+    if letzterichtung > -1 and bodensensor1 > -1:
         bodenrichtung = letzterichtung
-    if bodensensor1 > -1:
+    elif bodensensor1 > -1:
         bodenrichtung = (bodensensor1 * 360/16)%360
         bodenrichtung = letzterichtung = bodenrichtung
     else:
         letzterichtung = -1
-
-
 
     # ballverfolgung
     ballrichtung = -1 #finale fahrrtichtung für ballsensor

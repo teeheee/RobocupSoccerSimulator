@@ -5,7 +5,7 @@ import numpy as np
 last_irballsum = 0
 
 def getReward(robot:RobotControl):
-    state = robot.getRobotState()*100
+    state = robot.getRobotState()*10
     global last_irballsum
     irballsum = sum(robot.getIRBall())
     ballsensor = (irballsum-last_irballsum)
@@ -17,7 +17,7 @@ def getReward(robot:RobotControl):
     if reward == 0:
         reward = ballsensor - bodensensor
     else:
-        last_irballsum = 20
+        last_irballsum = 15
     return reward
 
 def getObservation(robot:RobotControl):

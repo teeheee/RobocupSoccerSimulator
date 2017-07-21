@@ -2,7 +2,6 @@ from robotRemote import RobotControl
 import numpy as np
 
 def main(robot:RobotControl):
-    letzterichtung = -1
     last_kompass = 0
     i_kompass = 0
 
@@ -16,18 +15,11 @@ def main(robot:RobotControl):
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor
-        bodensensor1 = -1
         for i in range(0, 16):
             if boden[i] > 0:
-                bodensensor1 = i
+                bodenrichtung = (i * 360 / 16) % 360
 
-        if letzterichtung > -1 and bodensensor1 > -1:
-            bodenrichtung = letzterichtung
-        if bodensensor1 > -1:
-            bodenrichtung = (bodensensor1 * 360 / 16) % 360
-            bodenrichtung = letzterichtung = bodenrichtung
-        else:
-            letzterichtung = -1
+
 
         # ballverfolgung
         ballrichtung = -1  # finale fahrrtichtung für ballsensor

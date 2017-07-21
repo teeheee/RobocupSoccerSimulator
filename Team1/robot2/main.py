@@ -14,14 +14,10 @@ def main(robot:RobotControl):
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor
-        bodensensor1 = -1
         for i in range(0, 16):
             if boden[i] > 0:
-                bodensensor1 = i
+                bodenrichtung = (i * 360 / 16) % 360
 
-        if bodensensor1 > -1:
-            bodenrichtung = (bodensensor1 * 360 / 16) % 360
-            bodenrichtung = bodenrichtung
 
         # ballverfolgung
         ballrichtung = -1  # finale fahrrtichtung für ballsensor

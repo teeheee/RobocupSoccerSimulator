@@ -19,9 +19,11 @@ class RobotControl:
         self.pixy = self._robotInterface.getPixy()
         self.kompass = self._robotInterface.getKompass()
         self.irsensors = self._robotInterface.getIRBall()
+        self.state = self._robotInterface.getRobotState()
         self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
         self.threadLock.notify()
         self.threadLock.release()
+
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
@@ -82,10 +84,15 @@ class RobotControl:
         pass
 
     # Returns the State of the Robot
-    # 1. In Game
-    # 2. Defekt
-    def getRobotState(self): #TODO getRobotState
-        pass
+    # 0. enemy Goal
+    # 1. Defekt
+    # 2. In Game
+    # 3. own Goal
+    def getRobotState(self):
+        self.threadLock.acquire()
+        tmp = np.array(self.state)
+        self.threadLock.release()
+        return tmp
 
 
 

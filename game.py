@@ -1,12 +1,11 @@
-import random
 
-import pymunk
 
 import Team1.robot1.main as r1
 import Team1.robot2.main as r2
 import Team2.robot1.main as r3
 import Team2.robot2.main as r4
 import robotRemote
+import time
 from grafik import *
 from physik import *
 
@@ -27,6 +26,7 @@ class Robot:
         self.pos = np.array([0, 0, 0])
         # Roboter Radius ist 10 cm
         self.radius = self.physik.radius
+
 
     # setzt den Roboter in Zustand Defekt und platziert ihn weit weg
     # (kann nur einmal aufgerufen werden. Danach muss der timeout ablaufen)
@@ -180,6 +180,8 @@ class Game:
         self.isgoal = False
         self.lastgoalteam = 0
 
+        self.lagofprogressTimeout = 2000
+
         self.srRobot = 0
         self.time = 0
         self.balltimeout = 0
@@ -194,10 +196,17 @@ class Game:
 
         BLUE = 0, 0, 255
         RED = 255, 0, 0
+        DEEPPINK = 255,20,147
+
+        self.nspots = [NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, gc.GOAL_WIDTH / 2)),
+                       NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, -gc.GOAL_WIDTH / 2)),
+                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, gc.GOAL_WIDTH / 2)),
+                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
+                       NeutralSpot((0, 0))]
 
         self.robots = [Robot(self.display, self.space, 1, BLUE, 180),
                        Robot(self.display, self.space, 2, BLUE, 180),
-                       Robot(self.display, self.space, 3, RED,    0),
+                       Robot(self.display, self.space, 3, DEEPPINK,    0),
                        Robot(self.display, self.space, 4, RED,    0)]
 
         self.robots[0].moveto(13, random.gauss(0,2), 180)
@@ -205,11 +214,6 @@ class Game:
         self.robots[2].moveto(-40, random.gauss(0,2), 0)
         self.robots[3].moveto(-80, random.gauss(0,2), 0)
 
-        self.nspots = [NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, -gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((0, 0))]
 
 
         self.ris = [robot_interface(self, self.robots[0], 180),
@@ -238,34 +242,55 @@ class Game:
             if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
                 self.setzteRobotwiederinsSpiel(robot)
 
+
         self.lagofProgress()  # Lag of Progress testen
         self.checkGoal()  # Tor testen
         self.doubleDefense()  # check double defense
         self.pushing()  # check for pushing
-        if self.isgoal:
-            for robot in self.robots:
-                robot.physik.defekt = False
-            if self.lastgoalteam == 2:
-                self.robots[0].moveto(13, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-40,random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
-            if self.lastgoalteam == 1:
-                self.robots[0].moveto(40, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-13, random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
-            self.ball.moveto(0, 0)  # Ball in die Mitte legen
-            self.isgoal = False
+
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
-        if self.srRobot > 20:
+        if self.srRobot > 20 or self.isgoal:
             robotRemote.tick(self.ris[0])  # Roboter program initialisieren
             robotRemote.tick(self.ris[1])  # Roboter program initialisieren
             robotRemote.tick(self.ris[2])  # Roboter program initialisieren
             robotRemote.tick(self.ris[3])  # Roboter program initialisieren
             self.srRobot = 0
 
+#### DELETE THIS BLOCK FOR NORMAL GAME PLAY. Just for faster learining.... ;-)
+
+        self.robots[0].defekt(self.time)
+        self.robots[1].defekt(self.time)
+        self.robots[3].defekt(self.time)
+
+
+        self.lagofprogressTimeout = 5000
+
+        if self.robots[2].physik.defekt == True:
+            time.sleep(1)
+            robotRemote.tick(self.ris[2])
+            time.sleep(1)
+            self.robots[2].physik.defekt = False
+            self.setzteRobotwiederinsSpiel(self.robots[2])
+###########ENBLOCK
+
+
+        if self.isgoal:
+            time.sleep(1)
+            for robot in self.robots:
+                robot.physik.defekt = False
+            if self.lastgoalteam == 2:
+                self.robots[0].moveto(13, random.gauss(0, 2), 180)
+                self.robots[1].moveto(80, random.gauss(0, 2), 180)
+                self.robots[2].moveto(-40, random.gauss(0, 2), 0)
+                self.robots[3].moveto(-80, random.gauss(0, 2), 0)
+            if self.lastgoalteam == 1:
+                self.robots[0].moveto(40, random.gauss(0, 2), 180)
+                self.robots[1].moveto(80, random.gauss(0, 2), 180)
+                self.robots[2].moveto(-13, random.gauss(0, 2), 0)
+                self.robots[3].moveto(-80, random.gauss(0, 2), 0)
+            self.ball.moveto(0, 0)  # Ball in die Mitte legen
+            self.isgoal = False
         # Alle Objekte auf das Display zeichnen
     def draw(self):
         self.field.draw()
@@ -315,7 +340,7 @@ class Game:
     def lagofProgress(self):
         if self.ball.isMoving():
             self.balltimeout = self.time
-        if self.time - self.balltimeout > 2000:
+        if self.time - self.balltimeout > self.lagofprogressTimeout:
             print("lag of progress!!!")
             self.setzteBallaufNeutralenPunkt()
             self.balltimeout = self.time

@@ -22,6 +22,7 @@ class App:
         self._running = True
         self.game = Game(self._game_display)
         self.debugger = Debugger(self._display_surf,self.game.ris)
+        self.debugger.setFocusedRobot(2)
         pygame.mixer.quit()
 
     def on_event(self, event):
@@ -94,7 +95,7 @@ class App:
             self.on_loop()
 
             I = I + 1
-            if I > 50:
+            if I > 80:
                 self.on_render()
                 I = 0
 

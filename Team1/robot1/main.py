@@ -12,6 +12,7 @@ def main(robot:RobotControl):
         kompass = robot.getKompass()
         boden = robot.getBodenSensors()
         ultraschall = robot.getUltraschall()
+        state = robot.getRobotState()
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor

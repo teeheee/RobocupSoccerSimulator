@@ -99,7 +99,23 @@ class robot_interface:
         pass
 
     # Returns the State of the Robot
-    # 1. In Game
-    # 2. Defekt
-    def getRobotState(self): #TODO getRobotState
-        pass
+    # -5. nemy Goal
+    # -1. Defekt
+    # 0. In Game
+    # 5. own Goal
+    def getRobotState(self):
+        if self.game.isgoal:
+            if self.robot.id <= 1:
+                if self.game.lastgoalteam == 1:
+                    return -5
+                else:
+                    return 5
+            else:
+                if self.game.lastgoalteam == 2:
+                    return 5
+                else:
+                    return -5
+        elif self.robot.physik.defekt == True:
+            return -1
+        else:
+            return 0

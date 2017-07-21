@@ -35,7 +35,8 @@ class Debugger:
 
         # ID
         tmp = (pos[0] - 20, pos[1] - 250)
-        text = self.font.render("id: "+str(self._id+1), True, BLACK)
+        state = self._robots[self._id].getRobotState()
+        text = self.font.render("id: "+str(self._id+1) + " state: " + str(state), True, BLACK)
         self._display.blit(text, tmp)
 
         # Motors

@@ -267,7 +267,6 @@ class Game:
         self.lagofprogressTimeout = 5000
 
         if self.robots[2].physik.defekt == True:
-            time.sleep(1)
             robotRemote.tick(self.ris[2])
             time.sleep(1)
             self.robots[2].physik.defekt = False

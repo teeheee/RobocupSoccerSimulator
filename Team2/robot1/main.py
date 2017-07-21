@@ -3,7 +3,6 @@ from Team2.robot1.RL_brain import DeepQNetwork
 import numpy as np
 
 last_irballsum = 0
-
 def getReward(robot:RobotControl):
     state = robot.getRobotState()*10
     global last_irballsum
@@ -11,14 +10,15 @@ def getReward(robot:RobotControl):
     ballsensor = (irballsum-last_irballsum)
     last_irballsum = irballsum
 
-    bodensensor = sum(robot.getBodenSensors())
+    #bodensensor = sum(robot.getBodenSensors())*10
 
     reward = state
     if reward == 0:
-        reward = ballsensor - bodensensor
+        reward = ballsensor
     else:
         last_irballsum = 15
     return reward
+
 
 def getObservation(robot:RobotControl):
     observation = []
@@ -28,6 +28,7 @@ def getObservation(robot:RobotControl):
     observation.extend(robot.getUltraschall())
     return np.array(observation)
 
+
 last_kompass = 0
 i_kompass = 0
 def doAction(robot:RobotControl , action):
@@ -36,7 +37,7 @@ def doAction(robot:RobotControl , action):
     kompass = robot.getKompass()
     if action <= 16:
         geschwindigkeit=100
-        fahrtrichtung = np.deg2rad(action*360/16)
+        fahrtrichtung = np.deg2rad(action*360/8)
         p_faktor = 3
         d_faktor = 12
         i_faktor = 0.001
@@ -57,12 +58,12 @@ def doAction(robot:RobotControl , action):
 
 
 def main(robot:RobotControl):
-    RL = DeepQNetwork(n_actions=16,
-                      n_features=16+16+4+1,
-                      learning_rate=0.01,
-                      reward_decay=0.9,
-                      e_greedy=0.9,
-                      replace_target_iter=100,
+    RL = DeepQNetwork(n_actions=8,
+                      n_features=16+4+16+1,
+                      learning_rate=0.005,
+                      reward_decay=0.99,
+                      e_greedy=0.8,
+                      replace_target_iter=1000,
                       memory_size=10000,
                       output_graph=True
                       )

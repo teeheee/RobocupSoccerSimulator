@@ -90,10 +90,10 @@ def main(robot:RobotControl):
         a = np.argmax(action[0,:])
         doAction(robot,a)
         reward = getReward(robot)
-        RL.store_transition(observation, action[0,:], reward)
+        RL.learn_from_single_transistion(observation, action[0,:], reward)
 
-        if isEpisodeEnd(robot):
-            RL.storeCurrentEpisode()
-            RL.learn()
+        #if isEpisodeEnd(robot):
+        #    RL.storeCurrentEpisode()
+        #    RL.learn()
 
         step += 1

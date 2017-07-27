@@ -98,7 +98,7 @@ class App:
             I = I + 1
             if I > 10:
                 self.on_render()
-                time.sleep(0.024)
+                #time.sleep(0.024)
                 I = 0
 
         self.on_cleanup()

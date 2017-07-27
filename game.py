@@ -9,6 +9,7 @@ import Team2.robot2.main as r4
 import robotRemote
 from grafik import *
 from physik import *
+import time
 
 
 class Robot:
@@ -180,7 +181,8 @@ class Game:
         self.isgoal = False
         self.lastgoalteam = 0
 
-        self.srRobot = 0
+        self.sample_rate_Robot = 0
+        self.sample_rate_Referee = 0
         self.time = 0
         self.balltimeout = 0
         self.display = _display
@@ -227,17 +229,18 @@ class Game:
         robotRemote.init(self.ris[2])  # Roboter program initialisieren
         robotRemote.init(self.ris[3])  # Roboter program initialisieren
 
-
-    def tick(self, dt):
+    def _tick_Physiks(self,dt):
         self.time += dt  # Sielzeit hochzaelen
         self.space.step(dt)  # Physik engine einen Tick weiter laufen lassen
         self.ball.tick()  # Ball updaten
         for robot in self.robots:
             robot.tick()  # Roboter updaten
+
+    def _tick_referee(self,dt): # TODO THIS TAKES TO LONG!!!!!
+        for robot in self.robots:
             self.isOutOfBounce(robot)  # roboter auf OutofBounce testen
             if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
                 self.setzteRobotwiederinsSpiel(robot)
-
         self.lagofProgress()  # Lag of Progress testen
         self.checkGoal()  # Tor testen
         self.doubleDefense()  # check double defense
@@ -246,25 +249,37 @@ class Game:
             for robot in self.robots:
                 robot.physik.defekt = False
             if self.lastgoalteam == 2:
-                self.robots[0].moveto(13, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-40,random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+                self.robots[0].moveto(13, random.gauss(0, 2), 180)
+                self.robots[1].moveto(80, random.gauss(0, 2), 180)
+                self.robots[2].moveto(-40, random.gauss(0, 2), 0)
+                self.robots[3].moveto(-80, random.gauss(0, 2), 0)
             if self.lastgoalteam == 1:
-                self.robots[0].moveto(40, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-13, random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+                self.robots[0].moveto(40, random.gauss(0, 2), 180)
+                self.robots[1].moveto(80, random.gauss(0, 2), 180)
+                self.robots[2].moveto(-13, random.gauss(0, 2), 0)
+                self.robots[3].moveto(-80, random.gauss(0, 2), 0)
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
             self.isgoal = False
 
-        self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
-        if self.srRobot > 20:
+    def _tick_robot(self, dt):
             robotRemote.tick(self.ris[0])  # Roboter program initialisieren
             robotRemote.tick(self.ris[1])  # Roboter program initialisieren
             robotRemote.tick(self.ris[2])  # Roboter program initialisieren
             robotRemote.tick(self.ris[3])  # Roboter program initialisieren
-            self.srRobot = 0
+
+
+    def tick(self, dt):
+        self._tick_Physiks(dt)
+
+        self.sample_rate_Robot += 1  # Sampling rate for the Robot
+        if self.sample_rate_Robot > 2:
+            self._tick_robot(dt)
+            self.sample_rate_Robot = 0
+
+        self.sample_rate_Referee += 1  # Sampling rate for the Robot
+        if self.sample_rate_Referee > 100:
+            self._tick_referee(dt)
+            self.sample_rate_Referee = 0
 
         # Alle Objekte auf das Display zeichnen
     def draw(self):

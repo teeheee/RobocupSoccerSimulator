@@ -4,6 +4,7 @@ from game import *
 from debugger import Debugger
 
 #TODO more comments
+#TODO add fast game mode
 
 class App:
     def __init__(self):
@@ -29,8 +30,10 @@ class App:
             self._running = False
 
     def on_loop(self):
+
         if not self.pause:
-            self.game.tick(0.5)
+            self.game.tick(5)
+
         speed = 0.5
         motor = np.array([0, 0, 0, 0])
         key = pygame.key.get_pressed()
@@ -71,6 +74,7 @@ class App:
             motor = motor*100
             self.game.ris[self.focusedrobot].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
 
+
     def on_render(self):
         self._display_surf.fill(GREEN)
         self.game.draw()
@@ -90,12 +94,11 @@ class App:
 
             for event in pygame.event.get():
                 self.on_event(event)
-
             self.on_loop()
-
             I = I + 1
-            if I > 50:
+            if I > 10:
                 self.on_render()
+                time.sleep(0.024)
                 I = 0
 
         self.on_cleanup()

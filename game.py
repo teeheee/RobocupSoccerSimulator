@@ -180,6 +180,7 @@ class Game:
         self.isgoal = False
         self.lastgoalteam = 0
 
+        self.episode_timout = 0
         self.lagofprogressTimeout = 2000
 
         self.srRobot = 0
@@ -250,7 +251,7 @@ class Game:
 
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
-        if self.srRobot > 20 or self.isgoal:
+        if self.srRobot > 50 or self.isgoal:
             robotRemote.tick(self.ris[0])  # Roboter program initialisieren
             robotRemote.tick(self.ris[1])  # Roboter program initialisieren
             robotRemote.tick(self.ris[2])  # Roboter program initialisieren
@@ -263,14 +264,21 @@ class Game:
         self.robots[1].defekt(self.time)
         self.robots[3].defekt(self.time)
 
+        self.episode_timout += 1
 
-        self.lagofprogressTimeout = 5000
+        self.lagofprogressTimeout = 50*500
+
+        if self.episode_timout > 5000:
+            self.robots[2].defekt(self.time)
+
 
         if self.robots[2].physik.defekt == True:
             robotRemote.tick(self.ris[2])
             time.sleep(1)
             self.robots[2].physik.defekt = False
             self.setzteRobotwiederinsSpiel(self.robots[2])
+            self.setzteBallaufNeutralenPunkt()
+            self.episode_timout = 0
 ###########ENBLOCK
 
 

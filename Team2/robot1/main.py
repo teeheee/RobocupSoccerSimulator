@@ -1,33 +1,50 @@
 from robotRemote import RobotControl
 from Team2.robot1.RL_brain import DeepQNetwork
 import numpy as np
+import matplotlib.pyplot as plt
 
 last_irballsum = 0
+
+def initEpisode():
+    global last_irballsum
+    last_irballsum = 0
+
+
 def getReward(robot:RobotControl):
-    state = robot.getRobotState()*10
+
+    state = robot.getRobotState()
+
     global last_irballsum
     irballsum = sum(robot.getIRBall())
-    ballsensor = (irballsum-last_irballsum)
+    ballsensor = (irballsum-last_irballsum)/10
     last_irballsum = irballsum
 
-    #bodensensor = sum(robot.getBodenSensors())*10
+    bodensensor = -sum(robot.getBodenSensors())/10
 
-    reward = state
-    if reward == 0:
-        reward = ballsensor
-    else:
-        last_irballsum = 15
+    reward = state + ballsensor + bodensensor
+
     return reward
 
 
 def getObservation(robot:RobotControl):
     observation = []
+
     observation.extend(robot.getBodenSensors())
-    observation.extend(robot.getIRBall())
-    observation.extend([robot.getKompass()])
-    observation.extend(robot.getUltraschall())
+
+    irball = robot.getIRBall()
+    observation.extend(irball/sum(irball))
+
+    observation.extend([robot.getKompass()-180])
+
+    us = robot.getUltraschall()
+    observation.extend(us/sum(us))
+
     return np.array(observation)
 
+def isEpisodeEnd(robot:RobotControl):
+    if robot.getRobotState() != 0:
+        return True
+    return False
 
 last_kompass = 0
 i_kompass = 0
@@ -35,12 +52,12 @@ def doAction(robot:RobotControl , action):
     global i_kompass
     global last_kompass
     kompass = robot.getKompass()
-    if action <= 16:
+    if action <= 8:
         geschwindigkeit=100
         fahrtrichtung = np.deg2rad(action*360/8)
-        p_faktor = 3
-        d_faktor = 12
-        i_faktor = 0.001
+        p_faktor = 1
+        d_faktor = 4
+        i_faktor = 0.05
 
         e_kompass = (180 - kompass)
         d_kompass = last_kompass - kompass
@@ -58,38 +75,25 @@ def doAction(robot:RobotControl , action):
 
 
 def main(robot:RobotControl):
-    RL = DeepQNetwork(n_actions=8,
-                      n_features=16+4+16+1,
-                      learning_rate=0.005,
-                      reward_decay=0.99,
-                      e_greedy=0.8,
-                      replace_target_iter=1000,
-                      memory_size=10000,
-                      output_graph=True
-                      )
-    observation = getObservation(robot)
+    RL = DeepQNetwork(16+16+4+1,8,2000,500)
+    RL.init_net()
     step = 0
     rewardcounter = 0
     rewardmean = 0
+
     while True:
+
+        observation = getObservation(robot)
 
         action = RL.choose_action(observation)
 
-        doAction(robot,action)
-
-        observation2 = getObservation(robot)
-
+        a = np.argmax(action[0,:])
+        doAction(robot,a)
         reward = getReward(robot)
+        RL.store_transition(observation, action[0,:], reward)
 
-        RL.store_transition(observation, action, reward, observation2)
-        rewardcounter+=reward
-
-        if (step % 20 == 0):
+        if isEpisodeEnd(robot):
+            RL.storeCurrentEpisode()
             RL.learn()
-
-        if (step % 500 == 0):
-            rewardmean = rewardmean*0.8 + rewardcounter*0.2
-            print("overall reward: %d at generation %d" % (rewardmean, step/20))
-            rewardcounter = 0
 
         step += 1

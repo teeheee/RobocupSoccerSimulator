@@ -99,7 +99,7 @@ class robot_interface:
         pass
 
     # Returns the State of the Robot
-    # -5. nemy Goal
+    # -5. enemy Goal
     # -1. Defekt
     # 0. In Game
     # 5. own Goal

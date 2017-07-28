@@ -27,15 +27,27 @@ class robot_interface:
     # Returns a list of 4 Distance measurements in all 4 directions
     # Numbering starts at the front and goes clockwise
     def getUltraschall(self): #TODO getUltraschall ist noch nicht fertig hindernisse fehlen
+        return self.robot.getUS()
+
+
+
         if self.spielrichtung == 180:
             pos = np.array([int(-self.robot.pos[0]), int(-self.robot.pos[1])])
         else:
             pos = np.array([int(self.robot.pos[0]), int(self.robot.pos[1])])
         US = []
-        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_WIDTH/2 + gameconfig.OUTER_FIELD_WIDTH-pos[0]-10+random.gauss(0,5) )))
-        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_LENGTH/2 + gameconfig.OUTER_FIELD_LENGTH-pos[1]-10+random.gauss(0,5)  )))
-        US.append(np.absolute(int( gameconfig.OUTER_FIELD_WIDTH/2 + pos[0]-10+random.gauss(0,5) )))
-        US.append(np.absolute(int( gameconfig.OUTER_FIELD_LENGTH/2 + pos[1]-10+random.gauss(0,5) )))
+        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_WIDTH/2 + gameconfig.OUTER_FIELD_WIDTH-pos[0]-10)))
+        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_LENGTH/2 + gameconfig.OUTER_FIELD_LENGTH-pos[1]-10 )))
+        US.append(np.absolute(int( gameconfig.OUTER_FIELD_WIDTH/2 + pos[0]-10)))
+        US.append(np.absolute(int( gameconfig.OUTER_FIELD_LENGTH/2 + pos[1]-10)))
+
+        for u in US:
+            u = int(u + random.gauss(0,5))
+            if u > 200:
+                u = 0
+            if u < 5:
+                u = 0
+
         return US
 
     # Returns a List of Blocks of detected Objects

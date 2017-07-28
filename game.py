@@ -100,6 +100,11 @@ class Robot:
                 return True
             return False
 
+    def getUS(self):
+        return self.physik.getUS()
+
+
+
 
 class Ball:
     def __init__(self, display, space):

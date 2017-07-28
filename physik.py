@@ -16,22 +16,35 @@ collision_types = {
 
 class RobotPhysik:
     def __init__(self, _space, _robotgrafik):
+        # For updateing the robot position
         self.robotgrafik = _robotgrafik
+        # pymunk space
         self.space = _space
+        # radius of the robot in cm
         self.radius = 10
+        # mass of the robot in kg
         self.mass = 2000
+        # maximum velocity in m/s TODO check this????
         self.vmax = 10
+        # maximum torque for all wheels combined
         self.fmax = 100
+        # motor speed array
         self.motor = np.array([0, 0, 0, 0])
+        # indicator if the robot is "defekt"
         self.defekt = False
 
+        # configure the Body of the Robot
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
         self.body.position = ((self.robotgrafik.x_position, self.robotgrafik.y_position))
         self.body.angle = np.radians(self.robotgrafik.orientation)
 
+        # generate the special shape of the robot.
+        # because the ballcapture zone is not concave two polygons are needed
         polygonlist1 = [[3,5],[5,3],[3,1],[3,-1],[-5,-1],[-5,3],[-3,5]]
         polygonlist2 = [[3,1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,1]]
-        scale = 10 / 5.83
+
+        # scale polygon to correct size
+        scale = 10 / 5.83 #scaling 10/5.83 = 10/sqrt(3¹+5¹)
         newpolygon1 = []
         for p in polygonlist1:
             newpolygon1.append([p[0]*scale,p[1]*scale])
@@ -39,6 +52,7 @@ class RobotPhysik:
         for p in polygonlist2:
                 newpolygon2.append([p[0] * scale, p[1] * scale])
 
+        # generate Robot shapes
         self.shape1 = pymunk.Poly(self.body, newpolygon1)
         self.shape1.elasticity = 0
         self.shape1.friction = 0.9
@@ -48,6 +62,17 @@ class RobotPhysik:
         self.shape2.friction = 0.9
         self.shape2.collision_type = collision_types["robot"]
 
+        self.shapeUSSensors = [Segment(self.body,(0,0),(0,1000),0),
+                               Segment(self.body,(0,0),(0,-1000),0),
+                               Segment(self.body,(0,0),(1000,0),0),
+                               Segment(self.body,(0,0),(-1000,0),0)]
+
+        for sensor in self.shapeUSSensors:
+            sensor.sensor = True
+
+
+
+        # add shapes to Body
         self.space.add(self.body, self.shape1 ,self.shape2)
 
     def motorSpeed(self, a, b, c, d):
@@ -91,6 +116,21 @@ class RobotPhysik:
         if len(p1.points) > 0 or len(p2.points) > 0:
             return True
         return False
+
+    def getUS(self):
+        usValue = np.array([10000,10000,10000,10000]) #max values needed TODO
+        i = 0
+        for sensor in self.shapeUSSensors:
+            for b in self.space.bodies:
+                pointset = sensor.shapes_collide(b.shapes)
+                if len(pointset) > 0:
+                    newUSValue = np.linalg.norm(pointset.points[0] - self.body.position)-10
+                    if newUSValue < usValue[i]:
+                        usValue[i] = newUSValue
+            i+=1
+        return usValue
+
+
 
 
 class BallPhysik:

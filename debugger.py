@@ -82,3 +82,9 @@ class Debugger:
             tmp = (pos[0]+np.cos(winkel)*200-30, pos[1]+np.sin(winkel)*160+20)
             text = self.font.render("US"+str(i)+": "+str(int(US[i])), True, BLACK)
             self._display.blit(text, tmp)
+
+        #LightBarrier
+        lb = self._robots[self._id].getLightBarrier()
+        if lb == True:
+            text = self.font.render("BALL", True, BLACK)
+            self._display.blit(text, (20,20))

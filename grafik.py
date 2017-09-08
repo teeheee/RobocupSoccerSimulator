@@ -12,7 +12,6 @@ RED = 255, 0, 0
 YELLOW = 255, 255, 0
 ORANGE = 255, 69, 0
 
-#TODO more comments
 
 class BallGrafik:
     def __init__(self, _display):
@@ -47,8 +46,13 @@ class RobotGrafik:
         self.id = _id
         self.font = pygame.font.SysFont('Calibri', 20, True, False)
         self.polygonlist = [[3,5],[5,3],[3,1],[3,-1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,3],[-3,5]]
+        self.dotList = list() #delete me
 
+    def drawDot(self, x, y):#delete me
+        self.dotList.append(np.array([x,y]))#delete me
 
+    def clearAllDots(self):#delete me
+        self.dotList = list()#delete me
 
     def draw(self):
         pos = int((self.x_position + self.x_position_offset) * self.ppcm), \
@@ -66,13 +70,20 @@ class RobotGrafik:
         text = pygame.transform.rotate(text, self.orientation+self.direction)
         self.display.blit(text, pos)
 
+        #Dots #delete me
+        for dot in self.dotList:#delete me
+            pygame.draw.circle(self.display,
+                               self.color,
+                               (int((dot[0] + self.x_position_offset) * self.ppcm),int((dot[1] + self.y_position_offset) * self.ppcm)),
+                               10)#delete me
+
     def moveto(self, x, y, d):
         self.x_position = x
         self.y_position = y
         self.orientation = d
 
 
-class FeldGrafik: #TODO linien nicht korrekt
+class FeldGrafik:
     def __init__(self, _display):
         self.display = _display
         self.outer_size = (gameconfig.OUTER_FIELD_LENGTH,
@@ -97,8 +108,8 @@ class FeldGrafik: #TODO linien nicht korrekt
         r2 = Rect(
             ((self.outer_size[0] - self.inner_size[0]) / 2 + self.inner_size[0] - 30) * self.ppcm,
             ((self.outer_size[1] - 90) / 2) * self.ppcm, 30 * self.ppcm, 90 * self.ppcm)
-        pygame.draw.rect(self.background_display, BLACK, r1, int(self.linewidth * self.ppcm))
-        pygame.draw.rect(self.background_display, BLACK, r2, int(self.linewidth * self.ppcm))
+        pygame.draw.rect(self.background_display, BLACK, r1, int(self.linewidth * self.ppcm * 0.8))
+        pygame.draw.rect(self.background_display, BLACK, r2, int(self.linewidth * self.ppcm * 0.8))
 
         # Auslinien
         p1 = (((self.outer_size[0] - self.inner_size[0]) / 2) * self.ppcm,

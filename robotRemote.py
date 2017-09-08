@@ -9,6 +9,7 @@ class RobotControl:
         self.m1 = 0
         self.m2 = 0
         self.m3 = 0
+        self.kickFlag = 0
         self.threadLock = threading.Condition()
         self._update()
 
@@ -19,9 +20,23 @@ class RobotControl:
         self.pixy = self._robotInterface.getPixy()
         self.kompass = self._robotInterface.getKompass()
         self.irsensors = self._robotInterface.getIRBall()
+        self.lightBarrier = self._robotInterface.getLightBarrier()
         self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
+        if self.kickFlag == 1:
+            self._robotInterface.Kick()
+            self.kickFlag = 0
         self.threadLock.notify()
         self.threadLock.release()
+
+    # plot(data) displays a plot of the given list of datapoints
+    # the game is halted until the plot is closed.
+    # be carefull with to many plot calls!
+    def plot(self,data):
+        self.threadLock.acquire()
+        self._robotInterface.game.plot(data)
+        self.threadLock.notify()
+        self.threadLock.release()
+
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
@@ -66,6 +81,13 @@ class RobotControl:
         self.threadLock.release()
         return tmp
 
+    #Returns the current state of the light barrier
+    def getLightBarrier(self):
+        self.threadLock.acquire()
+        tmp = self.lightBarrier
+        self.threadLock.release()
+        return tmp
+
     # Sets the Motor speeds to this Value Motors rotate the Robot counter clockwise.
     # Numbering starts at the front and goes clockwise
     def setMotorSpeed(self,m0,m1,m2,m3):
@@ -78,8 +100,11 @@ class RobotControl:
         self.threadLock.release()
 
     # Toggles the kicker
-    def Kick(self): #TODO Kick
-        pass
+    def Kick(self):
+        self.threadLock.acquire()
+        self.kickFlag = 1
+        self.threadLock.wait()
+        self.threadLock.release()
 
     # Returns the State of the Robot
     # 1. In Game

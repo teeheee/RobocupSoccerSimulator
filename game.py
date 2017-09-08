@@ -9,7 +9,7 @@ import Team2.robot2.main as r4
 import robotRemote
 from grafik import *
 from physik import *
-
+import matplotlib.pyplot as plt
 
 class Robot:
     # display ist das pygame fenster
@@ -106,6 +106,7 @@ class Robot:
 
 
 
+
 class Ball:
     def __init__(self, display, space):
         self.grafik = BallGrafik(display)
@@ -131,6 +132,9 @@ class Ball:
     # kann man noch anpassen
     def isMoving(self):
         return np.linalg.norm(self.physik.body.velocity) > 0.02
+
+    def kick(self,direction):
+        self.physik.kick(direction)
 
 
 class Field:
@@ -232,8 +236,20 @@ class Game:
         robotRemote.init(self.ris[2])  # Roboter program initialisieren
         robotRemote.init(self.ris[3])  # Roboter program initialisieren
 
+        self.plotData = list()
+
+    def plot(self,data):
+        self.plotData = data
+        print("plot saved")
+
 
     def tick(self, dt):
+        if len(self.plotData) > 0:
+            print("plot")
+            plt.plot(self.plotData)
+            plt.show()
+            self.plotData = list()
+
         self.time += dt  # Sielzeit hochzaelen
         self.space.step(dt)  # Physik engine einen Tick weiter laufen lassen
         self.ball.tick()  # Ball updaten

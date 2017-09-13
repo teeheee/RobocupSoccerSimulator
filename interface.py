@@ -21,22 +21,19 @@ class robot_interface:
             w = np.rad2deg(np.arctan2(p[0], p[1]))
             winkel = 360-(w+self.robot.orientation+270)%360
             i+=1
-            bodensensor[int(winkel * 16 / 360)%16] = 1
+            index = int(winkel * 16 / 360)%16
+            bodensensor[index] = 1
+            # sometimes multiple sensors detect the ball ;-)
+            if random.randrange(100) < 50:
+                bodensensor[(index+1)%16] = 1
+            if random.randrange(100) < 50:
+                bodensensor[(index+15)%16] = 1
         return bodensensor
 
     # Returns a list of 4 Distance measurements in all 4 directions
     # Numbering starts at the front and goes clockwise
-    def getUltraschall(self): #TODO getUltraschall ist noch nicht fertig hindernisse fehlen
-        if self.spielrichtung == 180:
-            pos = np.array([int(-self.robot.pos[0]), int(-self.robot.pos[1])])
-        else:
-            pos = np.array([int(self.robot.pos[0]), int(self.robot.pos[1])])
-        US = []
-        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_WIDTH/2 + gameconfig.OUTER_FIELD_WIDTH-pos[0]-10+random.gauss(0,5) )))
-        US.append(np.absolute(int( -gameconfig.OUTER_FIELD_LENGTH/2 + gameconfig.OUTER_FIELD_LENGTH-pos[1]-10+random.gauss(0,5)  )))
-        US.append(np.absolute(int( gameconfig.OUTER_FIELD_WIDTH/2 + pos[0]-10+random.gauss(0,5) )))
-        US.append(np.absolute(int( gameconfig.OUTER_FIELD_LENGTH/2 + pos[1]-10+random.gauss(0,5) )))
-        return US
+    def getUltraschall(self):
+        return self.robot.getUS()
 
     # Returns a List of Blocks of detected Objects
     # Attributes of each object is signature, x and y Position in camera vision
@@ -44,7 +41,7 @@ class robot_interface:
     # 2 is own Goal
     # 3 is opponent Goal
     # 4-9 are the Landmarks
-    def getPixy(self): #TODO getPixy ist noch nicht fertig
+    def getPixy(self):  # TODO pixy is not implemented
         pass
 
     # Returns a list of 16 IR sensors. Value corresponds to distance from the Ball
@@ -57,7 +54,12 @@ class robot_interface:
         ballrichtung = (ballrichtung + self.robot.orientation)%360
         ballrichtung = 360-ballrichtung
         if distanz > 0:
-            irsensors[int(ballrichtung * 16 / 360)%16] = int(1000/distanz)
+            index = int(ballrichtung * 16 / 360)%16
+            irsensors[index] = int(1000/distanz)
+           #irsensors[(index+1)%16] = int(300/distanz)
+            #irsensors[(index+15)%16] = int(300/distanz)
+            #irsensors[(index+2)%16] = int(30/distanz)
+            #irsensors[(index+14)%16] = int(30/distanz)
         return irsensors
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise
@@ -95,10 +97,22 @@ class robot_interface:
         self.motor = np.array([m0,m1,m2,m3])
 
     # Toggles the kicker
-    def Kick(self): #TODO Kick
-        pass
+    def Kick(self):
+        if self.getLightBarrier():
+            self.game.ball.kick(self.robot.orientation)
 
-    # Returns the State of the Robot
+
+    def getLightBarrier(self):
+        BallVektor = self.robot.pos[0:2] - self.game.ball.pos
+        theta = np.deg2rad(self.robot.orientation)
+        c,s = np.cos(theta),np.sin(theta)
+        rotMatrix = np.array([[c, s],[-s, c]])
+        relativBallVektor = np.dot(rotMatrix,BallVektor)
+        if relativBallVektor[0] > -11 and relativBallVektor[0] < 0:
+            if np.abs(relativBallVektor[1]) < 3:
+                return True
+        return False
+
     # -5. enemy Goal
     # -1. Defekt
     # 0. In Game

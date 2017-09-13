@@ -5,6 +5,9 @@ def main(robot:RobotControl):
     last_kompass = 0
     i_kompass = 0
 
+    drallList = list()
+    x = 0
+
     while True:
 
         # gather information
@@ -13,6 +16,9 @@ def main(robot:RobotControl):
         boden = robot.getBodenSensors()
         ultraschall = robot.getUltraschall()
         state = robot.getRobotState()
+
+        if robot.getLightBarrier():
+            robot.Kick()
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor
@@ -44,9 +50,9 @@ def main(robot:RobotControl):
 
         # calculate driving direction 180 is front
 
-        p_faktor = 0.6
-        d_faktor = 6
-        i_faktor = 0.02
+        p_faktor = 4
+        d_faktor = 10
+        i_faktor = 0# 0.1
 
         e_kompass = (180 - kompass)
         d_kompass = last_kompass - kompass
@@ -54,6 +60,8 @@ def main(robot:RobotControl):
             i_kompass += e_kompass
 
         drall = p_faktor * e_kompass +  d_faktor * d_kompass + i_faktor * i_kompass
+
+
 
         fahrtrichtung = np.deg2rad(fahrtrichtung)
         robot.setMotorSpeed(-geschwindigkeit * np.cos(fahrtrichtung - 135) + drall,

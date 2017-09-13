@@ -1,7 +1,5 @@
-import numpy as np
-import gameconfig as gc
+from gameconfig import gc
 from interface import *
-from pymunk import *
 import pymunk
 
 collision_types = {
@@ -16,22 +14,36 @@ collision_types = {
 
 class RobotPhysik:
     def __init__(self, _space, _robotgrafik):
+        # For updateing the robot position
         self.robotgrafik = _robotgrafik
+        # pymunk space
         self.space = _space
+        # radius of the robot in cm
         self.radius = 10
+        # mass of the robot in kg
         self.mass = 2000
+        # maximum velocity in m/s TODO check this????
         self.vmax = 10
+        # maximum torque for all wheels combined
         self.fmax = 100
+        # motor speed array
         self.motor = np.array([0, 0, 0, 0])
+        # indicator if the robot is "defekt"
         self.defekt = False
 
+        # configure the Body of the Robot
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
         self.body.position = ((self.robotgrafik.x_position, self.robotgrafik.y_position))
         self.body.angle = np.radians(self.robotgrafik.orientation)
+        self.body.name = "robot" + str(self.robotgrafik.id)
 
+        # generate the special shape of the robot.
+        # because the ballcapture zone is not concave two polygons are needed
         polygonlist1 = [[3,5],[5,3],[3,1],[3,-1],[-5,-1],[-5,3],[-3,5]]
         polygonlist2 = [[3,1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,1]]
-        scale = 10 / 5.83
+
+        # scale polygon to correct size
+        scale = 10 / 5.83 #scaling 10/5.83 = 10/sqrt(3¹+5¹)
         newpolygon1 = []
         for p in polygonlist1:
             newpolygon1.append([p[0]*scale,p[1]*scale])
@@ -39,6 +51,7 @@ class RobotPhysik:
         for p in polygonlist2:
                 newpolygon2.append([p[0] * scale, p[1] * scale])
 
+        # generate Robot shapes
         self.shape1 = pymunk.Poly(self.body, newpolygon1)
         self.shape1.elasticity = 0
         self.shape1.friction = 0.9
@@ -48,6 +61,7 @@ class RobotPhysik:
         self.shape2.friction = 0.9
         self.shape2.collision_type = collision_types["robot"]
 
+        # add shapes to Body
         self.space.add(self.body, self.shape1 ,self.shape2)
 
     def motorSpeed(self, a, b, c, d):
@@ -58,7 +72,7 @@ class RobotPhysik:
         self.body.angle = np.radians(d)
         self.space.reindex_shapes_for_body(self.body)
 
-    def tick(self):
+    def tick(self): #TODO there ist still something wrong with this
         if self.defekt:
             self.motor = np.array([0, 0, 0, 0])
             self.body.torque = 0
@@ -67,7 +81,7 @@ class RobotPhysik:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
             A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])
             f = A.dot(self.motor)
-            theta = self.body.angle -  np.deg2rad(45+180)
+            theta = self.body.angle - np.deg2rad(45 + 180)
             c, s = np.cos(theta), np.sin(theta)
             R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
             v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
@@ -92,6 +106,37 @@ class RobotPhysik:
             return True
         return False
 
+    def getUS(self):
+        usValue = np.array([0,0,0,0])
+        filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0x1) #this is some pymunk voodoo
+        queryList = list()
+        radians = self.body.angle
+        rotationMatrix = np.array([(np.cos(radians),-np.sin(radians)),
+                                   (np.sin(radians), np.cos(radians))])
+        v1 = np.matmul(rotationMatrix,np.array([200,0]))
+        v2 = np.matmul(rotationMatrix,np.array([0,200]))
+        v3 = np.matmul(rotationMatrix,np.array([-200,0]))
+        v4 = np.matmul(rotationMatrix,np.array([0,-200]))
+        queryList.append(self.space.segment_query(self.body.position,self.body.position + v1,5,filter))
+        queryList.append(self.space.segment_query(self.body.position,self.body.position + v2,5,filter))
+        queryList.append(self.space.segment_query(self.body.position,self.body.position + v3,5,filter))
+        queryList.append(self.space.segment_query(self.body.position,self.body.position + v4,5,filter))
+        i = 0
+        for query in queryList:
+            finalReflectionDistance = 200
+            for singleQuery in query:
+                dotOfInterest = singleQuery.point
+                distanceToDotOfInterest = np.linalg.norm(dotOfInterest-self.body.position)
+                if distanceToDotOfInterest < finalReflectionDistance:
+                    finalReflectionDistance = distanceToDotOfInterest
+            usValue[i]=finalReflectionDistance - 10 #subtract radius of robot
+            if usValue[i] <= 0:
+                usValue[i] = 200
+            i = i + 1
+        return usValue
+
+
+
 
 class BallPhysik:
     def __init__(self, _space, _ballgrafik):
@@ -104,11 +149,14 @@ class BallPhysik:
 
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
         self.body.position = ((self.ballgrafik.x_position, self.ballgrafik.y_position))
+        self.body.name = "ball"
+
 
         self.shape = pymunk.Circle(self.body, self.radius, (0, 0))
         self.shape.elasticity = 0.95
         self.shape.friction = 1
         self.shape.collision_type = collision_types["ball"]
+        self.shape.filter = pymunk.ShapeFilter(categories=0x1)
 
         self.space.add(self.body, self.shape)
 
@@ -119,6 +167,12 @@ class BallPhysik:
 
     def tick(self):
         self.ballgrafik.moveto((self.body.position.x), (self.body.position.y))
+
+    def kick(self,direction):
+        theta = np.deg2rad(direction)
+        f = (np.cos(theta)*50,np.sin(theta)*50)
+        self.body.force = f
+
 
 
 class FieldPhysik:
@@ -154,6 +208,7 @@ class FieldPhysik:
                              (gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2), 0.0)]
 
         for linie in self.auslinien:
+            linie.filter = pymunk.ShapeFilter(categories=0x1)
             linie.collision_type = collision_types["auslinie"]
             linie.sensor = True
 
@@ -194,21 +249,21 @@ class TorPhysik:
         static_body = self.space.static_body
         static_lines_tor1 = [pymunk.Segment(static_body,
                                 (gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
                                 (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
         static_lines_tor2 = [pymunk.Segment(static_body,
                                 (-gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
                                 (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
         tor_balken_1 = pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
             gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2), 0.0)

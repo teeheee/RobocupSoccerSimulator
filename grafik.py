@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
-import gameconfig
 import numpy as np
+from gameconfig import gc
 
 WHITE = 255, 255, 255
 GREEN = 0, 255, 0
@@ -12,12 +12,11 @@ RED = 255, 0, 0
 YELLOW = 255, 255, 0
 ORANGE = 255, 69, 0
 
-#TODO more comments
 
 class BallGrafik:
     def __init__(self, _display):
         self.display = _display
-        self.ppcm = self.display.get_height() / gameconfig.OUTER_FIELD_WIDTH
+        self.ppcm = self.display.get_height() / gc.OUTER_FIELD_WIDTH
         self.y_position_offset = self.display.get_height() / (2 * self.ppcm)
         self.x_position_offset = self.display.get_width() / (2 * self.ppcm)
         self.y_position = 0
@@ -38,7 +37,7 @@ class RobotGrafik:
         self.display = _display
         self.direction = _direction
         self.color = _color
-        self.ppcm = self.display.get_height() / gameconfig.OUTER_FIELD_WIDTH
+        self.ppcm = self.display.get_height() / gc.OUTER_FIELD_WIDTH
         self.y_position_offset = self.display.get_height() / (2 * self.ppcm)
         self.x_position_offset = self.display.get_width() / (2 * self.ppcm)
         self.y_position = 0
@@ -47,8 +46,13 @@ class RobotGrafik:
         self.id = _id
         self.font = pygame.font.SysFont('Calibri', 20, True, False)
         self.polygonlist = [[3,5],[5,3],[3,1],[3,-1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,3],[-3,5]]
+        self.dotList = list() #delete me
 
+    def drawDot(self, x, y):#delete me
+        self.dotList.append(np.array([x,y]))#delete me
 
+    def clearAllDots(self):#delete me
+        self.dotList = list()#delete me
 
     def draw(self):
         pos = int((self.x_position + self.x_position_offset) * self.ppcm), \
@@ -66,20 +70,27 @@ class RobotGrafik:
         text = pygame.transform.rotate(text, self.orientation+self.direction)
         self.display.blit(text, pos)
 
+        #Dots #delete me
+        for dot in self.dotList:#delete me
+            pygame.draw.circle(self.display,
+                               self.color,
+                               (int((dot[0] + self.x_position_offset) * self.ppcm),int((dot[1] + self.y_position_offset) * self.ppcm)),
+                               10)#delete me
+
     def moveto(self, x, y, d):
         self.x_position = x
         self.y_position = y
         self.orientation = d
 
 
-class FeldGrafik: #TODO linien nicht korrekt
+class FeldGrafik:
     def __init__(self, _display):
         self.display = _display
-        self.outer_size = (gameconfig.OUTER_FIELD_LENGTH,
-                           gameconfig.OUTER_FIELD_WIDTH)
-        self.inner_size = (gameconfig.INNER_FIELD_LENGTH,
-                           gameconfig.INNER_FIELD_WIDTH)
-        self.goal_size = (gameconfig.GOAL_DEEP, gameconfig.GOAL_WIDTH)
+        self.outer_size = (gc.OUTER_FIELD_LENGTH,
+                           gc.OUTER_FIELD_WIDTH)
+        self.inner_size = (gc.INNER_FIELD_LENGTH,
+                           gc.INNER_FIELD_WIDTH)
+        self.goal_size = (gc.GOAL_DEPTH, gc.GOAL_WIDTH)
         self.linewidth = 1
         self.ppcm = self.display.get_height() / self.outer_size[1]
         self.spielStand = (0, 0)
@@ -97,8 +108,8 @@ class FeldGrafik: #TODO linien nicht korrekt
         r2 = Rect(
             ((self.outer_size[0] - self.inner_size[0]) / 2 + self.inner_size[0] - 30) * self.ppcm,
             ((self.outer_size[1] - 90) / 2) * self.ppcm, 30 * self.ppcm, 90 * self.ppcm)
-        pygame.draw.rect(self.background_display, BLACK, r1, int(self.linewidth * self.ppcm))
-        pygame.draw.rect(self.background_display, BLACK, r2, int(self.linewidth * self.ppcm))
+        pygame.draw.rect(self.background_display, BLACK, r1, int(self.linewidth * self.ppcm * 0.8))
+        pygame.draw.rect(self.background_display, BLACK, r2, int(self.linewidth * self.ppcm * 0.8))
 
         # Auslinien
         p1 = (((self.outer_size[0] - self.inner_size[0]) / 2) * self.ppcm,

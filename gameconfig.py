@@ -1,10 +1,56 @@
-# Field Dimensions
+import yaml
 
-OUTER_FIELD_WIDTH = 182
-OUTER_FIELD_LENGTH = 243
-INNER_FIELD_WIDTH = 122
-INNER_FIELD_LENGTH = 183
-GOAL_WIDTH = 60
-GOAL_DEEP = 8
+CONFIG_FILE_PATH = "config.yml"
 
-# TODO class configFile:
+class configFile:
+    def __init__(self):
+        try:
+            configFile = open(CONFIG_FILE_PATH, 'r')
+            self.config = yaml.load(configFile)
+            self.OUTER_FIELD_WIDTH = self.config["FieldDiemensions"]["OuterWidth"]
+            self.OUTER_FIELD_LENGTH = self.config["FieldDiemensions"]["OuterLength"]
+            self.INNER_FIELD_WIDTH = self.config["FieldDiemensions"]["InnerWidth"]
+            self.INNER_FIELD_LENGTH = self.config["FieldDiemensions"]["InnerLength"]
+            self.GOAL_WIDTH = self.config["FieldDiemensions"]["GoalWidth"]
+            self.GOAL_DEPTH = self.config["FieldDiemensions"]["GoalDepth"]
+            self.ROBOTS = list()
+            for i in range(4):
+                self.ROBOTS.append(self.config["Robot"+str(i)])
+            self.RULES = self.config["Rules"]
+        except:
+            self.restoreDefault()
+            self.saveConfig()
+
+    def restoreDefault(self):
+        self.OUTER_FIELD_WIDTH = 182
+        self.OUTER_FIELD_LENGTH = 243
+        self.INNER_FIELD_WIDTH = 122
+        self.INNER_FIELD_LENGTH = 183
+        self.GOAL_WIDTH = 60
+        self.GOAL_DEPTH = 8
+        self.ROBOTS = list()
+        for i in range(4):
+            self.ROBOTS.append({"Active": True})
+        self.RULES = {"LagOfProgress": 2000,
+                      "DoubleDefense": True,
+                      "Pushing": True,
+                      "OutOfBounce": True,
+                      "TestMode": 0}
+        self.config = dict()
+
+    def saveConfig(self):
+        self.config["FieldDiemensions"] = dict()
+        self.config["FieldDiemensions"]["OuterWidth"] = self.OUTER_FIELD_WIDTH
+        self.config["FieldDiemensions"]["OuterLength"] = self.OUTER_FIELD_LENGTH
+        self.config["FieldDiemensions"]["InnerWidth"] = self.INNER_FIELD_WIDTH
+        self.config["FieldDiemensions"]["InnerLength"] = self.INNER_FIELD_LENGTH
+        self.config["FieldDiemensions"]["GoalWidth"] = self.GOAL_WIDTH
+        self.config["FieldDiemensions"]["GoalDepth"] = self.GOAL_DEPTH
+        for i in range(4):
+            self.config["Robot" + str(i)] = self.ROBOTS[i]
+        self.config["Rules"] = self.RULES
+        with open(CONFIG_FILE_PATH, 'w') as configFile:
+            yaml.dump(self.config, configFile, default_flow_style=False)
+
+
+gc = configFile()

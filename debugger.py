@@ -1,5 +1,5 @@
 import pygame
-import gameconfig
+from gameconfig import gc
 import numpy as np
 
 class Debugger:
@@ -7,7 +7,7 @@ class Debugger:
         self._display = display
         self._robots = robots
         self._id = 0
-        self.ppcm = self._display.get_height() / gameconfig.OUTER_FIELD_WIDTH
+        self.ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
         self.font = pygame.font.SysFont('Calibri', 20, True, False)
         self.polygonlist = [[3,5],[5,3],[3,1],[3,-1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,3],[-3,5]]
 
@@ -20,8 +20,8 @@ class Debugger:
         BLUE = 0, 0, 255
 
         # ROBOT
-        pos = int((gameconfig.OUTER_FIELD_LENGTH+gameconfig.OUTER_FIELD_WIDTH/2) * self.ppcm), \
-              int(gameconfig.OUTER_FIELD_WIDTH/2* self.ppcm)
+        pos = int((gc.OUTER_FIELD_LENGTH+gc.OUTER_FIELD_WIDTH/2) * self.ppcm), \
+              int(gc.OUTER_FIELD_WIDTH/2* self.ppcm)
         newpolygon = []
         scale = 15 * self.ppcm
         for p in self.polygonlist:

@@ -1,7 +1,5 @@
-import numpy as np
-import gameconfig as gc
+from gameconfig import gc
 from interface import *
-from pymunk import *
 import pymunk
 
 collision_types = {
@@ -251,21 +249,21 @@ class TorPhysik:
         static_body = self.space.static_body
         static_lines_tor1 = [pymunk.Segment(static_body,
                                 (gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
                                 (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
         static_lines_tor2 = [pymunk.Segment(static_body,
                                 (-gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEEP,gc. GOAL_WIDTH/2) ,0.0),
+                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2), 0.0),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP, -gc.GOAL_WIDTH / 2),
+                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
                                 (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
         tor_balken_1 = pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
             gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2), 0.0)

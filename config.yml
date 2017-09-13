@@ -1,0 +1,21 @@
+FieldDiemensions:
+  GoalDepth: 8
+  GoalWidth: 60
+  InnerLength: 183
+  InnerWidth: 122
+  OuterLength: 243
+  OuterWidth: 182
+Robot0:
+  Active: true
+Robot1:
+  Active: true
+Robot2:
+  Active: true
+Robot3:
+  Active: true
+Rules:
+  DoubleDefense: true
+  LagOfProgress: 2000
+  OutOfBounce: true
+  Pushing: true
+  TestMode: 0

@@ -1,7 +1,3 @@
-import random
-
-import pymunk
-
 import Team1.robot1.main as r1
 import Team1.robot2.main as r2
 import Team2.robot1.main as r3
@@ -10,6 +6,7 @@ import robotRemote
 from grafik import *
 from physik import *
 import matplotlib.pyplot as plt
+from gameconfig import gc
 
 class Robot:
     # display ist das pygame fenster
@@ -56,15 +53,17 @@ class Robot:
 
     # Spieltick wird ausgefuehrt. Roboter Position wird aktualisiert
     def tick(self):
-        self.physik.tick()
-        self.pos = np.array([self.physik.body.position.x,
-                             self.physik.body.position.y,
-                             self.physik.body.angle])
-        self.orientation = np.rad2deg(self.pos[2])
+        if gc.ROBOTS[self.id-1]["Active"]:
+            self.physik.tick()
+            self.pos = np.array([self.physik.body.position.x,
+                                 self.physik.body.position.y,
+                                 self.physik.body.angle])
+            self.orientation = np.rad2deg(self.pos[2])
 
     # Zeichnet den Roboter
     def draw(self):
-        self.grafik.draw()
+        if gc.ROBOTS[self.id-1]["Active"]:
+            self.grafik.draw()
 
     # gibt True zurueck wenn der Roboter von diesem Object beruehrt wird
     def isPushedBy(self, _object):
@@ -204,21 +203,24 @@ class Game:
         BLUE = 0, 0, 255
         RED = 255, 0, 0
 
-        self.robots = [Robot(self.display, self.space, 1, BLUE, 180),
-                       Robot(self.display, self.space, 2, BLUE, 180),
-                       Robot(self.display, self.space, 3, RED,    0),
-                       Robot(self.display, self.space, 4, RED,    0)]
-
-        self.robots[0].moveto(13, random.gauss(0,2), 180)
-        self.robots[1].moveto(80, random.gauss(0,2), 180)
-        self.robots[2].moveto(-40, random.gauss(0,2), 0)
-        self.robots[3].moveto(-80, random.gauss(0,2), 0)
-
+        # init neutral spots
         self.nspots = [NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, gc.GOAL_WIDTH / 2)),
                        NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, -gc.GOAL_WIDTH / 2)),
                        NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, gc.GOAL_WIDTH / 2)),
                        NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
                        NeutralSpot((0, 0))]
+
+        # init robots
+        self.robots = [Robot(self.display, self.space, 1, BLUE, 180),
+                       Robot(self.display, self.space, 2, BLUE, 180),
+                       Robot(self.display, self.space, 3, RED, 0),
+                       Robot(self.display, self.space, 4, RED, 0)]
+
+        # move robot to starting position
+        self.robots[0].moveto(13, random.gauss(0, 2), 180)
+        self.robots[1].moveto(80, random.gauss(0, 2), 180)
+        self.robots[2].moveto(-40, random.gauss(0, 2), 0)
+        self.robots[3].moveto(-80, random.gauss(0, 2), 0)
 
 
         self.ris = [robot_interface(self, self.robots[0], 180),
@@ -231,21 +233,20 @@ class Game:
         self.ris[2].main = r3.main
         self.ris[3].main = r4.main
 
-        robotRemote.init(self.ris[0])  # Roboter program initialisieren
-        robotRemote.init(self.ris[1])  # Roboter program initialisieren
-        robotRemote.init(self.ris[2])  # Roboter program initialisieren
-        robotRemote.init(self.ris[3])  # Roboter program initialisieren
+        for i in range(4):
+            if gc.ROBOTS[i]["Active"]:
+                robotRemote.init(self.ris[i])  # Roboter program initialisieren
 
         self.plotData = list()
 
+    # this function saves a dataset for ploting in the main thread.
     def plot(self,data):
         self.plotData = data
-        print("plot saved")
 
 
     def tick(self, dt):
+        # This is just a quick hack to plot some data
         if len(self.plotData) > 0:
-            print("plot")
             plt.plot(self.plotData)
             plt.show()
             self.plotData = list()
@@ -255,14 +256,17 @@ class Game:
         self.ball.tick()  # Ball updaten
         for robot in self.robots:
             robot.tick()  # Roboter updaten
-            self.isOutOfBounce(robot)  # roboter auf OutofBounce testen
+            if gc.RULES["OutOfBounce"]:
+                self.isOutOfBounce(robot)  # roboter auf OutofBounce testen
             if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
                 self.setzteRobotwiederinsSpiel(robot)
 
         self.lagofProgress()  # Lag of Progress testen
         self.checkGoal()  # Tor testen
-        self.doubleDefense()  # check double defense
-        self.pushing()  # check for pushing
+        if gc.RULES["DoubleDefense"]:
+            self.doubleDefense()  # check double defense
+        if gc.RULES["Pushing"]:
+            self.pushing()  # check for pushing
         if self.isgoal:
             for robot in self.robots:
                 robot.physik.defekt = False
@@ -281,10 +285,9 @@ class Game:
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
         if self.srRobot > 20:
-            robotRemote.tick(self.ris[0])  # Roboter program initialisieren
-            robotRemote.tick(self.ris[1])  # Roboter program initialisieren
-            robotRemote.tick(self.ris[2])  # Roboter program initialisieren
-            robotRemote.tick(self.ris[3])  # Roboter program initialisieren
+            for i in range(4):
+                if gc.ROBOTS[i]["Active"]:
+                    robotRemote.tick(self.ris[i])  # Roboter program ausfuehren
             self.srRobot = 0
 
         # Alle Objekte auf das Display zeichnen
@@ -336,7 +339,7 @@ class Game:
     def lagofProgress(self):
         if self.ball.isMoving():
             self.balltimeout = self.time
-        if self.time - self.balltimeout > 2000:
+        if self.time - self.balltimeout > gc.RULES["LagOfProgress"]:
             print("lag of progress!!!")
             self.setzteBallaufNeutralenPunkt()
             self.balltimeout = self.time
@@ -403,7 +406,7 @@ class Game:
 
     def checkGoal(self):
         if self.ball.pos[0] < -gc.INNER_FIELD_LENGTH / 2 \
-                and self.ball.pos[0] > -gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEEP \
+                and self.ball.pos[0] > -gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH \
                 and self.ball.pos[1] > -gc.GOAL_WIDTH / 2 \
                 and self.ball.pos[1] < gc.GOAL_WIDTH / 2:
             self.spielstand[0] = self.spielstand[0] + 1
@@ -412,7 +415,7 @@ class Game:
             self.lastgoalteam = 1
 
         if self.ball.pos[0] > gc.INNER_FIELD_LENGTH / 2 \
-                and self.ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEEP \
+                and self.ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH \
                 and self.ball.pos[1] > -gc.GOAL_WIDTH / 2 \
                 and self.ball.pos[1] < gc.GOAL_WIDTH / 2:
             self.spielstand[1] = self.spielstand[1] + 1

@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
-import gameconfig
 import numpy as np
+from gameconfig import gc
 
 WHITE = 255, 255, 255
 GREEN = 0, 255, 0
@@ -16,7 +16,7 @@ ORANGE = 255, 69, 0
 class BallGrafik:
     def __init__(self, _display):
         self.display = _display
-        self.ppcm = self.display.get_height() / gameconfig.OUTER_FIELD_WIDTH
+        self.ppcm = self.display.get_height() / gc.OUTER_FIELD_WIDTH
         self.y_position_offset = self.display.get_height() / (2 * self.ppcm)
         self.x_position_offset = self.display.get_width() / (2 * self.ppcm)
         self.y_position = 0
@@ -37,7 +37,7 @@ class RobotGrafik:
         self.display = _display
         self.direction = _direction
         self.color = _color
-        self.ppcm = self.display.get_height() / gameconfig.OUTER_FIELD_WIDTH
+        self.ppcm = self.display.get_height() / gc.OUTER_FIELD_WIDTH
         self.y_position_offset = self.display.get_height() / (2 * self.ppcm)
         self.x_position_offset = self.display.get_width() / (2 * self.ppcm)
         self.y_position = 0
@@ -86,11 +86,11 @@ class RobotGrafik:
 class FeldGrafik:
     def __init__(self, _display):
         self.display = _display
-        self.outer_size = (gameconfig.OUTER_FIELD_LENGTH,
-                           gameconfig.OUTER_FIELD_WIDTH)
-        self.inner_size = (gameconfig.INNER_FIELD_LENGTH,
-                           gameconfig.INNER_FIELD_WIDTH)
-        self.goal_size = (gameconfig.GOAL_DEEP, gameconfig.GOAL_WIDTH)
+        self.outer_size = (gc.OUTER_FIELD_LENGTH,
+                           gc.OUTER_FIELD_WIDTH)
+        self.inner_size = (gc.INNER_FIELD_LENGTH,
+                           gc.INNER_FIELD_WIDTH)
+        self.goal_size = (gc.GOAL_DEPTH, gc.GOAL_WIDTH)
         self.linewidth = 1
         self.ppcm = self.display.get_height() / self.outer_size[1]
         self.spielStand = (0, 0)

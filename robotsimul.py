@@ -8,26 +8,30 @@ from gameconfig import gc
 
 class App:
     def __init__(self):
+        # flag for shutdown of the simulation
         self._running = True
-        self.robotcontrol = False
-        self.focusedrobot = 0
-        self._display_surf = None
-        self.size = self.weight, self.height = 243*3, 182*3
-        self.pause = False
+
+        # flags for the keyboard control Interface
+        self.robotcontrol = False #True for manual control
+        self.pause = False #True for game paused
+        self.focusedrobot = 0 #Id of the robot which sensor values are displayed on the debugger
+
+        self._display_surf = None # dubble buffered display to minimize lag
+        self.size = self.width, self.height = 243*3, 182*3 # Window size is fixed TODO: variable window size
 
     def on_init(self):
         pygame.init()
         if gc.GUI["Debugger"]:
-            width = self.weight+self.height
+            width = self.width+self.height
+            self.debugger = Debugger(self._display_surf,self.game.ris)
+            self.debugger.setFocusedRobot(2)
         else:
-            width = self.weight
+            width = self.width
         self._display_surf = pygame.display.set_mode((width, self.height), pygame.DOUBLEBUF)
         self._game_display = pygame.Surface( self.size )
         self._display_surf.set_alpha(None)
         self._running = True
         self.game = Game(self._game_display)
-        self.debugger = Debugger(self._display_surf,self.game.ris)
-        self.debugger.setFocusedRobot(2)
         pygame.mixer.quit()
 
     def on_event(self, event):
@@ -36,7 +40,7 @@ class App:
 
     def on_loop(self):
         if not self.pause:
-            self.game.tick(0.5)
+            self.game.tick(30) #calculate in ms steps
         speed = 0.5
         motor = np.array([0, 0, 0, 0])
         key = pygame.key.get_pressed()
@@ -54,16 +58,20 @@ class App:
             motor = motor + np.array([speed, -speed, -speed, speed])
         if key[pygame.K_1]:
             self.focusedrobot = 0
-            self.debugger.setFocusedRobot(0)
+            if gc.GUI["Debugger"]:
+                self.debugger.setFocusedRobot(0)
         if key[pygame.K_2]:
             self.focusedrobot = 1
-            self.debugger.setFocusedRobot(1)
+            if gc.GUI["Debugger"]:
+                self.debugger.setFocusedRobot(1)
         if key[pygame.K_3]:
             self.focusedrobot = 2
-            self.debugger.setFocusedRobot(2)
+            if gc.GUI["Debugger"]:
+                self.debugger.setFocusedRobot(2)
         if key[pygame.K_4]:
             self.focusedrobot = 3
-            self.debugger.setFocusedRobot(3)
+            if gc.GUI["Debugger"]:
+                self.debugger.setFocusedRobot(3)
         if key[pygame.K_p]:
             self.pause = True
         else:
@@ -92,18 +100,13 @@ class App:
     def on_execute(self):
         if self.on_init() is False:
             self._running = False
-        I = 0
         while(self._running):
 
             for event in pygame.event.get():
                 self.on_event(event)
 
             self.on_loop()
-
-            I = I + 1
-            if I > 80:
-                self.on_render()
-                I = 0
+            self.on_render()
 
         self.on_cleanup()
 

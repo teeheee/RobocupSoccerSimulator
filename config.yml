@@ -1,3 +1,5 @@
+# This should not be changed unless you realy want to mess with the game
+# Those are the field dimensions in cm
 FieldDiemensions:
   GoalDepth: 8
   GoalWidth: 60
@@ -5,29 +7,36 @@ FieldDiemensions:
   InnerWidth: 122
   OuterLength: 243
   OuterWidth: 182
+# Gui is for configuring the userinterface. It should not effect the game dynamics.
+# Just speed up the simulation calculation
 Gui:
   Commandline: false
   Debugger: false
   SamplingRate: 20
   Fast: true
+# Robotx is for configuring special modes for the diffrent Robots.
 Robot0:
-  Active: false
-  DefektTime: 24000
+  Active: true
+  Stable: true
 Robot1:
-  Active: false
-  DefektTime: 24000
+  Active: true
+  Stable: true
 Robot2:
   Active: true
-  DefektTime: 100
+  Stable: true
 Robot3:
-  Active: false
-  DefektTime: 24000
+  Active: true
+  Stable: true
+# With Rules you can control the behavior of the referee
 Rules:
+  # To make a referee like at robocup junior, activate the following settings
   DoubleDefense: true
-  LagOfProgress: 2000
-  LagOfProgressActive: false
+  LagOfProgress: 5000 #Its the time in milliseconds TODO
+  LagOfProgressActive: true
   OutOfBounce: true
+  DefektTime: 60000
   Pushing: true
-  Timeout: 15000
+  # The following settings are for testing
+  Timeout: 15000 #Its a golbal game timeout in milliseconds TODO
   TimeoutActive: false
-  TestMode: 1
+  TestMode: 0 #Set this to 0 for no special TestMode

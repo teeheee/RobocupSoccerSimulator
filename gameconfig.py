@@ -32,7 +32,7 @@ class configFile:
         self.ROBOTS = list()
         for i in range(4):
             self.ROBOTS.append({"Active": True,
-                                "DefektTime": 24000})
+                                "Stable": True})
         self.RULES = {"LagOfProgress": 2000,
                       "LagOfProgressActive": True,
                       "DoubleDefense": True,
@@ -40,7 +40,8 @@ class configFile:
                       "OutOfBounce": True,
                       "Timeout": 0,
                       "TimeoutActive": False,
-                      "TestMode": 0}
+                      "TestMode": 0,
+                      "DefektTime": 60000}
         self.GUI = {"Debugger": False,
                       "Commandline": False,
                       "Fast": True,

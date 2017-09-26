@@ -1,4 +1,4 @@
-cp RobotTemplates/python_raw/robotRemote.py Team1/robot1/robotRemote.py
-cp RobotTemplates/python_raw/robotRemote.py Team1/robot2/robotRemote.py
-cp RobotTemplates/python_raw/robotRemote.py Team2/robot1/robotRemote.py
-cp RobotTemplates/python_raw/robotRemote.py Team2/robot2/robotRemote.py
+cp RobotTemplates/python/main.py Team1/robot1/main.py
+cp RobotTemplates/python/main.py Team1/robot2/main.py
+cp RobotTemplates/python/main.py Team2/robot1/main.py
+cp RobotTemplates/python/main.py Team2/robot2/main.py

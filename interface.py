@@ -1,6 +1,16 @@
 import numpy as np
 import random
 import gameconfig
+from enum import Enum
+
+class State(Enum):
+    Defekt = 1
+    Running = 2
+    OutOfBounce = 3
+    Goal = 4
+    MultipleDefence = 5
+    LagOfProgress = 6
+
 
 class robot_interface:
     def __init__(self, _game, _robot, _spielrichtung):

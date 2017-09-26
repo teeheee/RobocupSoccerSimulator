@@ -2,6 +2,9 @@ import pygame
 from gameconfig import gc
 import numpy as np
 
+# This is an optional visualisation of the sensor values of an specific robot.
+# It can be disabled via the config.yml Gui->Debugger->False
+
 class Debugger:
     def __init__(self, display, robots):
         self._display = display

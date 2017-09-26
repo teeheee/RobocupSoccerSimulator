@@ -94,6 +94,7 @@ class FeldGrafik:
         self.linewidth = 1
         self.ppcm = self.display.get_height() / self.outer_size[1]
         self.spielStand = (0, 0)
+        self.time = 0
         self.font = pygame.font.SysFont('Calibri', 20, True, False)
         self.background_display = pygame.Surface((self.display.get_width() , self.display.get_height() ))
         self.drawInit()
@@ -164,6 +165,11 @@ class FeldGrafik:
         self.display.blit(self.background_display, (0, 0))
         text = self.font.render(str(self.spielStand[0]) + " " + str(self.spielStand[1]), True, BLUE)
         self.display.blit(text, (self.display.get_width() / 2, 10))
+        text = self.font.render(str(self.time) + " s", True, BLUE)
+        self.display.blit(text, (self.display.get_width() / 2, 25))
 
     def setSpielstand(self, a, b):
         self.spielStand = (a, b)
+
+    def setTime(self, time):
+        self.time = time

@@ -1,7 +1,6 @@
 import threading
 import numpy as np
 
-
 class RobotControl:
     def __init__(self, robotInterface):
         self._robotInterface = robotInterface
@@ -10,29 +9,38 @@ class RobotControl:
         self.m2 = 0
         self.m3 = 0
         self.kickFlag = 0
-        self.state = 0
+        self.timeinms = 0
         self.restartFlag = False
-        self.threadLock = threading.Condition()
-        self._update()
-
-    def _update(self):
-        self.threadLock.acquire()
         self.state = self._robotInterface.getRobotState()
-        self.bodensensor = self._robotInterface.getBodenSensors()
         self.US = self._robotInterface.getUltraschall()
         self.pixy = self._robotInterface.getPixy()
         self.kompass = self._robotInterface.getKompass()
         self.irsensors = self._robotInterface.getIRBall()
+        self.threadLock = threading.Condition()
+        self.bodensensor = self._robotInterface.getBodenSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
-        self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
-        if self.kickFlag == 1:
-            self._robotInterface.Kick()
-            self.kickFlag = 0
-        if self.restartFlag:
-            self._robotInterface.restartGame()
-            self.restartFlag = False
-        self.threadLock.notify()
-        self.threadLock.release()
+
+    def _update(self):
+        self.timeinms += 1
+        if self.timeinms%5 == 0:
+            self.threadLock.acquire()
+            self.state = self._robotInterface.getRobotState()
+            self.bodensensor = self._robotInterface.getBodenSensors()
+            self.kompass = self._robotInterface.getKompass()
+            if self.timeinms%20 == 0:
+                self.US = self._robotInterface.getUltraschall()
+                self.pixy = self._robotInterface.getPixy()
+                self.irsensors = self._robotInterface.getIRBall()
+                self.lightBarrier = self._robotInterface.getLightBarrier()
+            self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
+            if self.kickFlag == 1:
+                self._robotInterface.Kick()
+                self.kickFlag = 0
+            if self.restartFlag:
+                self._robotInterface.restartGame()
+                self.restartFlag = False
+            self.threadLock.notify()
+            self.threadLock.release()
 
     # plot(data) displays a plot of the given list of datapoints
     # the game is halted until the plot is closed.

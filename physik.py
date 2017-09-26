@@ -22,10 +22,10 @@ class RobotPhysik:
         self.radius = 10
         # mass of the robot in kg
         self.mass = 2000
-        # maximum velocity in m/s TODO check this????
-        self.vmax = 10
-        # maximum torque for all wheels combined
-        self.fmax = 100
+        # maximum velocity in m/ms TODO check this????
+        self.vmax = 0.2
+        # maximum torque for all wheels combined in Nm
+        self.fmax = 0.5
         # motor speed array
         self.motor = np.array([0, 0, 0, 0])
         # indicator if the robot is "defekt"
@@ -79,7 +79,7 @@ class RobotPhysik:
             self.body.force = (0, 0)
         else:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
-            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])
+            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])*self.fmax
             f = A.dot(self.motor)
             theta = self.body.angle - np.deg2rad(45 + 180)
             c, s = np.cos(theta), np.sin(theta)
@@ -91,6 +91,7 @@ class RobotPhysik:
             self.body.force = tuple(f_soll[0:2])
 
     def isPushedByRobot(self, robot):
+        #every robot has two shapes so 4 collisions need to be checkt between each robot
         p1 = self.shape1.shapes_collide(robot.shape1)
         p2 = self.shape1.shapes_collide(robot.shape2)
         p3 = self.shape2.shapes_collide(robot.shape1)
@@ -100,6 +101,7 @@ class RobotPhysik:
         return False
 
     def isPushedByBall(self, ball):
+        #every robot has two shapes so 2 collisions need to be checkt
         p1 = self.shape1.shapes_collide(ball.shape)
         p2 = self.shape2.shapes_collide(ball.shape)
         if len(p1.points) > 0 or len(p2.points) > 0:
@@ -154,7 +156,7 @@ class BallPhysik:
 
         self.shape = pymunk.Circle(self.body, self.radius, (0, 0))
         self.shape.elasticity = 0.95
-        self.shape.friction = 1
+        self.shape.friction = 10
         self.shape.collision_type = collision_types["ball"]
         self.shape.filter = pymunk.ShapeFilter(categories=0x1)
 
@@ -170,7 +172,7 @@ class BallPhysik:
 
     def kick(self,direction):
         theta = np.deg2rad(direction)
-        f = (np.cos(theta)*50,np.sin(theta)*50)
+        f = (np.cos(theta)*1,np.sin(theta)*1)
         self.body.force = f
 
 

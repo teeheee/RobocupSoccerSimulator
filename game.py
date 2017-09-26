@@ -37,7 +37,7 @@ class Robot:
     # testet ob der Roboter nicht mehr defekt ist. (timeout vorbei)
     def isDefekt(self, time):
         if self.physik.defekt:
-            if time - self.defektTime > 24000:
+            if time - self.defektTime > gc.ROBOTS[self.id-1]["DefektTime"]:
                 self.physik.defekt = False
                 return False
         return True
@@ -59,6 +59,8 @@ class Robot:
                                  self.physik.body.position.y,
                                  self.physik.body.angle])
             self.orientation = np.rad2deg(self.pos[2])
+        else:
+            self.physik.moveto(1000, 1000*self.id, 0)
 
     # Zeichnet den Roboter
     def draw(self):
@@ -173,11 +175,11 @@ class NeutralSpot:
         for robot in robots:
             d = np.linalg.norm(robot.pos[0:2] - self.pos)
             if d < 30:
-                print("occupied by robot")
+                #print("occupied by robot")
                 return True
         d = np.linalg.norm(ball.pos[0:2] - self.pos)
         if d < 5:
-            print("occupied by ball")
+            #print("occupied by ball")
             return True
         return False
 
@@ -186,7 +188,10 @@ class Game:
     def __init__(self, _display):
         self.spielstand = [0, 0]
         self.isgoal = False
+        self.wasTimeout = False
+        self.wasGoal = False
         self.lastgoalteam = 0
+        self.timeout = 0
 
         self.srRobot = 0
         self.time = 0
@@ -217,11 +222,7 @@ class Game:
                        Robot(self.display, self.space, 4, RED, 0)]
 
         # move robot to starting position
-        self.robots[0].moveto(13, random.gauss(0, 2), 180)
-        self.robots[1].moveto(80, random.gauss(0, 2), 180)
-        self.robots[2].moveto(-40, random.gauss(0, 2), 0)
-        self.robots[3].moveto(-80, random.gauss(0, 2), 0)
-
+        self.setzteRoboterUndBallAufStartPosition()
 
         self.ris = [robot_interface(self, self.robots[0], 180),
                         robot_interface(self, self.robots[1], 180),
@@ -261,30 +262,30 @@ class Game:
             if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
                 self.setzteRobotwiederinsSpiel(robot)
 
-        self.lagofProgress()  # Lag of Progress testen
+        if gc.RULES["LagOfProgressActive"]:
+            self.lagofProgress()  # Lag of Progress testen
         self.checkGoal()  # Tor testen
         if gc.RULES["DoubleDefense"]:
             self.doubleDefense()  # check double defense
         if gc.RULES["Pushing"]:
             self.pushing()  # check for pushing
         if self.isgoal:
-            for robot in self.robots:
+            for robot in self.robots:# setzte alle Roboter auf nicht defekt
                 robot.physik.defekt = False
-            if self.lastgoalteam == 2:
-                self.robots[0].moveto(13, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-40,random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
-            if self.lastgoalteam == 1:
-                self.robots[0].moveto(40, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-13, random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
-            self.ball.moveto(0, 0)  # Ball in die Mitte legen
+            self.setzteRoboterUndBallAufStartPosition()
             self.isgoal = False
+            self.wasGoal = True
+            self.timeout = 0
+
+        self.timeout = self.timeout + 1
+        if self.timeout > gc.RULES["Timeout"] and gc.RULES["TimeoutActive"]:
+            self.setzteRoboterUndBallAufStartPosition()
+            self.timeout = 0
+            self.wasTimeout = True
+
 
         self.srRobot = self.srRobot + 1 #Sampling rate for the Robot
-        if self.srRobot > 20:
+        if self.srRobot > gc.GUI["SamplingRate"]:
             for i in range(4):
                 if gc.ROBOTS[i]["Active"]:
                     robotRemote.tick(self.ris[i])  # Roboter program ausfuehren
@@ -301,6 +302,42 @@ class Game:
     def shutdown(self):
         pass
 
+    def restart(self):
+        for robot in self.robots:
+            robot.physik.defekt = False
+        self.timeout = 0
+        #self.spielstand = [0, 0]
+        self.isgoal = False
+        self.wasGoal = False
+        self.wasTimeout = False
+        self.lastgoalteam = 0
+        self.srRobot = 0
+        self.time = 0
+        self.balltimeout = 0
+        self.setzteRoboterUndBallAufStartPosition()
+        print("restart Game")
+
+    def setzteRoboterUndBallAufStartPosition(self):
+        if gc.RULES["TestMode"] == 0:
+            if self.lastgoalteam == 1:
+                self.robots[0].moveto(13, random.gauss(0,2), 180)
+                self.robots[1].moveto(80, random.gauss(0,2), 180)
+                self.robots[2].moveto(-40,random.gauss(0,2), 0)
+                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+            else:
+                self.robots[0].moveto(40, random.gauss(0,2), 180)
+                self.robots[1].moveto(80, random.gauss(0,2), 180)
+                self.robots[2].moveto(-13, random.gauss(0,2), 0)
+                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+            self.ball.moveto(0, 0)  # Ball in die Mitte legen
+        if gc.RULES["TestMode"] == 1:
+            self.setzteRobotaufNeutralenPunkt(self.robots[0])
+            self.setzteRobotaufNeutralenPunkt(self.robots[1])
+            self.setzteRobotaufNeutralenPunkt(self.robots[2])
+            self.setzteRobotaufNeutralenPunkt(self.robots[3])
+            self.setzteBallaufNeutralenPunkt()
+
+
     # setzt den Ball auf den naechsten neutralen Punkt, der nicht besetzt ist
     def setzteBallaufNeutralenPunkt(self):
         random.shuffle(self.nspots)
@@ -313,7 +350,7 @@ class Game:
         self.ball.moveto(pos[0], pos[1])
 
     # setzt den Roboter auf den naechsten neutralen Punkt, der nicht besetzt ist
-    def setzteRobotaufNeutralenPunkt(self, robot):
+    def setzteRobotaufNeutralenPunkt(self, robot:Robot):
         random.shuffle(self.nspots)
         bestspot = self.nspots[0]
         for nspot in self.nspots:
@@ -325,7 +362,7 @@ class Game:
 
     # setzt den Roboter auf den neutralen Punkt,
     # der am weitesten vom Ball entfernt ist und nicht besetzt ist
-    def setzteRobotwiederinsSpiel(self, robot):
+    def setzteRobotwiederinsSpiel(self, robot:Robot):
         random.shuffle(self.nspots)
         bestspot = self.nspots[0]
         for nspot in self.nspots:
@@ -346,7 +383,7 @@ class Game:
 
     # wenn der Roboter ausserhalb vom Spielfeld steht wird er als defekt markiert
     # und verschwindet fuer 1 min aus dem Spiel
-    def isOutOfBounce(self, robot):
+    def isOutOfBounce(self, robot:Robot):
         if robot.isOutOfBounce():
             for otherrobot in self.robots:
                 if robot.isPushedBy(otherrobot) and otherrobot is not robot:
@@ -423,3 +460,10 @@ class Game:
             self.isgoal = True
             self.lastgoalteam = 2
         self.field.setSpielstand(self.spielstand[1], self.spielstand[0])
+
+    def isTimeout(self):
+        if self.wasTimeout:
+            self.wasTimeout = False
+            return True
+        else:
+            return False

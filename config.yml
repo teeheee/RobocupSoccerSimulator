@@ -5,17 +5,29 @@ FieldDiemensions:
   InnerWidth: 122
   OuterLength: 243
   OuterWidth: 182
+Gui:
+  Commandline: false
+  Debugger: false
+  SamplingRate: 20
+  Fast: true
 Robot0:
-  Active: true
+  Active: false
+  DefektTime: 24000
 Robot1:
-  Active: true
+  Active: false
+  DefektTime: 24000
 Robot2:
   Active: true
+  DefektTime: 100
 Robot3:
-  Active: true
+  Active: false
+  DefektTime: 24000
 Rules:
   DoubleDefense: true
   LagOfProgress: 2000
+  LagOfProgressActive: false
   OutOfBounce: true
   Pushing: true
-  TestMode: 0
+  Timeout: 15000
+  TimeoutActive: false
+  TestMode: 1

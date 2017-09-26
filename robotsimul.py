@@ -2,6 +2,7 @@
 
 from game import *
 from debugger import Debugger
+from gameconfig import gc
 
 #TODO more comments
 
@@ -16,7 +17,11 @@ class App:
 
     def on_init(self):
         pygame.init()
-        self._display_surf = pygame.display.set_mode((self.weight+self.height, self.height), pygame.DOUBLEBUF)
+        if gc.GUI["Debugger"]:
+            width = self.weight+self.height
+        else:
+            width = self.weight
+        self._display_surf = pygame.display.set_mode((width, self.height), pygame.DOUBLEBUF)
         self._game_display = pygame.Surface( self.size )
         self._display_surf.set_alpha(None)
         self._running = True
@@ -76,7 +81,8 @@ class App:
         self._display_surf.fill(GREEN)
         self.game.draw()
         self._display_surf.blit(self._game_display,(0, 0))
-        self.debugger.draw()
+        if gc.GUI["Debugger"]:
+            self.debugger.draw()
         pygame.display.update()
 
     def on_cleanup(self):

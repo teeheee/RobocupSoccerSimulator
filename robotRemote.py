@@ -10,11 +10,14 @@ class RobotControl:
         self.m2 = 0
         self.m3 = 0
         self.kickFlag = 0
+        self.state = 0
+        self.restartFlag = False
         self.threadLock = threading.Condition()
         self._update()
 
     def _update(self):
         self.threadLock.acquire()
+        self.state = self._robotInterface.getRobotState()
         self.bodensensor = self._robotInterface.getBodenSensors()
         self.US = self._robotInterface.getUltraschall()
         self.pixy = self._robotInterface.getPixy()
@@ -25,6 +28,9 @@ class RobotControl:
         if self.kickFlag == 1:
             self._robotInterface.Kick()
             self.kickFlag = 0
+        if self.restartFlag:
+            self._robotInterface.restartGame()
+            self.restartFlag = False
         self.threadLock.notify()
         self.threadLock.release()
 
@@ -103,7 +109,6 @@ class RobotControl:
     def Kick(self):
         self.threadLock.acquire()
         self.kickFlag = 1
-        self.threadLock.wait()
         self.threadLock.release()
 
     # Returns the State of the Robot
@@ -117,6 +122,12 @@ class RobotControl:
         self.threadLock.release()
         return tmp
 
+
+    def restartGame(self):
+        self.threadLock.acquire()
+        self.restartFlag = True
+        self.threadLock.wait()
+        self.threadLock.release()
 
 
 class robotThread (threading.Thread):

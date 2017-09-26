@@ -114,11 +114,12 @@ class robot_interface:
         return False
 
     # -5. enemy Goal
-    # -1. Defekt
+    # -2. Defekt
+    # -1. Tiemout
     # 0. In Game
     # 5. own Goal
     def getRobotState(self):
-        if self.game.isgoal:
+        if self.game.wasGoal:
             if self.robot.id <= 1:
                 if self.game.lastgoalteam == 1:
                     return -5
@@ -129,7 +130,13 @@ class robot_interface:
                     return 5
                 else:
                     return -5
+            self.game.wasGoal = False
         elif self.robot.physik.defekt == True:
+            return -2
+        elif self.game.isTimeout():
             return -1
         else:
             return 0
+
+    def restartGame(self):
+        self.game.restart()

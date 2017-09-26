@@ -17,6 +17,7 @@ class configFile:
             for i in range(4):
                 self.ROBOTS.append(self.config["Robot"+str(i)])
             self.RULES = self.config["Rules"]
+            self.GUI = self.config["Gui"]
         except:
             self.restoreDefault()
             self.saveConfig()
@@ -30,12 +31,20 @@ class configFile:
         self.GOAL_DEPTH = 8
         self.ROBOTS = list()
         for i in range(4):
-            self.ROBOTS.append({"Active": True})
+            self.ROBOTS.append({"Active": True,
+                                "DefektTime": 24000})
         self.RULES = {"LagOfProgress": 2000,
+                      "LagOfProgressActive": True,
                       "DoubleDefense": True,
                       "Pushing": True,
                       "OutOfBounce": True,
+                      "Timeout": 0,
+                      "TimeoutActive": False,
                       "TestMode": 0}
+        self.GUI = {"Debugger": False,
+                      "Commandline": False,
+                      "Fast": True,
+                    "SamplingRate": 20}
         self.config = dict()
 
     def saveConfig(self):
@@ -49,6 +58,7 @@ class configFile:
         for i in range(4):
             self.config["Robot" + str(i)] = self.ROBOTS[i]
         self.config["Rules"] = self.RULES
+        self.config["Gui"] = self.GUI
         with open(CONFIG_FILE_PATH, 'w') as configFile:
             yaml.dump(self.config, configFile, default_flow_style=False)
 

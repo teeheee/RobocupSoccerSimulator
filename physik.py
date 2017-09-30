@@ -9,7 +9,7 @@ collision_types = {
     "auslinie": 4
 }
 
-#TODO more comments
+#TODO more comments and rework names
 
 
 class RobotPhysik:
@@ -108,35 +108,6 @@ class RobotPhysik:
             return True
         return False
 
-    def getUS(self):
-        usValue = np.array([0,0,0,0])
-        filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0x1) #this is some pymunk voodoo
-        queryList = list()
-        radians = self.body.angle
-        rotationMatrix = np.array([(np.cos(radians),-np.sin(radians)),
-                                   (np.sin(radians), np.cos(radians))])
-        v1 = np.matmul(rotationMatrix,np.array([200,0]))
-        v2 = np.matmul(rotationMatrix,np.array([0,200]))
-        v3 = np.matmul(rotationMatrix,np.array([-200,0]))
-        v4 = np.matmul(rotationMatrix,np.array([0,-200]))
-        queryList.append(self.space.segment_query(self.body.position,self.body.position + v1,5,filter))
-        queryList.append(self.space.segment_query(self.body.position,self.body.position + v2,5,filter))
-        queryList.append(self.space.segment_query(self.body.position,self.body.position + v3,5,filter))
-        queryList.append(self.space.segment_query(self.body.position,self.body.position + v4,5,filter))
-        i = 0
-        for query in queryList:
-            finalReflectionDistance = 200
-            for singleQuery in query:
-                dotOfInterest = singleQuery.point
-                distanceToDotOfInterest = np.linalg.norm(dotOfInterest-self.body.position)
-                if distanceToDotOfInterest < finalReflectionDistance:
-                    finalReflectionDistance = distanceToDotOfInterest
-            usValue[i]=finalReflectionDistance - 10 #subtract radius of robot
-            if usValue[i] <= 0:
-                usValue[i] = 200
-            i = i + 1
-        return usValue
-
 
 
 
@@ -200,7 +171,7 @@ class FieldPhysik:
 
         # Auslinien
         static_body = self.space.static_body
-        self.auslinien = [pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2),
+        self.outLine = [pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2),
                                          (-gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2), 0.0)
             , pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2),
                              (gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2), 0.0)
@@ -209,39 +180,15 @@ class FieldPhysik:
             , pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2),
                              (gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2), 0.0)]
 
-        for linie in self.auslinien:
+        for linie in self.outLine:
             linie.filter = pymunk.ShapeFilter(categories=0x1)
             linie.collision_type = collision_types["auslinie"]
             linie.sensor = True
 
-        self.space.add(self.auslinien)
+        self.space.add(self.outLine)
 
     def tick(self):
         pass
-
-    def getIntersectingPoints(self, robot):
-        points = []
-        for linie in self.auslinien:
-            A = np.array(linie.a)
-            B = np.array(linie.b)
-            C = np.array(robot.body.position)
-            R = 8
-
-            LAB = np.linalg.norm(A-B)
-            D = (B - A) / LAB
-            t = D * ( C - A )
-            E = t * D + A
-            LEC = np.linalg.norm(E - C)
-
-            if LEC < R:
-                dt = np.sqrt(R-LEC)
-                F = (t - dt) * D + A
-                G = (t + dt) * D + A
-                points.append(F-C)
-                points.append(G-C)
-            elif LEC == R:
-                points.append(E-C)
-        return points
 
 
 class TorPhysik:

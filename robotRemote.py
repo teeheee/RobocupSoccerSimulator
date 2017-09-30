@@ -20,15 +20,17 @@ class RobotControl:
         self.bodensensor = self._robotInterface.getBodenSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
 
-    def _update(self):
-        self.timeinms += 1
+    # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
+    # dt is the tick time in ms #TODO better configurable timing
+    def _update(self, dt):
+        self.timeinms += dt
         if self.timeinms%5 == 0:
             self.threadLock.acquire()
             self.state = self._robotInterface.getRobotState()
-            self.bodensensor = self._robotInterface.getBodenSensors()
+            self.bodensensor = self._robotInterface.getLineSensors()
             self.kompass = self._robotInterface.getKompass()
             if self.timeinms%20 == 0:
-                self.US = self._robotInterface.getUltraschall()
+                self.US = self._robotInterface.getUltrasonic()
                 self.pixy = self._robotInterface.getPixy()
                 self.irsensors = self._robotInterface.getIRBall()
                 self.lightBarrier = self._robotInterface.getLightBarrier()
@@ -114,7 +116,7 @@ class RobotControl:
         self.threadLock.release()
 
     # Toggles the kicker
-    def Kick(self):
+    def kick(self):
         self.threadLock.acquire()
         self.kickFlag = 1
         self.threadLock.release()

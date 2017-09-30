@@ -1,35 +1,59 @@
 import numpy as np
 import random
-import gameconfig
+import gameconfig as gc
+import pymunk
 from enum import Enum
 
 class State(Enum):
+    Active = 0
     Defekt = 1
     Running = 2
     OutOfBounce = 3
-    Goal = 4
-    MultipleDefence = 5
-    LagOfProgress = 6
+    OwnGoal = 4
+    OponentGoal = 5
+    MultipleDefence = 6
+    LagOfProgress = 7
 
 
-class robot_interface:
-    def __init__(self, _game, _robot, _spielrichtung):
-        self.robot = _robot
-        self.id = _robot.id
-        self.game = _game
-        self.spielrichtung = _spielrichtung
-        self.motor = np.array([0, 0, 0, 0])
+class Interface:
+    def __init__(self, game, id):
+        self._robot = game.robots[id]
+        self._id = id
+        self._game = game
+        self._playDirection = self._robot.playDirection
+        self._body = self._robot.physik.body
+        self._space = self._robot.physik.space
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
-    def getBodenSensors(self):
+    def getLineSensors(self):
         bodensensor = np.zeros(16)
-        points = self.game.field.getIntersectingPoints(self.robot)
+        points = []
+        for line in self._game.field.physik.outLine:
+            A = np.array(line.a)
+            B = np.array(line.b)
+            C = np.array(self._robot.body.position)
+            R = 8
+
+            LAB = np.linalg.norm(A - B)
+            D = (B - A) / LAB
+            t = D * (C - A)
+            E = t * D + A
+            LEC = np.linalg.norm(E - C)
+
+            if LEC < R:
+                dt = np.sqrt(R - LEC)
+                F = (t - dt) * D + A
+                G = (t + dt) * D + A
+                points.append(F - C)
+                points.append(G - C)
+            elif LEC == R:
+                points.append(E - C)
         i=0
         for p in points:
             p = p / 4
             w = np.rad2deg(np.arctan2(p[0], p[1]))
-            winkel = 360-(w+self.robot.orientation+270)%360
+            winkel = 360-(w+self._robot.orientation+270)%360
             i+=1
             index = int(winkel * 16 / 360)%16
             bodensensor[index] = 1
@@ -42,8 +66,34 @@ class robot_interface:
 
     # Returns a list of 4 Distance measurements in all 4 directions
     # Numbering starts at the front and goes clockwise
-    def getUltraschall(self):
-        return self.robot.getUS()
+    def getUltrasonic(self):
+        usValue = np.array([0, 0, 0, 0])
+        filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 0x1)  # this is some pymunk voodoo
+        queryList = list()
+        radians = self._body.angle
+        rotationMatrix = np.array([(np.cos(radians), -np.sin(radians)),
+                                    (np.sin(radians), np.cos(radians))])
+        v1 = np.matmul(rotationMatrix, np.array([200, 0]))
+        v2 = np.matmul(rotationMatrix, np.array([0, 200]))
+        v3 = np.matmul(rotationMatrix, np.array([-200, 0]))
+        v4 = np.matmul(rotationMatrix, np.array([0, -200]))
+        queryList.append(self._space.segment_query(self._body.position, self._body.position + v1, 5, filter))
+        queryList.append(self._space.segment_query(self._body.position, self._body.position + v2, 5, filter))
+        queryList.append(self._space.segment_query(self._body.position, self._body.position + v3, 5, filter))
+        queryList.append(self._space.segment_query(self._body.position, self._body.position + v4, 5, filter))
+        i = 0
+        for query in queryList:
+            finalReflectionDistance = 200
+            for singleQuery in query:
+                dotOfInterest = singleQuery.point
+                distanceToDotOfInterest = np.linalg.norm(dotOfInterest - self._body.position)
+                if distanceToDotOfInterest < finalReflectionDistance:
+                    finalReflectionDistance = distanceToDotOfInterest
+            usValue[i] = finalReflectionDistance - 10  # subtract radius of robot
+            if usValue[i] <= 0:
+                usValue[i] = 200
+            i = i + 1
+            return usValue
 
     # Returns a List of Blocks of detected Objects
     # Attributes of each object is signature, x and y Position in camera vision
@@ -58,10 +108,10 @@ class robot_interface:
     # Numbering starts at the front and goes clockwise
     def getIRBall(self):
         irsensors = np.zeros(16)
-        ball_relative_robot = np.subtract(self.game.ball.pos,self.robot.pos[0:2])
+        ball_relative_robot = np.subtract(self._game.ball.pos,self._robot.pos[0:2])
         distanz = np.linalg.norm(ball_relative_robot)
         ballrichtung = (np.degrees(np.arctan2(ball_relative_robot[0], ball_relative_robot[1])) + random.gauss(0,5) + 270) % 360
-        ballrichtung = (ballrichtung + self.robot.orientation)%360
+        ballrichtung = (ballrichtung + self._robot.orientation)%360
         ballrichtung = 360-ballrichtung
         if distanz > 0:
             index = int(ballrichtung * 16 / 360)%16
@@ -74,11 +124,11 @@ class robot_interface:
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise
     def getKompass(self):
-        kompass = (np.degrees(self.robot.pos[2]) + self.spielrichtung + 180) % 360
+        kompass = (np.degrees(self._robot.pos[2]) + self.spielrichtung + 180) % 360
         return int(kompass + random.gauss(0, 1))
 
-    # Sets the Motor speeds to this Value Motors rotate the Robot counter clockwise.
-    # Numbering starts at the front and goes clockwise
+    # sets the motor speeds to this value motors rotate the robot counter clockwise.
+    # numbering starts at the front and goes clockwise
     def setMotorSpeed(self,m0,m1,m2,m3):
         m0 = m0 * random.gauss(1,0.02)
         m1 = m1 * random.gauss(1,0.02)
@@ -103,18 +153,17 @@ class robot_interface:
         if m3 < -100:
             m3 = -100
         m3 = m3/100
-        self.robot.motorSpeed(m0, m1, m2, m3)
-        self.motor = np.array([m0,m1,m2,m3])
+        self._robot.motorSpeed(m0, m1, m2, m3)
 
-    # Toggles the kicker
+    # toggles the kicker
     def Kick(self):
         if self.getLightBarrier():
-            self.game.ball.kick(self.robot.orientation)
+            self._game.ball.kick(self._robot.orientation)
 
-
+    # detects the ball in the ball capture zone
     def getLightBarrier(self):
-        BallVektor = self.robot.pos[0:2] - self.game.ball.pos
-        theta = np.deg2rad(self.robot.orientation)
+        BallVektor = self._robot.pos[0:2] - self._game.ball.pos
+        theta = np.deg2rad(self._robot.orientation)
         c,s = np.cos(theta),np.sin(theta)
         rotMatrix = np.array([[c, s],[-s, c]])
         relativBallVektor = np.dot(rotMatrix,BallVektor)
@@ -123,30 +172,25 @@ class robot_interface:
                 return True
         return False
 
-    # -5. enemy Goal
-    # -2. Defekt
-    # -1. Tiemout
-    # 0. In Game
-    # 5. own Goal
+    # See class State(Enum) for diffrent states
     def getRobotState(self):
-        if self.game.wasGoal:
-            if self.robot.id <= 1:
-                if self.game.lastgoalteam == 1:
-                    return -5
+        if self._game.wasGoal():
+            if self._robot.id <= 1:
+                if self._game.lastgoalteam == 1:
+                    return State.OwnGoal
                 else:
-                    return 5
+                    return State.OponentGoal
             else:
-                if self.game.lastgoalteam == 2:
-                    return 5
+                if self._game.lastgoalteam == 2:
+                    return State.OwnGoal
                 else:
-                    return -5
-            self.game.wasGoal = False
-        elif self.robot.physik.defekt == True:
-            return -2
-        elif self.game.isTimeout():
-            return -1
+                    return State.OponentGoal
+        elif self._robot.physik.defekt == True:
+            return State.Defekt
+        elif self._game.wasTimeout():
+            return State.TimeOut
         else:
-            return 0
+            return State.Active
 
     def restartGame(self):
-        self.game.restart()
+        self._game.restart()

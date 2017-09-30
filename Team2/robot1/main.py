@@ -18,7 +18,7 @@ def main(robot:RobotControl):
         state = robot.getRobotState()
 
         if robot.getLightBarrier():
-            robot.Kick()
+            robot.kick()
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor

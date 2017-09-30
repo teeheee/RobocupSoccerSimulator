@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d348ff9-7bf5-434d-958d-2bb185a330ad" name="Default" comment="some fixes but more bugs :-D">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/robotRemote.cpp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/robotRemote.h" />
+    <list default="true" id="7d348ff9-7bf5-434d-958d-2bb185a330ad" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Team2/robot1/main.py" afterPath="$PROJECT_DIR$/Team2/robot1/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game.py" afterPath="$PROJECT_DIR$/game.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grafik.py" afterPath="$PROJECT_DIR$/grafik.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/interface.py" afterPath="$PROJECT_DIR$/interface.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/physik.py" afterPath="$PROJECT_DIR$/physik.py" />
@@ -26,8 +26,8 @@
       <file leaf-file-name="game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+            <state relative-caret-position="105">
+              <caret line="158" column="24" lean-forward="false" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -38,8 +38,8 @@
       <file leaf-file-name="interface.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/interface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="28" column="22" lean-forward="false" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="22" />
+            <state relative-caret-position="120">
+              <caret line="35" column="29" lean-forward="false" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -50,8 +50,8 @@
       <file leaf-file-name="robotRemote.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/robotRemote.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="18" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="18" />
+            <state relative-caret-position="212">
+              <caret line="160" column="36" lean-forward="false" selection-start-line="160" selection-start-column="36" selection-end-line="160" selection-end-column="36" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
@@ -59,33 +59,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="robotRemote.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/robotRemote.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="robotRemote.h" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/robotRemote.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="21" lean-forward="true" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="physik.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/physik.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-690">
-              <caret line="11" column="36" lean-forward="false" selection-start-line="11" selection-start-column="36" selection-end-line="11" selection-end-column="36" />
+            <state relative-caret-position="125">
+              <caret line="38" column="57" lean-forward="false" selection-start-line="38" selection-start-column="57" selection-end-line="38" selection-end-column="57" />
               <folding>
-                <element signature="e#0#25#0" expanded="true" />
+                <element signature="e#1#24#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -94,7 +74,7 @@
       <file leaf-file-name="robotsimul.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/robotsimul.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="960">
+            <state relative-caret-position="780">
               <caret line="64" column="34" lean-forward="false" selection-start-line="64" selection-start-column="34" selection-end-line="64" selection-end-column="34" />
               <folding>
                 <element signature="e#24#42#0" expanded="true" />
@@ -103,13 +83,35 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="gameconfig.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gameconfig.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="615">
+              <caret line="41" column="45" lean-forward="true" selection-start-line="41" selection-start-column="45" selection-end-line="41" selection-end-column="45" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="grafik.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grafik.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-555">
-              <caret line="14" column="39" lean-forward="true" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
+            <state relative-caret-position="-1783">
+              <caret line="44" column="30" lean-forward="true" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Team2/robot1/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-15">
+              <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#36#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -141,7 +143,12 @@
       <find>self.body</find>
       <find>self.space</find>
       <find>self.motor</find>
+      <find>direct</find>
+      <find>wasTimeout</find>
+      <find>wasGoal</find>
       <find>self._motor</find>
+      <find>robotThread</find>
+      <find>ris</find>
       <find>_direction</find>
     </findStrings>
     <replaceStrings>
@@ -155,6 +162,7 @@
       <replace>self._space</replace>
       <replace>self._game</replace>
       <replace>self._motor</replace>
+      <replace>wasTimeout</replace>
       <replace>self._background_display</replace>
     </replaceStrings>
   </component>
@@ -188,7 +196,6 @@
         <option value="$PROJECT_DIR$/Team2/robot1/ReplayMemory.py" />
         <option value="$PROJECT_DIR$/Team2/robot1/RL_brain.py" />
         <option value="$PROJECT_DIR$/Team2/robot1/config.py" />
-        <option value="$PROJECT_DIR$/Team2/robot1/main.py" />
         <option value="$PROJECT_DIR$/debugger.py" />
         <option value="$PROJECT_DIR$/RobotTemplates/python/main.py" />
         <option value="$PROJECT_DIR$/updatetemplate.sh" />
@@ -196,14 +203,15 @@
         <option value="$PROJECT_DIR$/config.yml" />
         <option value="$PROJECT_DIR$/gameconfig.py" />
         <option value="$PROJECT_DIR$/sensors.py" />
-        <option value="$PROJECT_DIR$/game.py" />
-        <option value="$PROJECT_DIR$/physik.py" />
-        <option value="$PROJECT_DIR$/grafik.py" />
-        <option value="$PROJECT_DIR$/interface.py" />
         <option value="$PROJECT_DIR$/robotRemote.c" />
-        <option value="$PROJECT_DIR$/robotRemote.py" />
         <option value="$PROJECT_DIR$/robotRemote.cpp" />
         <option value="$PROJECT_DIR$/robotRemote.h" />
+        <option value="$PROJECT_DIR$/physik.py" />
+        <option value="$PROJECT_DIR$/interface.py" />
+        <option value="$PROJECT_DIR$/robotRemote.py" />
+        <option value="$PROJECT_DIR$/game.py" />
+        <option value="$PROJECT_DIR$/grafik.py" />
+        <option value="$PROJECT_DIR$/Team2/robot1/main.py" />
       </list>
     </option>
   </component>
@@ -504,7 +512,14 @@
       <option name="project" value="LOCAL" />
       <updated>1506424916490</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="intermediate commit">
+      <created>1506768725517</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1506768725518</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -526,7 +541,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32852563" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18910256" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35096154" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35096154" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13942307" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -567,7 +582,8 @@
     <MESSAGE value="started neural network in Team1robot1" />
     <MESSAGE value="first running neural network code" />
     <MESSAGE value="some fixes but more bugs :-D" />
-    <option name="LAST_COMMIT_MESSAGE" value="some fixes but more bugs :-D" />
+    <MESSAGE value="intermediate commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="intermediate commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -730,13 +746,6 @@
     <entry file="file://$PROJECT_DIR$/Team2/robot1/RL_brain.py" />
     <entry file="file://$PROJECT_DIR$/Team2/robot1/config.py" />
     <entry file="file://$PROJECT_DIR$/replaymemory.npy" />
-    <entry file="file://$PROJECT_DIR$/Team2/robot1/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2175">
-          <caret line="145" column="33" lean-forward="false" selection-start-line="145" selection-start-column="33" selection-end-line="145" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Team2/robot2/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -801,14 +810,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gameconfig.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="41" column="45" lean-forward="true" selection-start-line="41" selection-start-column="45" selection-end-line="41" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="151">
@@ -817,19 +818,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/interface.py">
+    <entry file="file://$PROJECT_DIR$/gameconfig.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="28" column="22" lean-forward="false" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="22" />
+        <state relative-caret-position="615">
+          <caret line="41" column="45" lean-forward="true" selection-start-line="41" selection-start-column="45" selection-end-line="41" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/physik.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="38" column="57" lean-forward="false" selection-start-line="38" selection-start-column="57" selection-end-line="38" selection-end-column="57" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/robotsimul.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
+        <state relative-caret-position="780">
           <caret line="64" column="34" lean-forward="false" selection-start-line="64" selection-start-column="34" selection-end-line="64" selection-end-column="34" />
           <folding>
             <element signature="e#24#42#0" expanded="true" />
@@ -837,43 +846,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grafik.py">
+    <entry file="file://$PROJECT_DIR$/robotRemote.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-555">
-          <caret line="14" column="39" lean-forward="true" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="110" column="0" lean-forward="true" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/physik.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-690">
-          <caret line="11" column="36" lean-forward="false" selection-start-line="11" selection-start-column="36" selection-end-line="11" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/robotRemote.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="18" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="135">
+          <caret line="9" column="21" lean-forward="true" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -885,11 +862,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/robotRemote.h">
+    <entry file="file://$PROJECT_DIR$/interface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="21" lean-forward="true" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
-          <folding />
+        <state relative-caret-position="120">
+          <caret line="35" column="29" lean-forward="false" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/robotRemote.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="160" column="36" lean-forward="false" selection-start-line="160" selection-start-column="36" selection-end-line="160" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="158" column="24" lean-forward="false" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grafik.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1783">
+          <caret line="44" column="30" lean-forward="true" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team2/robot1/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-15">
+          <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

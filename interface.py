@@ -15,14 +15,15 @@ class State(Enum):
     LagOfProgress = 7
 
 
-class Interface:
-    def __init__(self, game, id):
+class RobotInterface:
+    def __init__(self, game, id, main):
         self._robot = game.robots[id]
         self._id = id
         self._game = game
         self._playDirection = self._robot.playDirection
         self._body = self._robot.physik.body
         self._space = self._robot.physik.space
+        self._main = main
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
@@ -32,7 +33,7 @@ class Interface:
         for line in self._game.field.physik.outLine:
             A = np.array(line.a)
             B = np.array(line.b)
-            C = np.array(self._robot.body.position)
+            C = np.array(self._body.position)
             R = 8
 
             LAB = np.linalg.norm(A - B)
@@ -124,7 +125,7 @@ class Interface:
 
     # Returns the orientation of the Robot in degree. 180° is opponent goal. Numbering goes clockwise
     def getKompass(self):
-        kompass = (np.degrees(self._robot.pos[2]) + self.spielrichtung + 180) % 360
+        kompass = (np.degrees(self._robot.pos[2]) + self._playDirection + 180) % 360
         return int(kompass + random.gauss(0, 1))
 
     # sets the motor speeds to this value motors rotate the robot counter clockwise.

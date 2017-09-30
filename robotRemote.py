@@ -12,12 +12,12 @@ class RobotControl:
         self.timeinms = 0
         self.restartFlag = False
         self.state = self._robotInterface.getRobotState()
-        self.US = self._robotInterface.getUltraschall()
+        self.US = self._robotInterface.getUltrasonic()
         self.pixy = self._robotInterface.getPixy()
         self.kompass = self._robotInterface.getKompass()
         self.irsensors = self._robotInterface.getIRBall()
         self.threadLock = threading.Condition()
-        self.bodensensor = self._robotInterface.getBodenSensors()
+        self.bodensensor = self._robotInterface.getLineSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
@@ -147,15 +147,15 @@ class robotThread (threading.Thread):
         self._mainfunction = mainfunction
    def run(self):
         self._mainfunction(self._control)
-        print("WTF!! robot %d finished his loop" % self._robotInterface.id)
+        print("Error: robot %d finished his main loop. Check your code!" % self._control._robotInterface.id)
 
 
 def init(robotInterface):
     robotInterface.control = RobotControl(robotInterface)
-    robotInterface.thread = robotThread(robotInterface.control,robotInterface.main)
+    robotInterface.thread = robotThread(robotInterface.control,robotInterface._main)
     robotInterface.thread.daemon = True
     robotInterface.thread.start()
 
 
 def tick(robotInterface):
-    robotInterface.control._update()
+    robotInterface.control._update(1)

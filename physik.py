@@ -1,6 +1,7 @@
-from gameconfig import gc
+
 from interface import *
 import pymunk
+from gameconfig import gc
 
 collision_types = {
     "ball": 1,
@@ -33,9 +34,9 @@ class RobotPhysik:
 
         # configure the Body of the Robot
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
-        self.body.position = ((self.robotgrafik.x_position, self.robotgrafik.y_position))
-        self.body.angle = np.radians(self.robotgrafik.orientation)
-        self.body.name = "robot" + str(self.robotgrafik.id)
+        self.body.position = ((self.robotgrafik._x_position, self.robotgrafik._y_position))
+        self.body.angle = np.radians(self.robotgrafik._orientation)
+        self.body.name = "robot" + str(self.robotgrafik._id)
 
         # generate the special shape of the robot.
         # because the ballcapture zone is not concave two polygons are needed
@@ -118,10 +119,10 @@ class BallPhysik:
 
         self.radius = 3
         self.mass = 80
-        self.pos = np.array((self.ballgrafik.x_position, self.ballgrafik.y_position))
+        self.pos = np.array((self.ballgrafik._x_position, self.ballgrafik._y_position))
 
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
-        self.body.position = ((self.ballgrafik.x_position, self.ballgrafik.y_position))
+        self.body.position = ((self.ballgrafik._x_position, self.ballgrafik._y_position))
         self.body.name = "ball"
 
 

@@ -14,7 +14,7 @@ ORANGE = 255, 69, 0
 
 # TODO gc.FieldDiemnsions as dictionary
 
-class BallGraphik:
+class BallGraphic:
     # display: the pygame display to draw to
     def __init__(self, display):
         self._display = display
@@ -36,7 +36,7 @@ class BallGraphik:
         self._y_position = y
 
 
-class RobotGraphik:
+class RobotGraphic:
     # display: the pygame display to draw to
     # id: the robot id which is drawn on the back of the robot
     # color: color of the robot
@@ -72,12 +72,6 @@ class RobotGraphik:
         text = pygame.transform.rotate(text, self._orientation+self._direction)
         self._display.blit(text, pos)
 
-        #Dots #delete me
-        for dot in self._dotList:#delete me
-            pygame.draw.circle(self._display,
-                               self._color,
-                               (int((dot[0] + self._x_position_offset) * self._ppcm),int((dot[1] + self._y_position_offset) * self._ppcm)),
-                               10)#delete me
 
     # move robot to x and y in cm and orientation in degree
     def moveto(self, x, y, orientation):
@@ -107,10 +101,10 @@ class FieldGraphic:
         self._background_display.fill(GREEN)
 
         # Strafraeume
-        r1 = Rect(
+        r1 = pygame.Rect(
             ((self._outer_size[0] - self._inner_size[0]) / 2) * self._ppcm,
             ((self._outer_size[1] - 90) / 2) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm)
-        r2 = Rect(
+        r2 = pygame.Rect(
             ((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0] - 30) * self._ppcm,
             ((self._outer_size[1] - 90) / 2) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm)
         pygame.draw.rect(self._background_display, BLACK, r1, int(self._linewidth * self._ppcm * 0.8))
@@ -128,11 +122,11 @@ class FieldGraphic:
         pygame.draw.line(self._background_display, WHITE, p4, p1, int(self._linewidth * self._ppcm))
 
         # Tore
-        r1 = Rect(
+        r1 = pygame.Rect(
             ((self._outer_size[0] - self._inner_size[0]) / 2 - self._goal_size[0]) * self._ppcm,
             ((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm,
             self._goal_size[0] * self._ppcm, self._goal_size[1] * self._ppcm)
-        r2 = Rect(
+        r2 = pygame.Rect(
             ((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0]) * self._ppcm,
             ((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm,
             self._goal_size[0] * self._ppcm, self._goal_size[1] * self._ppcm)

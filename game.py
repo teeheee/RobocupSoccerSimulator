@@ -14,11 +14,11 @@ class Robot:
     # space ist der pymunk Raum
     # _id is die Roboter ID
     # color ist die Farbe des Roboters
-    def __init__(self, display, space, _id, color ,direction):
-        self.direction = direction
-        self.grafik = RobotGrafik(display, _id, color, direction)  # Physik
+    def __init__(self, display, space, _id, color ,playDirection):
+        self.playDirection = playDirection
+        self.grafik = RobotGraphic(display, _id, color, playDirection)  # Physik
         self.physik = RobotPhysik(space, self.grafik)
-        self.orientation = direction
+        self.orientation = playDirection
         # Roboter ID (setzt fest, welche Nummer auf dem Roboter steht)
         self.id = _id
         # Roboter Position in (x, y, rotation) Mittelpunkt ist x=0 y=0
@@ -113,7 +113,7 @@ class Robot:
 
 class Ball:
     def __init__(self, display, space):
-        self.grafik = BallGrafik(display)
+        self.grafik = BallGraphic(display)
         self.physik = BallPhysik(space, self.grafik)
         # Ball Position in (x, y, rotation) Mittelpunkt ist x=0 y=0
         self.pos = np.array(self.physik.body.position)
@@ -143,7 +143,7 @@ class Ball:
 
 class Field:
     def __init__(self, display, space):
-        self.grafik = FeldGrafik(display)
+        self.grafik = FieldGraphic(display)
         self.physik = FieldPhysik(space)
 
     # Wegen Kompatibilitaet?
@@ -156,7 +156,7 @@ class Field:
 
     # Spielstand updaten
     def setSpielstand(self, a, b):
-        self.grafik.setSpielstand(a, b)
+        self.grafik.setScore(a, b)
 
     # Zeit updaten
     def setTime(self, time):
@@ -197,8 +197,8 @@ class Game:
         self.start_time = 0
         self.spielstand = [0, 0]
         self.isgoal = False
-        self.wasTimeout = False
-        self.wasGoal = False
+        self.wasTimeoutFlag = False
+        self.wasGoalFlag = False
         self.lastgoalteam = 0
         self.timeout = 0
 
@@ -233,19 +233,15 @@ class Game:
         # move robot to starting position
         self.setzteRoboterUndBallAufStartPosition()
 
-        self.ris = [robot_interface(self, self.robots[0], 180),
-                        robot_interface(self, self.robots[1], 180),
-                        robot_interface(self, self.robots[2], 0),
-                        robot_interface(self, self.robots[3], 0)]
+        self.robotInterfaceHandlers = [RobotInterface(self, 0, r1.main),
+                                        RobotInterface(self, 1, r2.main),
+                                        RobotInterface(self, 2, r3.main),
+                                        RobotInterface(self, 3, r4.main)]
 
-        self.ris[0].main = r1.main
-        self.ris[1].main = r2.main
-        self.ris[2].main = r3.main
-        self.ris[3].main = r4.main
 
         for i in range(4):
             if gc.ROBOTS[i]["Active"]:
-                robotRemote.init(self.ris[i])  # Roboter program initialisieren
+                robotRemote.init(self.robotInterfaceHandlers[i])  # Roboter program initialisieren
 
         self.plotData = list()
 
@@ -282,14 +278,14 @@ class Game:
                 robot.physik.defekt = False
             self.setzteRoboterUndBallAufStartPosition()
             self.isgoal = False
-            self.wasGoal = True
+            self.wasGoalFlag = True
             self.timeout = 0
 
         self.timeout = self.timeout + dt
         if self.timeout > gc.RULES["Timeout"] and gc.RULES["TimeoutActive"]:
             self.setzteRoboterUndBallAufStartPosition()
             self.timeout = 0
-            self.wasTimeout = True
+            self.wasTimeoutFlag = True
 
     def _otherTick(self,dt):
         # This is just a quick hack to plot some data
@@ -303,7 +299,7 @@ class Game:
     def _robotInterfaceTick(self,dt):
         for i in range(4):
             if gc.ROBOTS[i]["Active"]:
-                robotRemote.tick(self.ris[i])  # Roboter sensorWerte updaten
+                robotRemote.tick(self.robotInterfaceHandlers[i])  # Roboter sensorWerte updaten
 
     # calculate a tick in ms
     def tick(self, dt):
@@ -331,8 +327,8 @@ class Game:
         self.timeout = 0
         #self.spielstand = [0, 0]
         self.isgoal = False
-        self.wasGoal = False
-        self.wasTimeout = False
+        self.wasGoalFlag = False
+        self.wasTimeoutFlag = False
         self.lastgoalteam = 0
         self.srRobot = 0
         self.time = 0
@@ -381,7 +377,7 @@ class Game:
                     and not nspot.isOccupied(self.robots, self.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], robot.direction)
+        robot.moveto(pos[0], pos[1], robot.playDirection)
 
     # setzt den Roboter auf den neutralen Punkt,
     # der am weitesten vom Ball entfernt ist und nicht besetzt ist
@@ -393,7 +389,7 @@ class Game:
                     and not nspot.isOccupied(self.robots, self.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], robot.direction+180)
+        robot.moveto(pos[0], pos[1], robot.playDirection+180)
 
     # bei zu wenig Ballbewegung wird setzteBallaufNeutralenPunkt() ausgefuehrt
     def lagofProgress(self):
@@ -484,9 +480,16 @@ class Game:
             self.lastgoalteam = 2
         self.field.setSpielstand(self.spielstand[1], self.spielstand[0])
 
-    def isTimeout(self):
-        if self.wasTimeout:
-            self.wasTimeout = False
+    def wasTimeout(self):
+        if self.wasTimeoutFlag:
+            self.wasTimeoutFlag = False
+            return True
+        else:
+            return False
+
+    def wasGoal(self):
+        if self.wasGoalFlag:
+            self.wasGoalFlag = False
             return True
         else:
             return False

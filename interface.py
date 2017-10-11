@@ -24,6 +24,7 @@ class RobotInterface:
         self._body = self._robot.physik.body
         self._space = self._robot.physik.space
         self._main = main
+        self._stateQueue = list()
         self.motors = (0,0,0,0)
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
@@ -104,8 +105,18 @@ class RobotInterface:
     # 2 is own Goal
     # 3 is opponent Goal
     # 4-9 are the Landmarks
-    def getPixy(self):  # TODO pixy is not implemented
-        pass
+    def getPixy(self):  # TODO pixy is not implemented very good
+        ballRelativeToRobot = np.subtract(self._game.ball.pos,self._robot.pos[0:2])
+        ballDirection = (np.degrees(np.arctan2(ballRelativeToRobot[0], ballRelativeToRobot[1])) + 270) % 360
+        ballDirection = (ballDirection + self._robot.orientation + 180) % 360
+        ballDirection = 180-ballDirection
+        ballDistance = np.linalg.norm(ballRelativeToRobot)
+        blocks = list()
+        if ballDirection < 35 and ballDirection > -35:
+            blocks.append({"signature": 1,
+                           "x": ballDistance,
+                           "y": ballDirection})
+        return blocks
 
     # Returns a list of 16 IR sensors. Value corresponds to distance from the Ball
     # Numbering starts at the front and goes clockwise
@@ -119,7 +130,7 @@ class RobotInterface:
         if distanz > 0:
             index = int(ballrichtung * 16 / 360)%16
             irsensors[index] = int(1000/distanz)
-           #irsensors[(index+1)%16] = int(300/distanz)
+            #irsensors[(index+1)%16] = int(300/distanz)
             #irsensors[(index+15)%16] = int(300/distanz)
             #irsensors[(index+2)%16] = int(30/distanz)
             #irsensors[(index+14)%16] = int(30/distanz)
@@ -178,7 +189,13 @@ class RobotInterface:
 
     # See class State(Enum) for diffrent states
     def getRobotState(self):
-        pass #TODO make it better
+        if len(self._stateQueue) == 0:
+            return State.Active
+        else:
+            return self._stateQueue.pop()
+
+    def setRobotState(self, aState):
+        self._stateQueue.insert(0,aState)
 
     def restartGame(self):
         self._game.restart()

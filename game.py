@@ -6,8 +6,8 @@ import robotRemote
 from grafik import *
 from physik import *
 from gameconfig import gc
+from cputime import cputime
 
-#TODO make class processingTime
 
 class Robot:
     # display ist das pygame fenster
@@ -170,7 +170,7 @@ class NeutralSpot:
     # oder der ball den neutralen Punkt besetzen
     def isOccupied(self, robots, ball):
         for robot in robots:
-            d = np.linalg.norm(robot.pos - self.pos)
+            d = np.linalg.norm(robot.pos[0:2] - self.pos)
             if d < 30:
                 #self._refereeShout("occupied by robot")
                 return True
@@ -224,9 +224,6 @@ class Game:
 
         self.referee = Referee(self)
 
-    def refereeShout(self,text):
-        print(str(self.time/1000)+" s Referee: " + text)
-
     def _physikTick(self,dt):
         for i in range(dt):
             self.space.step(1)  # Physik engine einen Tick weiter laufen lassen
@@ -246,11 +243,16 @@ class Game:
     # calculate a tick in ms
     def tick(self, dt):
         self.time += dt  # Sielzeit hochzaelen in ms
+        cputime.printTimer("Rest")
         for i in range(dt):
             self._physikTick(1)
+            cputime.printTimer("Physic")
             self._robotInterfaceTick(1)
+            cputime.printTimer("robotInterfaceTick")
         self._otherTick(dt)
+        cputime.printTimer("Other")
         self.referee.tick(dt)
+        cputime.printTimer("Referee")
 
         # Alle Objekte auf das Display zeichnen
     def draw(self):
@@ -302,7 +304,7 @@ class Referee:
         self._defektTimer = [0,0,0,0]
 
     def _refereeShout(self, string):
-        print(str(self._game.time)+": Referee: "+string)
+        print(str(self._game.time/100)+" s: Referee: "+string)
 
 
     def tick(self,dt):
@@ -312,12 +314,11 @@ class Referee:
                     if self._defektTimer[robot.id-1] < self._game.time:
                         robot.setDefekt(False)
                         self.putRobotBackInGame(robot)
-                        print("put robot back in game")
                 else:
                     if self.isOutOfBounce(robot):  # roboter auf OutofBounce testen
-                        print("put robot out of game")
                         self._defektTimer[robot.id-1] = self._game.time+gc.RULES["DefektTime"]
                         robot.setDefekt(True)
+                        self._game.robotInterfaceHandlers[robot.id].setRobotState(State.OutOfBounce)
 
 
         if gc.RULES["LagOfProgressActive"]:
@@ -450,6 +451,10 @@ class Referee:
             self._score[0] += 1
             self._lastGoalTeam = 1
             self._refereeShout("GOAL")
+            self._game.robotInterfaceHandlers[0].setRobotState(State.OwnGoal)
+            self._game.robotInterfaceHandlers[1].setRobotState(State.OwnGoal)
+            self._game.robotInterfaceHandlers[2].setRobotState(State.OponentGoal)
+            self._game.robotInterfaceHandlers[3].setRobotState(State.OponentGoal)
             self._wasGoal = True
 
         if gc.INNER_FIELD_LENGTH / 2 < self._ball.pos[0] \
@@ -458,5 +463,9 @@ class Referee:
                 and self._ball.pos[1] < gc.GOAL_WIDTH / 2:
             self._score[1] += 1
             self._refereeShout("GOAL")
+            self._game.robotInterfaceHandlers[2].setRobotState(State.OwnGoal)
+            self._game.robotInterfaceHandlers[3].setRobotState(State.OwnGoal)
+            self._game.robotInterfaceHandlers[0].setRobotState(State.OponentGoal)
+            self._game.robotInterfaceHandlers[1].setRobotState(State.OponentGoal)
             self._wasGoal = True
             self._lastGoalTeam = 0

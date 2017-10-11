@@ -14,27 +14,28 @@ Gui:
   Debugger: true
   SamplingRate: 20
   Fast: true
+  ShowTiming: false
 # Robotx is for configuring special modes for the diffrent Robots.
 Robot0:
   Active: true
-  Stable: true
+  Stable: false
 Robot1:
-  Active: true
+  Active: false
   Stable: true
 Robot2:
-  Active: true
+  Active: false
   Stable: true
 Robot3:
-  Active: true
+  Active: false
   Stable: true
 # With Rules you can control the behavior of the referee
 Rules:
   # To make a referee like at robocup junior, activate the following settings
   DoubleDefense: True
-  LagOfProgress: 5000 #Its the time in milliseconds TODO
-  LagOfProgressActive: True
+  LagOfProgress: 5000 #in ms
+  LagOfProgressActive: False
   OutOfBounce: True
-  DefektTime: 60000
+  DefektTime: 60000  #in ms
   Pushing: True
   # The following settings are for testing
   TestMode: 0 #Set this to 0 for no special TestMode

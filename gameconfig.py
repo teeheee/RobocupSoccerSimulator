@@ -43,7 +43,8 @@ class configFile:
         self.GUI = {"Debugger": False,
                       "Commandline": False,
                       "Fast": True,
-                    "SamplingRate": 20}
+                      "SamplingRate": 20,
+                      "ShowTiming": True}
         self.config = dict()
 
     def saveConfig(self):

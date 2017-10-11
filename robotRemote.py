@@ -22,7 +22,9 @@ class RobotControl:
         self.lightBarrier = self._robotInterface.getLightBarrier
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
-    # dt is the tick time in ms #TODO better configurable timing
+    # dt is the tick time in ms
+    # #TODO better configurable timing
+    # #TODO this function takes to much time!!!!
     def _update(self, dt):
         self.timeinms += dt
         if self.timeinms%5 == 0:
@@ -78,7 +80,7 @@ class RobotControl:
     # 2 is own Goal
     # 3 is opponent Goal
     # 4-9 are the Landmarks
-    def getPixy(self): #TODO getPixy ist noch nicht fertig
+    def getPixy(self):
         self.threadLock.acquire()
         tmp = np.array(self.pixy)
         self.threadLock.release()

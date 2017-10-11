@@ -75,6 +75,9 @@ class App:
             self.focusedrobot = 3
             if gc.GUI["Debugger"]:
                 self.debugger.setFocusedRobot(3)
+        if key[pygame.K_v]:
+            if gc.GUI["Debugger"]:
+                self.debugger.togglePixyMode()
         if key[pygame.K_p]:
             self.pause = True
         else:

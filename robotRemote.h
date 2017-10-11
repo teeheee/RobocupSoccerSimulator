@@ -2,7 +2,9 @@
 
 
 class RobotControl{
-    Robot(int id);
+    int _id;
+
+    RobotControl(int id);
 
     int* getBodenSensors();
     int* getUltraschall();
@@ -24,7 +26,7 @@ extern 'C'{
 
     PyObject* getActuatorValues(int robotId);
 
-    void updateSensorValues(PyObject* sensorValuesDictionary, int robotId);
+    void setSensorValues(PyObject* sensorValuesDictionary, int robotId);
 
     void startRobotMain();
 

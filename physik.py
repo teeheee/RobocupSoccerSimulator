@@ -24,9 +24,9 @@ class RobotPhysik:
         # mass of the robot in kg
         self.mass = 2000
         # maximum velocity in m/ms TODO check this????
-        self.vmax = 0.2
+        self.vmax = 0.1
         # maximum torque for all wheels combined in Nm
-        self.fmax = 0.5
+        self.fmax = 0.3
         # motor speed array
         self.motor = np.array([0, 0, 0, 0])
         # indicator if the robot is "defekt"
@@ -37,6 +37,7 @@ class RobotPhysik:
         self.body.position = ((self.robotgrafik._x_position, self.robotgrafik._y_position))
         self.body.angle = np.radians(self.robotgrafik._orientation)
         self.body.name = "robot" + str(self.robotgrafik._id)
+        self.startAngle = self.body.angle
 
         # generate the special shape of the robot.
         # because the ballcapture zone is not concave two polygons are needed
@@ -71,13 +72,26 @@ class RobotPhysik:
     def moveto(self, x, y, d):
         self.body.position = (x, y)
         self.body.angle = np.radians(d)
+        self.startAngle = np.radians(d)
         self.space.reindex_shapes_for_body(self.body)
 
-    def tick(self): #TODO there ist still something wrong with this
+    def tick(self,stable): #TODO there ist still something wrong with this
         if self.defekt:
             self.motor = np.array([0, 0, 0, 0])
             self.body.torque = 0
             self.body.force = (0, 0)
+        elif stable:
+            self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
+            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])*self.fmax
+            f = A.dot(self.motor)
+            theta = self.body.angle - np.deg2rad(45 + 180)
+            c, s = np.cos(theta), np.sin(theta)
+            R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
+            v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
+            f = R.dot(f)
+            f_soll = (f - (self.fmax / self.vmax) * v)
+            self.body.torque = (self.startAngle-self.body.angle)*10
+            self.body.force = tuple(f_soll[0:2])
         else:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
             A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])*self.fmax
@@ -109,6 +123,10 @@ class RobotPhysik:
             return True
         return False
 
+    def setDefekt(self, flag):
+        self.defekt = flag
+        self.moveto(1000,1000,0)
+        self.robotgrafik.moveto(1000,1000,0)
 
 
 

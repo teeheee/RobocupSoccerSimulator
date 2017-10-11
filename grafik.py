@@ -171,7 +171,7 @@ class FieldGraphic:
 
     # display the current game score
     def setScore(self, a, b):
-        self.spielStand = (a, b)
+        self._score = (a, b)
 
     # display the current time
     def setTime(self, time):

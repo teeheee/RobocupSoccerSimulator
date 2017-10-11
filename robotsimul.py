@@ -23,8 +23,6 @@ class App:
         pygame.init()
         if gc.GUI["Debugger"]:
             width = self.width+self.height
-            self.debugger = Debugger(self._display_surf,self.game.ris)
-            self.debugger.setFocusedRobot(2)
         else:
             width = self.width
         self._display_surf = pygame.display.set_mode((width, self.height), pygame.DOUBLEBUF)
@@ -32,6 +30,11 @@ class App:
         self._display_surf.set_alpha(None)
         self._running = True
         self.game = Game(self._game_display)
+
+        if gc.GUI["Debugger"]:
+            self.debugger = Debugger(self._display_surf, self.game.robotInterfaceHandlers)
+            self.debugger.setFocusedRobot(self.focusedrobot)
+
         pygame.mixer.quit()
 
     def on_event(self, event):
@@ -42,20 +45,20 @@ class App:
         if not self.pause:
             self.game.tick(30) #calculate in ms steps
         speed = 0.5
-        motor = np.array([0, 0, 0, 0])
+        motor = np.array([0.0, 0.0, 0.0, 0.0])
         key = pygame.key.get_pressed()
         if key[pygame.K_UP]:
-            motor = motor + np.array([-speed, -speed, speed, speed])
+            motor += np.array([-speed, -speed, speed, speed])
         if key[pygame.K_DOWN]:
-            motor = motor + np.array([speed, speed, -speed, -speed])
+            motor += np.array([speed, speed, -speed, -speed])
         if key[pygame.K_RIGHT]:
-            motor = motor + np.array([speed/2, 0, speed/2, 0])
+            motor += np.array([speed/2, 0, speed/2, 0])
         if key[pygame.K_LEFT]:
-            motor = motor + np.array([-speed/2, 0, -speed/2, 0])
+            motor += np.array([-speed/2, 0, -speed/2, 0])
         if key[pygame.K_m]:
-            motor = motor + np.array([-speed, speed, speed, -speed])
+            motor += np.array([-speed, speed, speed, -speed])
         if key[pygame.K_j]:
-            motor = motor + np.array([speed, -speed, -speed, speed])
+            motor += np.array([speed, -speed, -speed, speed])
         if key[pygame.K_1]:
             self.focusedrobot = 0
             if gc.GUI["Debugger"]:
@@ -82,8 +85,11 @@ class App:
             self.robotcontrol=False
 
         if self.robotcontrol:
-            motor = motor*100
-            self.game.ris[self.focusedrobot].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
+            motor *= 100
+            self.game.robotInterfaceHandlers[self.focusedrobot].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
+            self.game.robotInterfaceHandlers[self.focusedrobot].control.block()
+        else:
+            self.game.robotInterfaceHandlers[self.focusedrobot].control.unBlock()
 
     def on_render(self):
         self._display_surf.fill(GREEN)

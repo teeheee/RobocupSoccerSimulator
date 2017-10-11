@@ -39,8 +39,6 @@ class configFile:
                       "Pushing": True,
                       "OutOfBounce": True,
                       "Timeout": 0,
-                      "TimeoutActive": False,
-                      "TestMode": 0,
                       "DefektTime": 60000}
         self.GUI = {"Debugger": False,
                       "Commandline": False,

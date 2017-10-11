@@ -5,43 +5,43 @@ import Team2.robot2.main as r4
 import robotRemote
 from grafik import *
 from physik import *
-import matplotlib.pyplot as plt
 from gameconfig import gc
-import time
+
+#TODO make class processingTime
 
 class Robot:
     # display ist das pygame fenster
     # space ist der pymunk Raum
-    # _id is die Roboter ID
+    # id is die Roboter ID
     # color ist die Farbe des Roboters
-    def __init__(self, display, space, _id, color ,playDirection):
+    def __init__(self, display, space, id, color ,playDirection):
+        # stores the direction of the opponent goal
         self.playDirection = playDirection
-        self.grafik = RobotGraphic(display, _id, color, playDirection)  # Physik
+        # grafik object
+        self.grafik = RobotGraphic(display, id, color, playDirection)
+        # physik object
         self.physik = RobotPhysik(space, self.grafik)
+        # initial orientation
         self.orientation = playDirection
         # Roboter ID (setzt fest, welche Nummer auf dem Roboter steht)
-        self.id = _id
+        self.id = id
         # Roboter Position in (x, y, rotation) Mittelpunkt ist x=0 y=0
         self.pos = np.array([0, 0, 0])
         # Roboter Radius ist 10 cm
         self.radius = self.physik.radius
 
+        self.isDefektFlag = False
+
+
     # setzt den Roboter in Zustand Defekt und platziert ihn weit weg
     # (kann nur einmal aufgerufen werden. Danach muss der timeout ablaufen)
-    def defekt(self, time):
-        if self.physik.defekt:
-            return
-        self.defektTime = time
-        self.physik.defekt = True
-        self.moveto(10000, self.id * 10000, 0)
+    def setDefekt(self, state):
+        self.physik.setDefekt(state)
+        self.isDefektFlag = state
 
     # testet ob der Roboter nicht mehr defekt ist. (timeout vorbei)
-    def isDefekt(self, time):
-        if self.physik.defekt:
-            if time - self.defektTime > gc.RULES["DefektTime"]:
-                self.physik.defekt = False
-                return False
-        return True
+    def isDefekt(self):
+        return self.isDefektFlag
 
     # setzt den Motorspeed
     def motorSpeed(self, a, b, c, d):
@@ -55,13 +55,13 @@ class Robot:
     # Spieltick wird ausgefuehrt. Roboter Position wird aktualisiert
     def tick(self):
         if gc.ROBOTS[self.id-1]["Active"]:
-            self.physik.tick()
             if gc.ROBOTS[self.id-1]["Stable"]:
-                pass #TODO
+                self.physik.tick(True)
+            else:
+                self.physik.tick(False)
             self.pos = np.array([self.physik.body.position.x,
-                                 self.physik.body.position.y,
-                                 self.physik.body.angle])
-            self.orientation = np.rad2deg(self.pos[2])
+                                 self.physik.body.position.y])
+            self.orientation = np.rad2deg(self.physik.body.angle)
         else:
             self.physik.moveto(1000, 1000*self.id, 0)
 
@@ -92,7 +92,7 @@ class Robot:
         if seite is "links":
             if self.pos[0] > -20 + gc.INNER_FIELD_LENGTH / 2 and \
                             self.pos[0] < +gc.INNER_FIELD_LENGTH / 2 and \
-                            self.pos[1] > -45 and \
+                            -45 < self.pos[1] and \
                             self.pos[1] < 45:
                 return True
             return False
@@ -103,11 +103,6 @@ class Robot:
                             self.pos[1] < 45:
                 return True
             return False
-
-    def getUS(self):
-        return self.physik.getUS()
-
-
 
 
 
@@ -155,17 +150,12 @@ class Field:
         self.grafik.draw()
 
     # Spielstand updaten
-    def setSpielstand(self, a, b):
+    def setScore(self, a, b):
         self.grafik.setScore(a, b)
 
     # Zeit updaten
     def setTime(self, time):
         self.grafik.setTime(int(time))
-
-    # gibt alle Schnittpunkte des Roboters robot mit der Auslinien
-    # relativ zum Roboter wieder
-    def getIntersectingPoints(self, robot):
-        return self.physik.getIntersectingPoints(robot.physik)
 
 
 class NeutralSpot:
@@ -174,37 +164,26 @@ class NeutralSpot:
 
     # gibt die Distanz von dem objekt (ball oder roboter) zu dem neutralen Punkt
     def distance(self, object):
-        return np.linalg.norm(self.pos - object.pos[0:2])
+        return np.linalg.norm(self.pos - object.pos)
 
     # gibt True zurueck wenn einer der roboter in robots
     # oder der ball den neutralen Punkt besetzen
     def isOccupied(self, robots, ball):
         for robot in robots:
-            d = np.linalg.norm(robot.pos[0:2] - self.pos)
+            d = np.linalg.norm(robot.pos - self.pos)
             if d < 30:
-                #self.refereeShout("occupied by robot")
+                #self._refereeShout("occupied by robot")
                 return True
-        d = np.linalg.norm(ball.pos[0:2] - self.pos)
+        d = np.linalg.norm(ball.pos - self.pos)
         if d < 5:
-            #self.refereeShout("occupied by ball")
+            #self._refereeShout("occupied by ball")
             return True
         return False
 
 
 class Game:
     def __init__(self, _display):
-
-        self.start_time = 0
-        self.spielstand = [0, 0]
-        self.isgoal = False
-        self.wasTimeoutFlag = False
-        self.wasGoalFlag = False
-        self.lastgoalteam = 0
-        self.timeout = 0
-
-        self.srRobot = 0
         self.time = 0
-        self.balltimeout = 0
         self.display = _display
 
         self.space = pymunk.Space()
@@ -231,7 +210,7 @@ class Game:
                        Robot(self.display, self.space, 4, RED, 0)]
 
         # move robot to starting position
-        self.setzteRoboterUndBallAufStartPosition()
+        self.putEverythingOnStartPosition(1)
 
         self.robotInterfaceHandlers = [RobotInterface(self, 0, r1.main),
                                         RobotInterface(self, 1, r2.main),
@@ -243,14 +222,10 @@ class Game:
             if gc.ROBOTS[i]["Active"]:
                 robotRemote.init(self.robotInterfaceHandlers[i])  # Roboter program initialisieren
 
-        self.plotData = list()
+        self.referee = Referee(self)
 
     def refereeShout(self,text):
         print(str(self.time/1000)+" s Referee: " + text)
-
-    # this function saves a dataset for ploting in the main thread.
-    def plot(self,data):
-        self.plotData = data
 
     def _physikTick(self,dt):
         for i in range(dt):
@@ -259,40 +234,7 @@ class Game:
             for robot in self.robots:
                 robot.tick()  # Roboter updaten
 
-    def _refereeTick(self,dt):
-        for robot in self.robots:
-            if gc.RULES["OutOfBounce"]:
-                self.isOutOfBounce(robot)  # roboter auf OutofBounce testen
-            if robot.isDefekt(self.time) is False:  # roboter auf nicht defekt testen
-                self.setzteRobotwiederinsSpiel(robot)
-
-        if gc.RULES["LagOfProgressActive"]:
-            self.lagofProgress()  # Lag of Progress testen
-        self.checkGoal()  # Tor testen
-        if gc.RULES["DoubleDefense"]:
-            self.doubleDefense()  # check double defense
-        if gc.RULES["Pushing"]:
-            self.pushing()  # check for pushing
-        if self.isgoal:
-            for robot in self.robots:# setzte alle Roboter auf nicht defekt
-                robot.physik.defekt = False
-            self.setzteRoboterUndBallAufStartPosition()
-            self.isgoal = False
-            self.wasGoalFlag = True
-            self.timeout = 0
-
-        self.timeout = self.timeout + dt
-        if self.timeout > gc.RULES["Timeout"] and gc.RULES["TimeoutActive"]:
-            self.setzteRoboterUndBallAufStartPosition()
-            self.timeout = 0
-            self.wasTimeoutFlag = True
-
     def _otherTick(self,dt):
-        # This is just a quick hack to plot some data
-        if len(self.plotData) > 0:
-            plt.plot(self.plotData)
-            plt.show()
-            self.plotData = list()
         # Zeitdisplay auf aktuelle Sekunden setzen
         self.field.setTime(self.time/1000)
 
@@ -308,7 +250,7 @@ class Game:
             self._physikTick(1)
             self._robotInterfaceTick(1)
         self._otherTick(dt)
-        self._refereeTick(dt)
+        self.referee.tick(dt)
 
         # Alle Objekte auf das Display zeichnen
     def draw(self):
@@ -323,22 +265,13 @@ class Game:
 
     def restart(self):
         for robot in self.robots:
-            robot.physik.defekt = False
-        self.timeout = 0
-        #self.spielstand = [0, 0]
-        self.isgoal = False
-        self.wasGoalFlag = False
-        self.wasTimeoutFlag = False
-        self.lastgoalteam = 0
-        self.srRobot = 0
-        self.time = 0
-        self.balltimeout = 0
-        self.setzteRoboterUndBallAufStartPosition()
-        self.refereeShout("restart Game")
+            robot.setDefekt(False)
+        self.referee = Referee(self)
+        self.putEverythingOnStartPosition(1)
 
-    def setzteRoboterUndBallAufStartPosition(self):
+    def putEverythingOnStartPosition(self,lastgoalteam):
         if gc.RULES["TestMode"] == 0:
-            if self.lastgoalteam == 1:
+            if lastgoalteam == 1:
                 self.robots[0].moveto(13, random.gauss(0,2), 180)
                 self.robots[1].moveto(80, random.gauss(0,2), 180)
                 self.robots[2].moveto(-40,random.gauss(0,2), 0)
@@ -350,146 +283,180 @@ class Game:
                 self.robots[3].moveto(-80, random.gauss(0,2), 0)
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
         if gc.RULES["TestMode"] == 1:
-            self.setzteRobotaufNeutralenPunkt(self.robots[0])
-            self.setzteRobotaufNeutralenPunkt(self.robots[1])
-            self.setzteRobotaufNeutralenPunkt(self.robots[2])
-            self.setzteRobotaufNeutralenPunkt(self.robots[3])
-            self.setzteBallaufNeutralenPunkt()
+            self.referee.putRobotOnNeutralSpot(self.robots[0])
+            self.referee.putRobotOnNeutralSpot(self.robots[1])
+            self.referee.putRobotOnNeutralSpot(self.robots[2])
+            self.referee.putRobotOnNeutralSpot(self.robots[3])
+            self.referee.putBallOnNeutralSpot()
+
+
+class Referee:
+    def __init__(self, game):
+        self._game = game
+        self._ballTimeout = 0
+        self._wasGoal = False
+        self._score = [0,0]
+        self._lastGoalTeam = 1
+        self._robots = game.robots
+        self._ball = game.ball
+        self._defektTimer = [0,0,0,0]
+
+    def _refereeShout(self, string):
+        print(str(self._game.time)+": Referee: "+string)
+
+
+    def tick(self,dt):
+        for robot in self._robots:
+            if gc.RULES["OutOfBounce"]:
+                if robot.isDefekt():
+                    if self._defektTimer[robot.id-1] < self._game.time:
+                        robot.setDefekt(False)
+                        self.putRobotBackInGame(robot)
+                        print("put robot back in game")
+                else:
+                    if self.isOutOfBounce(robot):  # roboter auf OutofBounce testen
+                        print("put robot out of game")
+                        self._defektTimer[robot.id-1] = self._game.time+gc.RULES["DefektTime"]
+                        robot.setDefekt(True)
+
+
+        if gc.RULES["LagOfProgressActive"]:
+            self.lagofProgress()  # Lag of Progress testen
+        self.checkGoal()  # Tor testen
+        if gc.RULES["DoubleDefense"]:
+            self.doubleDefense()  # check double defense
+        if gc.RULES["Pushing"]:
+            self.pushing()  # check for pushing
+        if self._wasGoal:
+            self._defektTimer = [0,0,0,0]
+            for robot in self._robots:# setzte alle Roboter auf nicht defekt
+                robot.setDefekt(False)
+            self._game.putEverythingOnStartPosition(self._lastGoalTeam)
+            self._wasGoal = False
+            self._game.field.setScore(self._score[1], self._score[0])
+            self._refereeShout("new Score" + str(self._score))
+
 
 
     # setzt den Ball auf den naechsten neutralen Punkt, der nicht besetzt ist
-    def setzteBallaufNeutralenPunkt(self):
-        random.shuffle(self.nspots)
-        bestspot = self.nspots[0]
-        for nspot in self.nspots:
-            if nspot.distance(self.ball) < bestspot.distance(self.ball) \
-                    and not nspot.isOccupied(self.robots, self.ball):
+    def putBallOnNeutralSpot(self):
+        random.shuffle(self._game.nspots)
+        bestspot = self._game.nspots[0]
+        for nspot in self._game.nspots:
+            if nspot.distance(self._game.ball) < bestspot.distance(self._game.ball) \
+                    and not nspot.isOccupied(self._robots, self._game.ball):
                 bestspot = nspot
         pos = bestspot.pos
-        self.ball.moveto(pos[0], pos[1])
+        self._game.ball.moveto(pos[0], pos[1])
 
     # setzt den Roboter auf den naechsten neutralen Punkt, der nicht besetzt ist
-    def setzteRobotaufNeutralenPunkt(self, robot:Robot):
-        random.shuffle(self.nspots)
-        bestspot = self.nspots[0]
-        for nspot in self.nspots:
+    def putRobotOnNeutralSpot(self, robot:Robot):
+        random.shuffle(self._game.nspots)
+        bestspot = self._game.nspots[0]
+        for nspot in self._game.nspots:
             if nspot.distance(robot) < bestspot.distance(robot) \
-                    and not nspot.isOccupied(self.robots, self.ball):
+                    and not nspot.isOccupied(self._robots, self._ball):
                 bestspot = nspot
         pos = bestspot.pos
         robot.moveto(pos[0], pos[1], robot.playDirection)
 
     # setzt den Roboter auf den neutralen Punkt,
     # der am weitesten vom Ball entfernt ist und nicht besetzt ist
-    def setzteRobotwiederinsSpiel(self, robot:Robot):
-        random.shuffle(self.nspots)
-        bestspot = self.nspots[0]
-        for nspot in self.nspots:
-            if nspot.distance(self.ball) > bestspot.distance(self.ball) \
-                    and not nspot.isOccupied(self.robots, self.ball):
+    def putRobotBackInGame(self, robot:Robot):
+        random.shuffle(self._game.nspots)
+        bestspot = self._game.nspots[0]
+        for nspot in self._game.nspots:
+            if nspot.distance(self._ball) > bestspot.distance(self._ball) \
+                    and not nspot.isOccupied(self._robots, self._ball):
                 bestspot = nspot
         pos = bestspot.pos
         robot.moveto(pos[0], pos[1], robot.playDirection+180)
 
-    # bei zu wenig Ballbewegung wird setzteBallaufNeutralenPunkt() ausgefuehrt
+    # bei zu wenig Ballbewegung wird putBallOnNeutralSpot() ausgefuehrt
     def lagofProgress(self):
-        if self.ball.isMoving():
-            self.balltimeout = self.time
-        if self.time - self.balltimeout > gc.RULES["LagOfProgress"]:
-            self.refereeShout("lag of progress!!!")
-            self.setzteBallaufNeutralenPunkt()
-            self.balltimeout = self.time
+        if self._game.ball.isMoving():
+            self._ballTimeout = self._game.time
+        if self._game.time - self._ballTimeout > gc.RULES["LagOfProgress"]:
+            self._refereeShout("lag of progress!!!")
+            self.putBallOnNeutralSpot()
+            self._ballTimeout = self._game.time
 
     # wenn der Roboter ausserhalb vom Spielfeld steht wird er als defekt markiert
     # und verschwindet fuer 1 min aus dem Spiel
     def isOutOfBounce(self, robot:Robot):
         if robot.isOutOfBounce():
-            for otherrobot in self.robots:
+            for otherrobot in self._robots:
                 if robot.isPushedBy(otherrobot) and otherrobot is not robot:
-                    self.refereeShout("pushed out!!!")
-                    self.setzteRobotaufNeutralenPunkt(robot)
-                    return
-            self.refereeShout("out of bounce!!!")
-            robot.defekt(self.time)
+                    self._refereeShout("pushed out!!!")
+                    self.putRobotOnNeutralSpot(robot)
+                    return False
+            self._refereeShout("out of bounce!!!")
+            return True
+        return False
 
     def pushing(self):
         for i in range(0, 2):
-            if self.robots[i].isInStrafraum("links"):
-                if self.robots[i].isPushedBy(self.robots[2]):
-                    if self.robots[i].isPushedBy(self.ball) \
-                            or self.robots[2].isPushedBy(self.ball):
-                        self.refereeShout("pushing!!!")
-                        self.setzteBallaufNeutralenPunkt()
-                if self.robots[i].isPushedBy(self.robots[3]):
-                    if self.robots[i].isPushedBy(self.ball) \
-                            or self.robots[3].isPushedBy(self.ball):
-                        self.refereeShout("pushing!!!")
-                        self.setzteBallaufNeutralenPunkt()
+            if self._robots[i].isInStrafraum("links"):
+                if self._robots[i].isPushedBy(self._robots[2]):
+                    if self._robots[i].isPushedBy(self._ball) \
+                            or self._robots[2].isPushedBy(self._ball):
+                        self._refereeShout("pushing!!!")
+                        self.putBallOnNeutralSpot()
+                if self._robots[i].isPushedBy(self._robots[3]):
+                    if self._robots[i].isPushedBy(self._ball) \
+                            or self._robots[3].isPushedBy(self._ball):
+                        self._refereeShout("pushing!!!")
+                        self.putBallOnNeutralSpot()
 
         for i in range(2, 4):
-            if self.robots[i].isInStrafraum("rechts"):
-                if self.robots[i].isPushedBy(self.robots[0]):
-                    if self.robots[i].isPushedBy(self.ball) \
-                            or self.robots[0].isPushedBy(self.ball):
-                        self.refereeShout("pushing!!!")
-                        self.setzteBallaufNeutralenPunkt()
-                if self.robots[i].isPushedBy(self.robots[1]):
-                    if self.robots[i].isPushedBy(self.ball) \
-                            or self.robots[1].isPushedBy(self.ball):
-                        self.refereeShout("pushing!!!")
-                        self.setzteBallaufNeutralenPunkt()
+            if self._robots[i].isInStrafraum("rechts"):
+                if self._robots[i].isPushedBy(self._robots[0]):
+                    if self._robots[i].isPushedBy(self._ball) \
+                            or self._robots[0].isPushedBy(self._ball):
+                        self._refereeShout("pushing!!!")
+                        self.putBallOnNeutralSpot()
+                if self._robots[i].isPushedBy(self._robots[1]):
+                    if self._robots[i].isPushedBy(self._ball) \
+                            or self._robots[1].isPushedBy(self._ball):
+                        self._refereeShout("pushing!!!")
+                        self.putBallOnNeutralSpot()
 
     def doubleDefense(self):
-        if self.robots[0].isInStrafraum("links") and \
-                self.robots[1].isInStrafraum("links"):
-            d1 = np.linalg.norm(self.robots[0].pos[0:2] - self.ball.pos)
-            d2 = np.linalg.norm(self.robots[1].pos[0:2] - self.ball.pos)
-            self.refereeShout("double defense!!!")
+        if self._robots[0].isInStrafraum("links") and \
+                self._robots[1].isInStrafraum("links"):
+            d1 = np.linalg.norm(self._robots[0].pos - self._ball.pos)
+            d2 = np.linalg.norm(self._robots[1].pos - self._ball.pos)
+            self._refereeShout("double defense!!!")
             if d1 > d2:
-                self.setzteRobotaufNeutralenPunkt(self.robots[0])
+                self.putRobotOnNeutralSpot(self._robots[0])
             else:
-                self.setzteRobotaufNeutralenPunkt(self.robots[1])
+                self.putRobotOnNeutralSpot(self._robots[1])
 
-        if self.robots[2].isInStrafraum("rechts") and \
-                self.robots[3].isInStrafraum("rechts"):
-            d1 = np.linalg.norm(self.robots[2].pos[0:2] - self.ball.pos)
-            d2 = np.linalg.norm(self.robots[3].pos[0:2] - self.ball.pos)
-            self.refereeShout("double defense!!!")
+        if self._robots[2].isInStrafraum("rechts") and \
+                self._robots[3].isInStrafraum("rechts"):
+            d1 = np.linalg.norm(self._robots[2].pos - self._ball.pos)
+            d2 = np.linalg.norm(self._robots[3].pos - self._ball.pos)
+            self._refereeShout("double defense!!!")
             if d1 > d2:
-                self.setzteRobotaufNeutralenPunkt(self.robots[2])
+                self.putRobotOnNeutralSpot(self._robots[2])
             else:
-                self.setzteRobotaufNeutralenPunkt(self.robots[3])
+                self.putRobotOnNeutralSpot(self._robots[3])
 
     def checkGoal(self):
-        if self.ball.pos[0] < -gc.INNER_FIELD_LENGTH / 2 \
-                and self.ball.pos[0] > -gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH \
-                and self.ball.pos[1] > -gc.GOAL_WIDTH / 2 \
-                and self.ball.pos[1] < gc.GOAL_WIDTH / 2:
-            self.spielstand[0] = self.spielstand[0] + 1
-            self.refereeShout("GOAL")
-            self.isgoal = True
-            self.lastgoalteam = 1
+        if -gc.INNER_FIELD_LENGTH / 2 > self._ball.pos[0] \
+                and self._ball.pos[0] > -gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH \
+                and self._ball.pos[1] > -gc.GOAL_WIDTH / 2 \
+                and self._ball.pos[1] < gc.GOAL_WIDTH / 2:
+            self._score[0] += 1
+            self._lastGoalTeam = 1
+            self._refereeShout("GOAL")
+            self._wasGoal = True
 
-        if self.ball.pos[0] > gc.INNER_FIELD_LENGTH / 2 \
-                and self.ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH \
-                and self.ball.pos[1] > -gc.GOAL_WIDTH / 2 \
-                and self.ball.pos[1] < gc.GOAL_WIDTH / 2:
-            self.spielstand[1] = self.spielstand[1] + 1
-            self.refereeShout("GOAL")
-            self.isgoal = True
-            self.lastgoalteam = 2
-        self.field.setSpielstand(self.spielstand[1], self.spielstand[0])
-
-    def wasTimeout(self):
-        if self.wasTimeoutFlag:
-            self.wasTimeoutFlag = False
-            return True
-        else:
-            return False
-
-    def wasGoal(self):
-        if self.wasGoalFlag:
-            self.wasGoalFlag = False
-            return True
-        else:
-            return False
+        if gc.INNER_FIELD_LENGTH / 2 < self._ball.pos[0] \
+                and self._ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH \
+                and self._ball.pos[1] > -gc.GOAL_WIDTH / 2 \
+                and self._ball.pos[1] < gc.GOAL_WIDTH / 2:
+            self._score[1] += 1
+            self._refereeShout("GOAL")
+            self._wasGoal = True
+            self._lastGoalTeam = 0

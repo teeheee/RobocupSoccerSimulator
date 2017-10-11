@@ -11,7 +11,7 @@ FieldDiemensions:
 # Just speed up the simulation calculation
 Gui:
   Commandline: false
-  Debugger: false
+  Debugger: true
   SamplingRate: 20
   Fast: true
 # Robotx is for configuring special modes for the diffrent Robots.
@@ -30,13 +30,11 @@ Robot3:
 # With Rules you can control the behavior of the referee
 Rules:
   # To make a referee like at robocup junior, activate the following settings
-  DoubleDefense: true
+  DoubleDefense: True
   LagOfProgress: 5000 #Its the time in milliseconds TODO
-  LagOfProgressActive: true
-  OutOfBounce: true
+  LagOfProgressActive: True
+  OutOfBounce: True
   DefektTime: 60000
-  Pushing: true
+  Pushing: True
   # The following settings are for testing
-  Timeout: 15000 #Its a golbal game timeout in milliseconds TODO
-  TimeoutActive: false
   TestMode: 0 #Set this to 0 for no special TestMode

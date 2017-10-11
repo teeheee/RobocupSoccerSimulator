@@ -3,6 +3,7 @@ import numpy as np
 
 class RobotControl:
     def __init__(self, robotInterface):
+        self.blocked = False
         self._robotInterface = robotInterface
         self.m0 = 0
         self.m1 = 0
@@ -18,7 +19,7 @@ class RobotControl:
         self.irsensors = self._robotInterface.getIRBall()
         self.threadLock = threading.Condition()
         self.bodensensor = self._robotInterface.getLineSensors()
-        self.lightBarrier = self._robotInterface.getLightBarrier()
+        self.lightBarrier = self._robotInterface.getLightBarrier
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
     # dt is the tick time in ms #TODO better configurable timing
@@ -33,14 +34,15 @@ class RobotControl:
                 self.US = self._robotInterface.getUltrasonic()
                 self.pixy = self._robotInterface.getPixy()
                 self.irsensors = self._robotInterface.getIRBall()
-                self.lightBarrier = self._robotInterface.getLightBarrier()
-            self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
-            if self.kickFlag == 1:
-                self._robotInterface.Kick()
-                self.kickFlag = 0
-            if self.restartFlag:
-                self._robotInterface.restartGame()
-                self.restartFlag = False
+                self.lightBarrier = self._robotInterface.getLightBarrier
+            if self.blocked == False:
+                    self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
+                    if self.kickFlag == 1:
+                        self._robotInterface.kick()
+                        self.kickFlag = 0
+                    if self.restartFlag:
+                        self._robotInterface.restartGame()
+                        self.restartFlag = False
             self.threadLock.notify()
             self.threadLock.release()
 
@@ -138,6 +140,12 @@ class RobotControl:
         self.restartFlag = True
         self.threadLock.wait()
         self.threadLock.release()
+
+    def block(self):
+        self.blocked = True
+
+    def unBlock(self):
+        self.blocked = False
 
 
 class robotThread (threading.Thread):

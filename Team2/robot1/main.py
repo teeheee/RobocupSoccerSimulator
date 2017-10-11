@@ -5,9 +5,6 @@ def main(robot:RobotControl):
     last_kompass = 0
     i_kompass = 0
 
-    drallList = list()
-    x = 0
-
     while True:
 
         # gather information

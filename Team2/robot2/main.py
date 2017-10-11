@@ -5,9 +5,6 @@ def main(robot:RobotControl):
     last_kompass = 0
     i_kompass = 0
 
-    drallList = list()
-    x = 0
-
     while True:
 
         # gather information
@@ -18,7 +15,7 @@ def main(robot:RobotControl):
         state = robot.getRobotState()
 
         if robot.getLightBarrier():
-            robot.Kick()
+            robot.kick()
 
         # Linie
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor

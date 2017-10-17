@@ -1,9 +1,12 @@
-from robotRemote import RobotControl
 import numpy as np
+from robotRemote import RobotControl
+
 
 def main(robot:RobotControl):
     last_kompass = 0
     i_kompass = 0
+    linieErkannt = False
+    bodenrichtungLinie = -1
 
     while True:
 
@@ -21,7 +24,14 @@ def main(robot:RobotControl):
         bodenrichtung = -1  # finale fahrrtichtung für bodensensor
         for i in range(0, 16):
             if boden[i] > 0:
-                bodenrichtung = (i * 360 / 16) % 360
+                if linieErkannt:
+                    bodenrichtung = bodenrichtungLinie
+                else:
+                    bodenrichtungLinie = (i * 360 / 16 + 90) % 360
+                    bodenrichtung = bodenrichtungLinie
+                    linieErkannt = True
+        if bodenrichtung == -1:
+            linieErkannt = False
 
 
 

@@ -1,8 +1,18 @@
 import threading
 import numpy as np
 
+
+class robotThread (threading.Thread):
+   def __init__(self, control, mainfunction):
+        threading.Thread.__init__(self)
+        self._control = control
+        self._mainfunction = mainfunction
+   def run(self):
+        self._mainfunction(self._control)
+        print("Error: robot %d finished his main loop. Check your code!" % self._control._robotInterface._id)
+
 class RobotControl:
-    def __init__(self, robotInterface):
+    def __init__(self, robotInterface, main):
         self.blocked = False
         self._robotInterface = robotInterface
         self.m0 = 0
@@ -19,16 +29,28 @@ class RobotControl:
         self.irsensors = self._robotInterface.getIRBall()
         self.threadLock = threading.Condition()
         self.bodensensor = self._robotInterface.getLineSensors()
-        self.lightBarrier = self._robotInterface.getLightBarrier
+        self.lightBarrier = self._robotInterface.getLightBarrier()
+        self.thread = robotThread(self, main)
+        self.thread.daemon = True
+        self.thread.start()
+        #def doNothing(self):
+        #    print(self._robotInterface._id)
+        #    pass
+        self.onUpdate = None
+
+    def foo(self):
+        print("onupdate?")
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
     # dt is the tick time in ms
     # #TODO better configurable timing
     # #TODO this function takes to much time!!!!
-    def _update(self, dt):
+    def update(self, dt):
         self.timeinms += dt
         if self.timeinms%5 == 0:
             self.threadLock.acquire()
+            if self.onUpdate:
+                self.onUpdate(self)
             self.state = self._robotInterface.getRobotState()
             self.bodensensor = self._robotInterface.getLineSensors()
             self.kompass = self._robotInterface.getKompass()
@@ -36,7 +58,7 @@ class RobotControl:
                 self.US = self._robotInterface.getUltrasonic()
                 self.pixy = self._robotInterface.getPixy()
                 self.irsensors = self._robotInterface.getIRBall()
-                self.lightBarrier = self._robotInterface.getLightBarrier
+                self.lightBarrier = self._robotInterface.getLightBarrier()
             if self.blocked == False:
                     self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
                     if self.kickFlag == 1:
@@ -150,22 +172,6 @@ class RobotControl:
         self.blocked = False
 
 
-class robotThread (threading.Thread):
-   def __init__(self, control, mainfunction):
-        threading.Thread.__init__(self)
-        self._control = control
-        self._mainfunction = mainfunction
-   def run(self):
-        self._mainfunction(self._control)
-        print("Error: robot %d finished his main loop. Check your code!" % self._control._robotInterface.id)
 
 
-def init(robotInterface):
-    robotInterface.control = RobotControl(robotInterface)
-    robotInterface.thread = robotThread(robotInterface.control,robotInterface._main)
-    robotInterface.thread.daemon = True
-    robotInterface.thread.start()
 
-
-def tick(robotInterface):
-    robotInterface.control._update(1)

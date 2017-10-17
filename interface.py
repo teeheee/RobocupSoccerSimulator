@@ -16,14 +16,13 @@ class State(Enum):
 
 
 class RobotInterface:
-    def __init__(self, game, id, main):
+    def __init__(self, game, id):
         self._robot = game.robots[id]
         self._id = id
         self._game = game
         self._playDirection = self._robot.playDirection
         self._body = self._robot.physik.body
         self._space = self._robot.physik.space
-        self._main = main
         self._stateQueue = list()
         self.motors = (0,0,0,0)
 
@@ -194,7 +193,7 @@ class RobotInterface:
         else:
             return self._stateQueue.pop()
 
-    def setRobotState(self, aState):
+    def setRobotState(self, aState): # TODO is not the perfect position for this function...
         self._stateQueue.insert(0,aState)
 
     def restartGame(self):

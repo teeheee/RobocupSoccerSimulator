@@ -20,20 +20,20 @@ Robot0:
   Active: true
   Stable: false
 Robot1:
-  Active: false
-  Stable: true
+  Active: true
+  Stable: false
 Robot2:
-  Active: false
-  Stable: true
+  Active: true
+  Stable: false
 Robot3:
-  Active: false
-  Stable: true
+  Active: true
+  Stable: false
 # With Rules you can control the behavior of the referee
 Rules:
   # To make a referee like at robocup junior, activate the following settings
   DoubleDefense: True
   LagOfProgress: 5000 #in ms
-  LagOfProgressActive: False
+  LagOfProgressActive: True
   OutOfBounce: True
   DefektTime: 60000  #in ms
   Pushing: True

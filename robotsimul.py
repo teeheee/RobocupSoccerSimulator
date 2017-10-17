@@ -90,9 +90,9 @@ class App:
         if self.robotcontrol:
             motor *= 100
             self.game.robotInterfaceHandlers[self.focusedrobot].setMotorSpeed(motor[0], motor[1], motor[2], motor[3])
-            self.game.robotInterfaceHandlers[self.focusedrobot].control.block()
+            self.game.robotProgramHandlers[self.focusedrobot].block()
         else:
-            self.game.robotInterfaceHandlers[self.focusedrobot].control.unBlock()
+            self.game.robotProgramHandlers[self.focusedrobot].unBlock()
 
     def on_render(self):
         self._display_surf.fill(GREEN)

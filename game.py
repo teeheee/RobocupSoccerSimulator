@@ -1,12 +1,11 @@
+import RobotTemplates.C.main as r4
 import Team1.robot1.main as r1
 import Team1.robot2.main as r2
 import Team2.robot1.main as r3
-import Team2.robot2.main as r4
-import robotRemote
+from cputime import cputime
 from grafik import *
 from physik import *
-from gameconfig import gc
-from cputime import cputime
+from robotRemote import RobotControl
 
 
 class Robot:
@@ -212,15 +211,16 @@ class Game:
         # move robot to starting position
         self.putEverythingOnStartPosition(1)
 
-        self.robotInterfaceHandlers = [RobotInterface(self, 0, r1.main),
-                                        RobotInterface(self, 1, r2.main),
-                                        RobotInterface(self, 2, r3.main),
-                                        RobotInterface(self, 3, r4.main)]
+        self.robotInterfaceHandlers = [RobotInterface(self, 0),
+                                        RobotInterface(self, 1),
+                                        RobotInterface(self, 2),
+                                        RobotInterface(self, 3)]
 
-
-        for i in range(4):
-            if gc.ROBOTS[i]["Active"]:
-                robotRemote.init(self.robotInterfaceHandlers[i])  # Roboter program initialisieren
+        # Roboter program initialisieren
+        self.robotProgramHandlers = [ RobotControl(self.robotInterfaceHandlers[0],r1.main),
+                                      RobotControl(self.robotInterfaceHandlers[1],r2.main),
+                                      RobotControl(self.robotInterfaceHandlers[2],r3.main),
+                                      RobotControl(self.robotInterfaceHandlers[3],r4.main)]
 
         self.referee = Referee(self)
 
@@ -238,7 +238,7 @@ class Game:
     def _robotInterfaceTick(self,dt):
         for i in range(4):
             if gc.ROBOTS[i]["Active"]:
-                robotRemote.tick(self.robotInterfaceHandlers[i])  # Roboter sensorWerte updaten
+                self.robotProgramHandlers[i].update(1)  # Roboter sensorWerte updaten
 
     # calculate a tick in ms
     def tick(self, dt):
@@ -318,7 +318,7 @@ class Referee:
                     if self.isOutOfBounce(robot):  # roboter auf OutofBounce testen
                         self._defektTimer[robot.id-1] = self._game.time+gc.RULES["DefektTime"]
                         robot.setDefekt(True)
-                        self._game.robotInterfaceHandlers[robot.id].setRobotState(State.OutOfBounce)
+                        self._game.robotInterfaceHandlers[robot.id-1].setRobotState(State.OutOfBounce)
 
 
         if gc.RULES["LagOfProgressActive"]:

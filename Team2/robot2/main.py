@@ -38,10 +38,6 @@ def newOnUpdate(self):
 
 
 def main(robot:RobotControl):
-    robot.threadLock.acquire()
-
-    robot.foo()  #has to be here but I don't know why =(. Must be some multithreading voodoo
-
     mainDLL.getActuatorValues.restype = ActuatorType
 
     def callback():
@@ -55,6 +51,4 @@ def main(robot:RobotControl):
     )
 
     robot.onUpdate = newOnUpdate
-
-    robot.threadLock.release()
     mainDLL._main_()

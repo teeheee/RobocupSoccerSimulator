@@ -12,9 +12,12 @@ class robotThread (threading.Thread):
         print("Error: robot %d finished his main loop. Check your code!" % self._control._robotInterface._id)
 
 class RobotControl:
-    def __init__(self, robotInterface, main):
-        self.blocked = False
+    def __init__(self, robotInterface, robotProgram):
+
         self._robotInterface = robotInterface
+
+        # control attributes
+        self.blocked = False
         self.m0 = 0
         self.m1 = 0
         self.m2 = 0
@@ -27,19 +30,16 @@ class RobotControl:
         self.pixy = self._robotInterface.getPixy()
         self.kompass = self._robotInterface.getKompass()
         self.irsensors = self._robotInterface.getIRBall()
-        self.threadLock = threading.Condition()
         self.bodensensor = self._robotInterface.getLineSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
-        self.thread = robotThread(self, main)
-        self.thread.daemon = True
-        self.thread.start()
-        #def doNothing(self):
-        #    print(self._robotInterface._id)
-        #    pass
-        self.onUpdate = None
 
-    def foo(self):
-        print("onupdate?")
+        # threading attributes
+        self.threadLock = threading.Condition()
+        self.thread = robotThread(self, robotProgram.main)
+        self.thread.daemon = True
+        self.onUpdate = None # this is a function callback
+        self.thread.start()
+
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
     # dt is the tick time in ms

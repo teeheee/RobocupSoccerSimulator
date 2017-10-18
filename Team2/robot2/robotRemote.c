@@ -1,5 +1,6 @@
 
 /**** Thread handling part ***********/
+
 #include "robotRemote.h"
 
 struct ActuatorValueType actuatorValue;
@@ -34,7 +35,7 @@ int* getUltraschall()
 {
     return sensorValue.ultrasonic;
 }
-//Blocks* RobotControl::getPixy()
+
 int* getIRBall()
 {
     return sensorValue.ball;
@@ -63,17 +64,3 @@ void kick()
 {
     actuatorValue.kick = 1;
 }
-
-/*void RobotControl::plot(int* data, int datasize)
-{
-
-}
-
-State getRobotState();
-
-void RobotControl::restartGame()
-{
-
-}
-
-*/

@@ -1,7 +1,8 @@
-import RobotTemplates.C.main as r4
+
 import Team1.robot1.main as r1
 import Team1.robot2.main as r2
 import Team2.robot1.main as r3
+import Team2.robot2.main as r4
 from cputime import cputime
 from grafik import *
 from physik import *
@@ -216,11 +217,12 @@ class Game:
                                         RobotInterface(self, 2),
                                         RobotInterface(self, 3)]
 
+
         # Roboter program initialisieren
-        self.robotProgramHandlers = [ RobotControl(self.robotInterfaceHandlers[0],r1.main),
-                                      RobotControl(self.robotInterfaceHandlers[1],r2.main),
-                                      RobotControl(self.robotInterfaceHandlers[2],r3.main),
-                                      RobotControl(self.robotInterfaceHandlers[3],r4.main)]
+        self.robotProgramHandlers = [ RobotControl(self.robotInterfaceHandlers[0],r1),
+                                      RobotControl(self.robotInterfaceHandlers[1],r2),
+                                      RobotControl(self.robotInterfaceHandlers[2],r3),
+                                      RobotControl(self.robotInterfaceHandlers[3],r4)]
 
         self.referee = Referee(self)
 

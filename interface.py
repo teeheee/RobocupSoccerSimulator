@@ -1,6 +1,6 @@
 import numpy as np
 import random
-import gameconfig as gc
+from gameconfig import gc
 import pymunk
 from enum import Enum
 
@@ -30,6 +30,9 @@ class RobotInterface:
     # Numbering starts at the front and goes clockwise
     def getLineSensors(self): #TODO line corners are crosses
         bodensensor = np.zeros(16)
+        if gc.FIELD["TouchlineActive"] == False:
+            return bodensensor
+
         points = []
         for line in self._game.field.physik.outLine:
             A = np.array(line.a)

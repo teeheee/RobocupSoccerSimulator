@@ -1,18 +1,32 @@
 # This should not be changed unless you realy want to mess with the game
 # Those are the field dimensions in cm
-FieldDiemensions:
+
+#1 vs 1
+#Field:
+#  TouchlineActive: False
+#  TouchlineLength: 183
+#  TouchlineWidth: 122
+#  GoalDepth: 8
+#  GoalWidth: 60
+#  BorderLength: 183
+#  BorderWidth: 122
+
+#2 vs 2
+Field:
+  TouchlineActive: True
+  TouchlineLength: 183
+  TouchlineWidth: 122
   GoalDepth: 8
   GoalWidth: 60
-  InnerLength: 183
-  InnerWidth: 122
-  OuterLength: 243
-  OuterWidth: 182
+  GoalDistanceFromCenter:
+  BorderLength: 243
+  BorderWidth: 182
 
 # Gui is for configuring the userinterface. It should not effect the game dynamics.
 # Just speed up the simulation calculation
 Gui:
   Commandline: false
-  Debugger: true
+  Debugger: false
   SamplingRate: 20
   Fast: true
   ShowTiming: false

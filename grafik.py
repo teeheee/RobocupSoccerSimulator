@@ -11,16 +11,16 @@ BLUE = 0, 0, 255
 RED = 255, 0, 0
 YELLOW = 255, 255, 0
 ORANGE = 255, 69, 0
+BROWN = 139, 69, 19
 
-# TODO gc.FieldDiemnsions as dictionary
 
 class BallGraphic:
     # display: the pygame display to draw to
-    def __init__(self, display):
-        self._display = display
-        self._ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
-        self._y_position_offset = self._display.get_height() / (2 * self._ppcm)
-        self._x_position_offset = self._display.get_width() / (2 * self._ppcm)
+    def __init__(self, game_display_data):
+        self._display = game_display_data["display"]
+        self._ppcm = game_display_data["ppcm"]
+        self._y_position_offset = game_display_data["center"][0]
+        self._x_position_offset = game_display_data["center"][1]
         self._y_position = 0
         self._x_position = 0
 
@@ -41,13 +41,13 @@ class RobotGraphic:
     # id: the robot id which is drawn on the back of the robot
     # color: color of the robot
     # direction: orientation of the text on the robot (to make it more readable)
-    def __init__(self, display, id, color, direction):
-        self._display = display
+    def __init__(self, game_display_data, id, color, direction):
+        self._display = game_display_data["display"]
+        self._ppcm = game_display_data["ppcm"]
+        self._y_position_offset = game_display_data["center"][0]
+        self._x_position_offset = game_display_data["center"][1]
         self._direction = direction
         self._color = color
-        self._ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
-        self._y_position_offset = self._display.get_height() / (2 * self._ppcm)
-        self._x_position_offset = self._display.get_width() / (2 * self._ppcm)
         self._y_position = 0
         self._x_position = 0
         self._orientation = 0
@@ -81,9 +81,11 @@ class RobotGraphic:
 
 class DebugOutput:
     # display: the pygame display to draw to
-    def __init__(self, adisplay):
-        self._display = adisplay
-        self._ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
+    def __init__(self, game_display_data):
+        self._display = game_display_data["display"]
+        self._ppcm = game_display_data["ppcm"]
+        self._y_position_offset = game_display_data["center"][0]
+        self._x_position_offset = game_display_data["center"][1]
         self.ellipseActiveFlag = False
         self.ellipseX = 0
         self.ellipseY = 0
@@ -99,8 +101,8 @@ class DebugOutput:
 
     def draw(self):
         if self.ellipseActiveFlag:
-            rect = pygame.Rect((self.ellipseX-self.ellipsePX/2 + gc.OUTER_FIELD_LENGTH/2)*self._ppcm,
-                               (self.ellipseY-self.ellipsePY/2 + gc.OUTER_FIELD_WIDTH/2)*self._ppcm,
+            rect = pygame.Rect((self.ellipseX-self.ellipsePX/2 + self._display.center[0])*self._ppcm,
+                               (self.ellipseY-self.ellipsePY/2 + self._display.center[1])*self._ppcm,
                                self.ellipsePX*self._ppcm,
                                self.ellipsePY*self._ppcm )
             try:
@@ -111,15 +113,17 @@ class DebugOutput:
 
 class FieldGraphic:
     # display: the pygame display to draw to
-    def __init__(self, adisplay):
-        self._display = adisplay
-        self._outer_size = (gc.OUTER_FIELD_LENGTH,
-                           gc.OUTER_FIELD_WIDTH)
-        self._inner_size = (gc.INNER_FIELD_LENGTH,
-                           gc.INNER_FIELD_WIDTH)
-        self._goal_size = (gc.GOAL_DEPTH, gc.GOAL_WIDTH)
+    def __init__(self, game_display_data):
+        self._display = game_display_data["display"]
+        self._ppcm = game_display_data["ppcm"]
+        self._y_position_offset = game_display_data["center"][0]
+        self._x_position_offset = game_display_data["center"][1]
+        self._outer_size = (gc.FIELD["BorderLength"],
+                            gc.FIELD["BorderWidth"])
+        self._inner_size = (gc.FIELD["TouchlineLength"],
+                            gc.FIELD["TouchlineWidth"])
+        self._goal_size = (gc.FIELD["GoalDepth"], gc.FIELD["GoalWidth"])
         self._linewidth = 1
-        self._ppcm = self._display.get_height() / self._outer_size[1]
         self._font = pygame.font.SysFont('Calibri', 20, True, False)
         self._background_display = pygame.Surface((self._display.get_width() , self._display.get_height() ))
         self._drawInit()
@@ -129,57 +133,67 @@ class FieldGraphic:
     def _drawInit(self):
         self._background_display.fill(GREEN)
 
+        offset = (self._x_position_offset - self._inner_size[0] / 2,
+                  self._y_position_offset - self._inner_size[1] / 2 )
+
         # Strafraeume
         r1 = pygame.Rect(
-            ((self._outer_size[0] - self._inner_size[0]) / 2) * self._ppcm,
-            ((self._outer_size[1] - 90) / 2) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm)
+            (offset[0] * self._ppcm,
+            (offset[1]+15) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm))
         r2 = pygame.Rect(
-            ((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0] - 30) * self._ppcm,
-            ((self._outer_size[1] - 90) / 2) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm)
+            (offset[0] + self._inner_size[0] - 30) * self._ppcm,
+            (offset[1]+15) * self._ppcm, 30 * self._ppcm, 90 * self._ppcm)
         pygame.draw.rect(self._background_display, BLACK, r1, int(self._linewidth * self._ppcm * 0.8))
         pygame.draw.rect(self._background_display, BLACK, r2, int(self._linewidth * self._ppcm * 0.8))
 
         # Auslinien
-        p1 = (((self._outer_size[0] - self._inner_size[0]) / 2) * self._ppcm,
-              ((self._outer_size[1] - self._inner_size[1]) / 2) * self._ppcm)
+
+        if gc.FIELD["TouchlineActive"]:
+            ausColor = WHITE
+        else:
+            ausColor = BROWN
+        p1 = (offset[0] * self._ppcm, offset[1] * self._ppcm)
         p2 = (p1[0], p1[1] + self._inner_size[1] * self._ppcm)
         p3 = (p2[0] + self._inner_size[0] * self._ppcm, p2[1])
         p4 = (p3[0], p3[1] - self._inner_size[1] * self._ppcm)
-        pygame.draw.line(self._background_display, WHITE, p1, p2, int(self._linewidth * self._ppcm))
-        pygame.draw.line(self._background_display, WHITE, p2, p3, int(self._linewidth * self._ppcm))
-        pygame.draw.line(self._background_display, WHITE, p3, p4, int(self._linewidth * self._ppcm))
-        pygame.draw.line(self._background_display, WHITE, p4, p1, int(self._linewidth * self._ppcm))
+        pygame.draw.line(self._background_display, ausColor, p1, p2, int(self._linewidth * self._ppcm))
+        pygame.draw.line(self._background_display, ausColor, p2, p3, int(self._linewidth * self._ppcm))
+        pygame.draw.line(self._background_display, ausColor, p3, p4, int(self._linewidth * self._ppcm))
+        pygame.draw.line(self._background_display, ausColor, p4, p1, int(self._linewidth * self._ppcm))
 
         # Tore
         r1 = pygame.Rect(
-            ((self._outer_size[0] - self._inner_size[0]) / 2 - self._goal_size[0]) * self._ppcm,
-            ((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm,
-            self._goal_size[0] * self._ppcm, self._goal_size[1] * self._ppcm)
+            (self._x_position_offset - self._goal_size[0] - gc.FIELD["TouchlineLength"]/2) * self._ppcm,
+            (self._y_position_offset - self._goal_size[1] / 2) * self._ppcm,
+            self._goal_size[0] * self._ppcm,
+            self._goal_size[1] * self._ppcm)
         r2 = pygame.Rect(
-            ((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0]) * self._ppcm,
-            ((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm,
-            self._goal_size[0] * self._ppcm, self._goal_size[1] * self._ppcm)
+            (self._x_position_offset  + gc.FIELD["TouchlineLength"] / 2) * self._ppcm,
+            (self._y_position_offset - self._goal_size[1] / 2) * self._ppcm,
+            self._goal_size[0] * self._ppcm,
+            self._goal_size[1] * self._ppcm)
         pygame.draw.rect(self._background_display, BLUE, r1)
         pygame.draw.rect(self._background_display, YELLOW, r2)
 
         # Mittelkreis
-        p1 = (int(self._outer_size[0] / 2 * self._ppcm), int(self._outer_size[1] / 2 * self._ppcm))
+        p1 = (int(self._x_position_offset * self._ppcm), int(self._y_position_offset * self._ppcm))
         pygame.draw.circle(self._background_display, BLACK, p1, int(30 * self._ppcm), 1)
 
         # Neutrale Punkte
+        neutral_x_offset = self._inner_size[0]/2 - 45
         p1 = \
-            int(((self._outer_size[0] - self._inner_size[0]) / 2 + 45) * self._ppcm), \
-            int(((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm)
+            int((self._x_position_offset - neutral_x_offset) * self._ppcm), \
+            int((self._y_position_offset - self._goal_size[1] / 2) * self._ppcm)
         p2 = \
-            int(((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0] - 45) * self._ppcm), \
-            int(((self._outer_size[1] - self._goal_size[1]) / 2) * self._ppcm)
+            int((self._x_position_offset + neutral_x_offset) * self._ppcm), \
+            int((self._y_position_offset - self._goal_size[1] / 2) * self._ppcm)
         p3 = \
-            int(((self._outer_size[0] - self._inner_size[0]) / 2 + 45) * self._ppcm), \
-                int(((self._outer_size[1] + self._goal_size[1]) / 2) * self._ppcm)
+            int((self._x_position_offset - neutral_x_offset) * self._ppcm), \
+                int((self._y_position_offset + self._goal_size[1] / 2) * self._ppcm)
         p4 = \
-            int(((self._outer_size[0] - self._inner_size[0]) / 2 + self._inner_size[0] - 45) * self._ppcm), \
-                int(((self._outer_size[1] + self._goal_size[1]) / 2) * self._ppcm)
-        p5 = int(self._outer_size[0] / 2 * self._ppcm), int(self._outer_size[1] / 2 * self._ppcm)
+            int((self._x_position_offset + neutral_x_offset) * self._ppcm), \
+                int((self._y_position_offset + self._goal_size[1] / 2) * self._ppcm)
+        p5 = int(self._x_position_offset * self._ppcm), int(self._y_position_offset * self._ppcm)
 
         pygame.draw.circle(self._background_display, BLACK, p1, int(1 * self._ppcm))
         pygame.draw.circle(self._background_display, BLACK, p2, int(1 * self._ppcm))

@@ -27,9 +27,15 @@ class App:
             width = self.width
         self._display_surf = pygame.display.set_mode((width, self.height), pygame.DOUBLEBUF)
         self._game_display = pygame.Surface( self.size )
+        self.ppcm = 3 #TODO: variable window size
+        self.center = [self._game_display.get_height() / (2 * self.ppcm),
+                                     self._game_display.get_width() / (2 * self.ppcm)]
         self._display_surf.set_alpha(None)
         self._running = True
-        self.game = Game(self._game_display)
+        game_display_data = {"display": self._game_display,
+                             "ppcm": self.ppcm,
+                             "center": self.center}
+        self.game = Game(game_display_data)
 
         if gc.GUI["Debugger"]:
             self.debugger = Debugger(self._display_surf, self.game.robotInterfaceHandlers)

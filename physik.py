@@ -171,16 +171,36 @@ class FieldPhysik:
     def __init__(self, _space):
         self.space = _space
 
+
+        self._outer_size = (gc.FIELD["BorderLength"],
+                            gc.FIELD["BorderWidth"])
+        self._inner_size = (gc.FIELD["TouchlineLength"],
+                            gc.FIELD["TouchlineWidth"])
         # Walls
+
         static_body = self.space.static_body
-        static_lines = [pymunk.Segment(static_body, (-gc.OUTER_FIELD_LENGTH / 2, -gc.OUTER_FIELD_WIDTH / 2),
-                                       (-gc.OUTER_FIELD_LENGTH / 2, gc.OUTER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (-gc.OUTER_FIELD_LENGTH / 2, -gc.OUTER_FIELD_WIDTH / 2),
-                             (gc.OUTER_FIELD_LENGTH / 2, -gc.OUTER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (gc.OUTER_FIELD_LENGTH / 2, gc.OUTER_FIELD_WIDTH / 2),
-                             (-gc.OUTER_FIELD_LENGTH / 2, gc.OUTER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (gc.OUTER_FIELD_LENGTH / 2, gc.OUTER_FIELD_WIDTH / 2),
-                             (gc.OUTER_FIELD_LENGTH / 2, -gc.OUTER_FIELD_WIDTH / 2), 0.0)]
+        if self._outer_size == self._inner_size:
+            static_lines = [pymunk.Segment(static_body, (-self._outer_size[0] / 2, -self._outer_size[1] / 2),
+                                 (-self._outer_size[0] / 2, -gc.FIELD["GoalWidth"] / 2), 0.0)
+                , pymunk.Segment(static_body, (-self._outer_size[0] / 2, gc.FIELD["GoalWidth"] / 2),
+                                 (-self._outer_size[0] / 2, self._outer_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (-self._outer_size[0] / 2, -self._outer_size[1] / 2),
+                                 (self._outer_size[0] / 2, -self._outer_size[1] / 2), 0.0) #side element
+                , pymunk.Segment(static_body, (self._outer_size[0] / 2, self._outer_size[1] / 2),
+                                 (-self._outer_size[0] / 2, self._outer_size[1] / 2), 0.0)#side element
+                , pymunk.Segment(static_body, (self._outer_size[0] / 2, self._outer_size[1] / 2),
+                                 (self._outer_size[0] / 2, gc.FIELD["GoalWidth"]/ 2), 0.0)
+                , pymunk.Segment(static_body, (self._outer_size[0] / 2, -gc.FIELD["GoalWidth"] / 2),
+                                 (self._outer_size[0] / 2, -self._outer_size[1] / 2), 0.0)]
+        else:
+            static_lines = [pymunk.Segment(static_body, (-self._outer_size[0] / 2, -self._outer_size[1] / 2),
+                                           (-self._outer_size[0] / 2, self._outer_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (-self._outer_size[0] / 2, -self._outer_size[1] / 2),
+                                 (self._outer_size[0] / 2, -self._outer_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (self._outer_size[0] / 2, self._outer_size[1] / 2),
+                                 (-self._outer_size[0] / 2, self._outer_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (self._outer_size[0] / 2, self._outer_size[1] / 2),
+                                 (self._outer_size[0] / 2, -self._outer_size[1] / 2), 0.0)]
         for line in static_lines:
             line.elasticity = 0.95
             line.friction = 0.9
@@ -189,22 +209,24 @@ class FieldPhysik:
         self.tor = TorPhysik(self.space)
 
         # Auslinien
-        static_body = self.space.static_body
-        self.outLine = [pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2),
-                                         (-gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2),
-                             (gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2),
-                             (-gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2), 0.0)
-            , pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, gc.INNER_FIELD_WIDTH / 2),
-                             (gc.INNER_FIELD_LENGTH / 2, -gc.INNER_FIELD_WIDTH / 2), 0.0)]
 
-        for linie in self.outLine:
-            linie.filter = pymunk.ShapeFilter(categories=0x1)
-            linie.collision_type = collision_types["auslinie"]
-            linie.sensor = True
+        if gc.FIELD["TouchlineActive"]:
+            static_body = self.space.static_body
+            self.outLine = [pymunk.Segment(static_body, (-self._inner_size[0] / 2, -self._inner_size[1] / 2),
+                                             (-self._inner_size[0] / 2, self._inner_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (-self._inner_size[0] / 2, -self._inner_size[1] / 2),
+                                 (self._inner_size[0] / 2, -self._inner_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (self._inner_size[0] / 2, self._inner_size[1] / 2),
+                                 (-self._inner_size[0] / 2, self._inner_size[1] / 2), 0.0)
+                , pymunk.Segment(static_body, (self._inner_size[0] / 2, self._inner_size[1] / 2),
+                                 (self._inner_size[0] / 2, -self._inner_size[1] / 2), 0.0)]
 
-        self.space.add(self.outLine)
+            for linie in self.outLine:
+                linie.filter = pymunk.ShapeFilter(categories=0x1)
+                linie.collision_type = collision_types["auslinie"]
+                linie.sensor = True
+
+            self.space.add(self.outLine)
 
     def tick(self):
         pass
@@ -212,31 +234,35 @@ class FieldPhysik:
 
 class TorPhysik:
     def __init__(self, _space):
+        self._inner_size = (gc.FIELD["TouchlineLength"],
+                            gc.FIELD["TouchlineWidth"])
+        self._goal_size = (gc.FIELD["GoalDepth"], gc.FIELD["GoalWidth"])
+        
         self.isgoal = False
         self.space = _space
         static_body = self.space.static_body
         static_lines_tor1 = [pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2+gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
+                                (self._inner_size[0] / 2, self._goal_size[1] / 2),
+                                (self._inner_size[0] / 2+self._goal_size[0],self._goal_size[1]/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
+                                (self._inner_size[0] / 2 + self._goal_size[0], self._goal_size[1] / 2),
+                                (self._inner_size[0] / 2 + self._goal_size[0], -self._goal_size[1] / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
-                                (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
+                                (self._inner_size[0] / 2 + self._goal_size[0], -self._goal_size[1] / 2),
+                                (self._inner_size[0] / 2, -self._goal_size[1] / 2), 0.0)]
         static_lines_tor2 = [pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2-gc.GOAL_DEPTH,gc. GOAL_WIDTH/2) ,0.0),
+                                (-self._inner_size[0] / 2, self._goal_size[1] / 2),
+                                (-self._inner_size[0] / 2-self._goal_size[0],self._goal_size[1]/2) ,0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2), 0.0),
+                                (-self._inner_size[0] / 2 - self._goal_size[0], self._goal_size[1] / 2),
+                                (-self._inner_size[0] / 2 - self._goal_size[0], -self._goal_size[1] / 2), 0.0),
                              pymunk.Segment(static_body,
-                                (-gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH, -gc.GOAL_WIDTH / 2),
-                                (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), 0.0)]
-        tor_balken_1 = pymunk.Segment(static_body, (gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
-            gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2), 0.0)
-        tor_balken_2 = pymunk.Segment(static_body, (-gc.INNER_FIELD_LENGTH / 2, -gc.GOAL_WIDTH / 2), (
-            -gc.INNER_FIELD_LENGTH / 2, gc.GOAL_WIDTH / 2), 0.0)
+                                (-self._inner_size[0] / 2 - self._goal_size[0], -self._goal_size[1] / 2),
+                                (-self._inner_size[0] / 2, -self._goal_size[1] / 2), 0.0)]
+        tor_balken_1 = pymunk.Segment(static_body, (self._inner_size[0] / 2, -self._goal_size[1] / 2), (
+            self._inner_size[0] / 2, self._goal_size[1] / 2), 0.0)
+        tor_balken_2 = pymunk.Segment(static_body, (-self._inner_size[0] / 2, -self._goal_size[1] / 2), (
+            -self._inner_size[0] / 2, self._goal_size[1] / 2), 0.0)
 
         for line in static_lines_tor1:
             line.elasticity = 0.95

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 from cx_Freeze import setup, Executable
 import os.path
 import platform
+
 
 if platform.system() == 'Windows':
     PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
@@ -13,10 +13,10 @@ if platform.system() == 'Windows':
                              "include_files": [
                                  os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tk86t.dll'),
                                  os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tcl86t.dll'),
-                                 "chipmunk.dll", "Team1", "Team2"]}}
+                                 "chipmunk.dll", "RobotPrograms", "config.yml", "LICENSE", "README.md"]}}
 else:
     setupOptions = {"build_exe": {"packages": ["pygame", "numpy", "pymunk", "yaml"],
-                    "include_files": ["libchipmunk.so", "Team1", "Team2"]}}
+                    "include_files": ["libchipmunk.so", "RobotPrograms", "config.yml", "LICENSE", "README.md"]}}
 
 
 setup(

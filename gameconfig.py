@@ -7,28 +7,18 @@ class configFile:
         try:
             configFile = open(CONFIG_FILE_PATH, 'r')
             self.config = yaml.load(configFile)
-            self.OUTER_FIELD_WIDTH = self.config["FieldDiemensions"]["OuterWidth"]
-            self.OUTER_FIELD_LENGTH = self.config["FieldDiemensions"]["OuterLength"]
-            self.INNER_FIELD_WIDTH = self.config["FieldDiemensions"]["InnerWidth"]
-            self.INNER_FIELD_LENGTH = self.config["FieldDiemensions"]["InnerLength"]
-            self.GOAL_WIDTH = self.config["FieldDiemensions"]["GoalWidth"]
-            self.GOAL_DEPTH = self.config["FieldDiemensions"]["GoalDepth"]
+            self.FIELD = self.config["Field"]
             self.ROBOTS = list()
             for i in range(4):
                 self.ROBOTS.append(self.config["Robot"+str(i)])
             self.RULES = self.config["Rules"]
             self.GUI = self.config["Gui"]
         except:
+            print("ERROR: conifg file was corrupted")
             self.restoreDefault()
             self.saveConfig()
 
     def restoreDefault(self):
-        self.OUTER_FIELD_WIDTH = 182
-        self.OUTER_FIELD_LENGTH = 243
-        self.INNER_FIELD_WIDTH = 122
-        self.INNER_FIELD_LENGTH = 183
-        self.GOAL_WIDTH = 60
-        self.GOAL_DEPTH = 8
         self.ROBOTS = list()
         for i in range(4):
             self.ROBOTS.append({"Active": True,
@@ -46,17 +36,18 @@ class configFile:
                       "Commandline": False,
                       "Fast": True,
                       "SamplingRate": 20,
-                      "ShowTiming": True}
+                      "ShowTiming": False}
+        self.FIELD = {"TouchlineActive": True,
+                      "TouchlineLength": 183,
+                      "TouchlineWidth": 122,
+                      "GoalDepth": 8,
+                      "GoalWidth": 60,
+                      "BorderLength": 243,
+                      "BorderWidth": 183}
         self.config = dict()
 
     def saveConfig(self):
-        self.config["FieldDiemensions"] = dict()
-        self.config["FieldDiemensions"]["OuterWidth"] = self.OUTER_FIELD_WIDTH
-        self.config["FieldDiemensions"]["OuterLength"] = self.OUTER_FIELD_LENGTH
-        self.config["FieldDiemensions"]["InnerWidth"] = self.INNER_FIELD_WIDTH
-        self.config["FieldDiemensions"]["InnerLength"] = self.INNER_FIELD_LENGTH
-        self.config["FieldDiemensions"]["GoalWidth"] = self.GOAL_WIDTH
-        self.config["FieldDiemensions"]["GoalDepth"] = self.GOAL_DEPTH
+        self.config["Field"] = self.FIELD
         for i in range(4):
             self.config["Robot" + str(i)] = self.ROBOTS[i]
         self.config["Rules"] = self.RULES

@@ -84,24 +84,24 @@ class Robot:
     def isOutOfBounce(self):
         if self.physik.defekt:
             return False
-        if self.pos[0] > (gc.INNER_FIELD_LENGTH / 2 + self.radius) or \
-                        self.pos[0] < -(gc.INNER_FIELD_LENGTH / 2 + self.radius) or \
-                        self.pos[1] > (gc.INNER_FIELD_WIDTH / 2 + self.radius) or \
-                        self.pos[1] < -(gc.INNER_FIELD_WIDTH / 2 + self.radius):
+        if self.pos[0] > (gc.FIELD["TouchlineLength"] / 2 + self.radius) or \
+                        self.pos[0] < -(gc.FIELD["TouchlineLength"] / 2 + self.radius) or \
+                        self.pos[1] > (gc.FIELD["TouchlineWidth"] / 2 + self.radius) or \
+                        self.pos[1] < -(gc.FIELD["TouchlineWidth"] / 2 + self.radius):
             return True
         return False
 
     def isInStrafraum(self, seite):
         if seite is "links":
-            if self.pos[0] > -20 + gc.INNER_FIELD_LENGTH / 2 and \
-                            self.pos[0] < +gc.INNER_FIELD_LENGTH / 2 and \
+            if self.pos[0] > -20 + gc.FIELD["TouchlineLength"] / 2 and \
+                            self.pos[0] < +gc.FIELD["TouchlineLength"] / 2 and \
                             -45 < self.pos[1] and \
                             self.pos[1] < 45:
                 return True
             return False
         if seite is "rechts":
-            if self.pos[0] < +20 - gc.INNER_FIELD_LENGTH / 2 and \
-                            self.pos[0] > -gc.INNER_FIELD_LENGTH / 2 and \
+            if self.pos[0] < +20 - gc.FIELD["TouchlineLength"] / 2 and \
+                            self.pos[0] > -gc.FIELD["TouchlineLength"] / 2 and \
                             self.pos[1] > -45 and \
                             self.pos[1] < 45:
                 return True
@@ -202,10 +202,10 @@ class Game:
         RED = 255, 0, 0
 
         # init neutral spots
-        self.nspots = [NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((gc.INNER_FIELD_LENGTH / 2 - 45, -gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, gc.GOAL_WIDTH / 2)),
-                       NeutralSpot((-gc.INNER_FIELD_LENGTH / 2 + 45, -gc.GOAL_WIDTH / 2)),
+        self.nspots = [NeutralSpot((gc.FIELD["TouchlineLength"] / 2 - 45, gc.FIELD["GoalWidth"] / 2)),
+                       NeutralSpot((gc.FIELD["TouchlineLength"]/ 2 - 45, -gc.FIELD["GoalWidth"] / 2)),
+                       NeutralSpot((-gc.FIELD["TouchlineLength"] / 2 + 45, gc.FIELD["GoalWidth"] / 2)),
+                       NeutralSpot((-gc.FIELD["TouchlineLength"] / 2 + 45, -gc.FIELD["GoalWidth"] / 2)),
                        NeutralSpot((0, 0))]
 
         # init robots
@@ -321,7 +321,7 @@ class Referee:
 
     def tick(self,dt):
         for robot in self._robots:
-            if gc.RULES["OutOfBounce"]:
+            if gc.RULES["OutOfBounce"] and gc.FIELD["TouchlineActive"]:
                 if robot.isDefekt():
                     if self._defektTimer[robot.id-1] < self._game.time:
                         robot.setDefekt(False)
@@ -456,10 +456,10 @@ class Referee:
                 self.putRobotOnNeutralSpot(self._robots[3])
 
     def checkGoal(self):
-        if -gc.INNER_FIELD_LENGTH / 2 > self._ball.pos[0] \
-                and self._ball.pos[0] > -gc.INNER_FIELD_LENGTH / 2 - gc.GOAL_DEPTH \
-                and self._ball.pos[1] > -gc.GOAL_WIDTH / 2 \
-                and self._ball.pos[1] < gc.GOAL_WIDTH / 2:
+        if -gc.FIELD["TouchlineLength"] / 2 > self._ball.pos[0] \
+                and self._ball.pos[0] > -gc.FIELD["TouchlineLength"] / 2 - gc.FIELD["GoalDepth"] \
+                and self._ball.pos[1] > -gc.FIELD["GoalWidth"] / 2 \
+                and self._ball.pos[1] < gc.FIELD["GoalWidth"] / 2:
             self._score[0] += 1
             self._lastGoalTeam = 1
             self._refereeShout("GOAL")
@@ -469,10 +469,10 @@ class Referee:
             self._game.robotInterfaceHandlers[3].setRobotState(State.OponentGoal)
             self._wasGoal = True
 
-        if gc.INNER_FIELD_LENGTH / 2 < self._ball.pos[0] \
-                and self._ball.pos[0] < gc.INNER_FIELD_LENGTH / 2 + gc.GOAL_DEPTH \
-                and self._ball.pos[1] > -gc.GOAL_WIDTH / 2 \
-                and self._ball.pos[1] < gc.GOAL_WIDTH / 2:
+        if gc.FIELD["TouchlineLength"] / 2 < self._ball.pos[0] \
+                and self._ball.pos[0] < gc.FIELD["TouchlineLength"] / 2 + gc.FIELD["GoalDepth"] \
+                and self._ball.pos[1] > -gc.FIELD["GoalWidth"] / 2 \
+                and self._ball.pos[1] < gc.FIELD["GoalWidth"] / 2:
             self._score[1] += 1
             self._refereeShout("GOAL")
             self._game.robotInterfaceHandlers[2].setRobotState(State.OwnGoal)

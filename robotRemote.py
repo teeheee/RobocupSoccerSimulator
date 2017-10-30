@@ -32,6 +32,7 @@ class RobotControl:
         self.irsensors = self._robotInterface.getIRBall()
         self.bodensensor = self._robotInterface.getLineSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
+        self.circleList = list()
 
         # threading attributes
         self.threadLock = threading.Condition()
@@ -76,6 +77,12 @@ class RobotControl:
     def plot(self,data):
         self.threadLock.acquire()
         self._robotInterface.game.plot(data)
+        self.threadLock.notify()
+        self.threadLock.release()
+
+    def drawEllipse(self,x,y,px,py):
+        self.threadLock.acquire()
+        self._robotInterface._game.debugOutput.drawEllipse(x,y,px,py)
         self.threadLock.notify()
         self.threadLock.release()
 

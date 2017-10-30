@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d348ff9-7bf5-434d-958d-2bb185a330ad" name="Default" comment="added pixy support">
+    <list default="true" id="7d348ff9-7bf5-434d-958d-2bb185a330ad" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/RobotPrograms/hard_python/main.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/RobotTemplates/C/Makefile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/RobotTemplates/C/main.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/RobotTemplates/C/robotRemote.c" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/RobotTemplates/C/robotRemote.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/RobotTemplates/python/main.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Team1/robot2/main.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Team2/robot1/main.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Team2/robot2/main.c" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/updatetemplate.sh" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/RobotTemplates/C/main.c" afterPath="$PROJECT_DIR$/RobotPrograms/simple_cpp/main.c" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Team1/robot1/main.py" afterPath="$PROJECT_DIR$/RobotPrograms/simple_python/main.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Team2/robot2/Makefile" afterPath="$PROJECT_DIR$/RobotPrograms/simple_cpp/Makefile" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Team2/robot2/main.py" afterPath="$PROJECT_DIR$/RobotPrograms/simple_cpp/main.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Team2/robot2/robotRemote.c" afterPath="$PROJECT_DIR$/RobotPrograms/simple_cpp/robotRemote.c" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Team2/robot2/robotRemote.h" afterPath="$PROJECT_DIR$/RobotPrograms/simple_cpp/robotRemote.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Team2/robot2/main.py" afterPath="$PROJECT_DIR$/Team2/robot2/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Team2/robot2/robotRemote.c" afterPath="$PROJECT_DIR$/Team2/robot2/robotRemote.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Team2/robot2/robotRemote.h" afterPath="$PROJECT_DIR$/Team2/robot2/robotRemote.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.yml" afterPath="$PROJECT_DIR$/config.yml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game.py" afterPath="$PROJECT_DIR$/game.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gameconfig.py" afterPath="$PROJECT_DIR$/gameconfig.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grafik.py" afterPath="$PROJECT_DIR$/grafik.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/robotRemote.py" afterPath="$PROJECT_DIR$/robotRemote.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,84 +41,30 @@
       <file leaf-file-name="game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-435">
-              <caret line="4" column="30" lean-forward="false" selection-start-line="4" selection-start-column="30" selection-end-line="4" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="robotRemote.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/robotRemote.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="765">
-              <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
+            <state relative-caret-position="-2985">
+              <caret line="227" column="50" lean-forward="false" selection-start-line="227" selection-start-column="50" selection-end-line="227" selection-end-column="50" />
               <folding>
-                <element signature="e#0#16#0" expanded="true" />
+                <element signature="e#1#22#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="interface.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/interface.py">
+      <file leaf-file-name="config.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/config.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1950">
-              <caret line="134" column="55" lean-forward="false" selection-start-line="134" selection-start-column="55" selection-end-line="134" selection-end-column="55" />
+            <state relative-caret-position="473">
+              <caret line="49" column="10" lean-forward="false" selection-start-line="49" selection-start-column="2" selection-end-line="49" selection-end-column="10" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="robotsimul.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/robotsimul.py">
+      <file leaf-file-name="gameconfig.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gameconfig.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-195">
-              <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding>
-                <element signature="e#24#42#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/RobotTemplates/C/main.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Team2/robot2/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#36#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="robotRemote.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-195">
-              <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="robotRemote.h" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-570">
-              <caret line="7" column="10" lean-forward="true" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
+            <state relative-caret-position="182">
+              <caret line="35" column="41" lean-forward="false" selection-start-line="35" selection-start-column="33" selection-end-line="35" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -178,7 +140,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="development" />
+        <entry key="$PROJECT_DIR$" value="4134761e04af096539c5ba53fdac1f8e0077b7c8" />
       </map>
     </option>
   </component>
@@ -201,12 +163,10 @@
         <option value="$PROJECT_DIR$/sensors.py" />
         <option value="$PROJECT_DIR$/robotRemote.c" />
         <option value="$PROJECT_DIR$/RobotTemplates/python/main.py" />
-        <option value="$PROJECT_DIR$/grafik.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/physik.py" />
         <option value="$PROJECT_DIR$/robotRemote.h" />
         <option value="$PROJECT_DIR$/robotRemote.cpp" />
-        <option value="$PROJECT_DIR$/gameconfig.py" />
         <option value="$PROJECT_DIR$/cputime.py" />
         <option value="$PROJECT_DIR$/debugger.py" />
         <option value="$PROJECT_DIR$/Team2/robot1/robotRemote.py" />
@@ -214,22 +174,28 @@
         <option value="$PROJECT_DIR$/Team2/robot2/robotRemote.py" />
         <option value="$PROJECT_DIR$/Team1/robot1/robotRemote.py" />
         <option value="$PROJECT_DIR$/Team1/robot2/main.py" />
-        <option value="$PROJECT_DIR$/Team1/robot1/main.py" />
         <option value="$PROJECT_DIR$/robotsimul.py" />
         <option value="$PROJECT_DIR$/Team2/robot2/main.cpp" />
         <option value="$PROJECT_DIR$/Team2/robot2/robotRemote.cpp" />
         <option value="$PROJECT_DIR$/Team2/robot2/Makefile" />
-        <option value="$PROJECT_DIR$/config.yml" />
         <option value="$PROJECT_DIR$/Team2/robot1/main.py" />
-        <option value="$PROJECT_DIR$/interface.py" />
         <option value="$PROJECT_DIR$/Team2/robot2/main.c" />
-        <option value="$PROJECT_DIR$/RobotTemplates/C/main.c" />
         <option value="$PROJECT_DIR$/Team2/robot2/robotRemote.c" />
         <option value="$PROJECT_DIR$/Team2/robot2/robotRemote.h" />
-        <option value="$PROJECT_DIR$/RobotTemplates/C/main.py" />
-        <option value="$PROJECT_DIR$/game.py" />
         <option value="$PROJECT_DIR$/Team2/robot2/main.py" />
+        <option value="$PROJECT_DIR$/RobotTemplates/C/robotRemote.h" />
+        <option value="$PROJECT_DIR$/RobotTemplates/C/robotRemote.c" />
+        <option value="$PROJECT_DIR$/RobotTemplates/C/main.py" />
+        <option value="$PROJECT_DIR$/RobotTemplates/C/main.c" />
+        <option value="$PROJECT_DIR$/Team1/robot1/position.py" />
         <option value="$PROJECT_DIR$/robotRemote.py" />
+        <option value="$PROJECT_DIR$/grafik.py" />
+        <option value="$PROJECT_DIR$/interface.py" />
+        <option value="$PROJECT_DIR$/Team1/robot1/main.py" />
+        <option value="$PROJECT_DIR$/RobotPrograms/simple_python/main.py" />
+        <option value="$PROJECT_DIR$/config.yml" />
+        <option value="$PROJECT_DIR$/gameconfig.py" />
+        <option value="$PROJECT_DIR$/game.py" />
       </list>
     </option>
   </component>
@@ -255,6 +221,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -269,7 +236,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -283,11 +249,11 @@
       <recent name="$PROJECT_DIR$/Team2/robot2" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/RobotPrograms/hard_python" />
+      <recent name="$PROJECT_DIR$/RobotPrograms/simple_cpp" />
+      <recent name="$PROJECT_DIR$/RobotPrograms/simple_python" />
       <recent name="$PROJECT_DIR$/Team2/robot2" />
       <recent name="$PROJECT_DIR$/Team1/robot1" />
-      <recent name="$PROJECT_DIR$/Team1/robot2" />
-      <recent name="$PROJECT_DIR$/Team2/robot1" />
-      <recent name="$PROJECT_DIR$/RobotTemplates/Cpp" />
     </key>
   </component>
   <component name="RunManager" selected="Python.robotsimul">
@@ -553,7 +519,14 @@
       <option name="project" value="LOCAL" />
       <updated>1507718280673</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="fixed multithreading bug">
+      <created>1508317183049</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1508317183049</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TodoView">
@@ -572,7 +545,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24795234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32692307" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33848533" sideWeight="0.50292826" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.102564104" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34935898" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -620,7 +593,8 @@
     <MESSAGE value="intermediate commit" />
     <MESSAGE value="some cleanup. There will be Bugs!!" />
     <MESSAGE value="added pixy support" />
-    <option name="LAST_COMMIT_MESSAGE" value="added pixy support" />
+    <MESSAGE value="fixed multithreading bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed multithreading bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -629,18 +603,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/python_raw/robotRemote.py" />
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/python/robotRemote.py" />
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/Cpp/robotRemote.py" />
-    <entry file="file://$PROJECT_DIR$/Team2/robot1/run_this.py" />
-    <entry file="file://$PROJECT_DIR$/Team2/robot1/maze_env.py" />
     <entry file="file://$PROJECT_DIR$/Team2/robot1/DQN_modified.py" />
     <entry file="file:///usr/local/lib/python3.5/dist-packages/numpy/core/numeric.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -664,24 +626,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sensors.py" />
     <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="7" lean-forward="true" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
+        </state>
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="121">
             <caret line="36" column="4" lean-forward="false" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="7" lean-forward="true" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/python/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-87">
-          <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
         </state>
       </provider>
     </entry>
@@ -707,25 +662,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
           <caret line="15" column="34" lean-forward="false" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gameconfig.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="49" column="25" lean-forward="false" selection-start-line="49" selection-start-column="25" selection-end-line="49" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grafik.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1920">
-          <caret line="131" column="65" lean-forward="false" selection-start-line="131" selection-start-column="65" selection-end-line="131" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -750,18 +686,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Team1/robot1/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/physik.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="616">
           <caret line="251" column="7" lean-forward="false" selection-start-line="251" selection-start-column="7" selection-end-line="252" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -770,7 +698,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="191">
           <caret line="364" column="0" lean-forward="false" selection-start-line="364" selection-start-column="0" selection-end-line="364" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -781,124 +708,166 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.yml">
+    <entry file="file:///usr/lib/python3.5/threading.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="15" lean-forward="false" selection-start-line="29" selection-start-column="15" selection-end-line="29" selection-end-column="15" />
+        <state relative-caret-position="125">
+          <caret line="292" column="0" lean-forward="false" selection-start-line="292" selection-start-column="0" selection-end-line="292" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/robotsimul.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.h" />
+    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/robotRemote.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1015">
+          <caret line="99" column="6" lean-forward="false" selection-start-line="99" selection-start-column="6" selection-end-line="99" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.c" />
+    <entry file="file://$PROJECT_DIR$/Team2/robot2/Makefile" />
+    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/robotRemote.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="790">
+          <caret line="66" column="0" lean-forward="false" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team1/robot1/position.py" />
+    <entry file="file://$PROJECT_DIR$/Team2/robot2/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="42" column="33" lean-forward="true" selection-start-line="42" selection-start-column="33" selection-end-line="42" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team1/robot1/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-270">
+          <caret line="9" column="20" lean-forward="true" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/interface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1950">
-          <caret line="134" column="55" lean-forward="false" selection-start-line="134" selection-start-column="55" selection-end-line="134" selection-end-column="55" />
+        <state relative-caret-position="70">
+          <caret line="140" column="48" lean-forward="false" selection-start-line="140" selection-start-column="48" selection-end-line="140" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/robotRemote.c">
+    <entry file="file://$PROJECT_DIR$/grafik.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="29" lean-forward="false" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="29" />
+        <state relative-caret-position="195">
+          <caret line="106" column="61" lean-forward="false" selection-start-line="106" selection-start-column="61" selection-end-line="106" selection-end-column="61" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotTemplates/C/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        <state relative-caret-position="120">
+          <caret line="8" column="1" lean-forward="true" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/lib/python3.5/threading.py">
+    <entry file="file://$PROJECT_DIR$/RobotPrograms/simple_cpp/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="292" column="0" lean-forward="false" selection-start-line="292" selection-start-column="0" selection-end-line="292" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Team2/robot1/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="66" column="0" lean-forward="false" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/robotRemote.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="14" lean-forward="false" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-195">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-435">
-          <caret line="4" column="30" lean-forward="false" selection-start-line="4" selection-start-column="30" selection-end-line="4" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Team2/robot2/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/robotsimul.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-195">
-          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#42#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/robotRemote.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
+        <state relative-caret-position="-550">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Team2/robot2/robotRemote.h">
+    <entry file="file://$PROJECT_DIR$/RobotPrograms/hard_python/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-570">
-          <caret line="7" column="10" lean-forward="true" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team2/robot2/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotTemplates/C/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="643">
+          <caret line="54" column="0" lean-forward="true" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Team2/robot1/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="62" column="20" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="70" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotTemplates/python/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="14" column="37" lean-forward="true" selection-start-line="14" selection-start-column="37" selection-end-line="14" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotPrograms/simple_python/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="692">
+          <caret line="70" column="28" lean-forward="true" selection-start-line="70" selection-start-column="28" selection-end-line="70" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gameconfig.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="35" column="41" lean-forward="false" selection-start-line="35" selection-start-column="33" selection-end-line="35" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2985">
+          <caret line="227" column="50" lean-forward="false" selection-start-line="227" selection-start-column="50" selection-end-line="227" selection-end-column="50" />
+          <folding>
+            <element signature="e#1#22#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="473">
+          <caret line="49" column="10" lean-forward="false" selection-start-line="49" selection-start-column="2" selection-end-line="49" selection-end-column="10" />
           <folding />
         </state>
       </provider>

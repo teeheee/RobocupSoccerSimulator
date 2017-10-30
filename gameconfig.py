@@ -32,14 +32,16 @@ class configFile:
         self.ROBOTS = list()
         for i in range(4):
             self.ROBOTS.append({"Active": True,
-                                "Stable": True})
+                                "Stable": True,
+                                "MainPath": "RobotPrograms/simple_python/main.py"})
         self.RULES = {"LagOfProgress": 2000,
                       "LagOfProgressActive": True,
                       "DoubleDefense": True,
                       "Pushing": True,
                       "OutOfBounce": True,
                       "Timeout": 0,
-                      "DefektTime": 60000}
+                      "DefektTime": 60000,
+                      "TestMode": 0}
         self.GUI = {"Debugger": False,
                       "Commandline": False,
                       "Fast": True,

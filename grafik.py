@@ -79,11 +79,40 @@ class RobotGraphic:
         self._y_position = y
         self._orientation = orientation
 
+class DebugOutput:
+    # display: the pygame display to draw to
+    def __init__(self, adisplay):
+        self._display = adisplay
+        self._ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
+        self.ellipseActiveFlag = False
+        self.ellipseX = 0
+        self.ellipseY = 0
+        self.ellipsePX = 0
+        self.ellipsePY = 0
+
+    def drawEllipse(self,x,y,px,py):
+        self.ellipseX = x
+        self.ellipseY = y
+        self.ellipsePX = px
+        self.ellipsePY = py
+        self.ellipseActiveFlag = True
+
+    def draw(self):
+        if self.ellipseActiveFlag:
+            rect = pygame.Rect((self.ellipseX-self.ellipsePX/2 + gc.OUTER_FIELD_LENGTH/2)*self._ppcm,
+                               (self.ellipseY-self.ellipsePY/2 + gc.OUTER_FIELD_WIDTH/2)*self._ppcm,
+                               self.ellipsePX*self._ppcm,
+                               self.ellipsePY*self._ppcm )
+            try:
+                pygame.draw.ellipse(self._display,GREY,rect,2)
+            except:
+                pass
+
 
 class FieldGraphic:
     # display: the pygame display to draw to
-    def __init__(self, _display):
-        self._display = _display
+    def __init__(self, adisplay):
+        self._display = adisplay
         self._outer_size = (gc.OUTER_FIELD_LENGTH,
                            gc.OUTER_FIELD_WIDTH)
         self._inner_size = (gc.INNER_FIELD_LENGTH,

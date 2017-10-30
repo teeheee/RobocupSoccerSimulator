@@ -1,12 +1,15 @@
 
-import Team1.robot1.main as r1
-import Team1.robot2.main as r2
-import Team2.robot1.main as r3
-import Team2.robot2.main as r4
+import importlib.util
 from cputime import cputime
 from grafik import *
 from physik import *
 from robotRemote import RobotControl
+
+def loadRobotModule(path):
+    robotSpec = importlib.util.spec_from_file_location("main", path)
+    robotModule = importlib.util.module_from_spec(robotSpec)
+    robotSpec.loader.exec_module(robotModule)
+    return robotModule
 
 
 class Robot:
@@ -189,6 +192,8 @@ class Game:
         self.space = pymunk.Space()
         self.space.damping = 0.998
 
+        self.debugOutput = DebugOutput(self.display)
+
         self.field = Field(self.display, self.space)
 
         self.ball = Ball(self.display, self.space)
@@ -217,12 +222,16 @@ class Game:
                                         RobotInterface(self, 2),
                                         RobotInterface(self, 3)]
 
+        robot1Module = loadRobotModule(gc.ROBOTS[0]["MainPath"])
+        robot2Module = loadRobotModule(gc.ROBOTS[1]["MainPath"])
+        robot3Module = loadRobotModule(gc.ROBOTS[2]["MainPath"])
+        robot4Module = loadRobotModule(gc.ROBOTS[3]["MainPath"])
 
         # Roboter program initialisieren
-        self.robotProgramHandlers = [ RobotControl(self.robotInterfaceHandlers[0],r1),
-                                      RobotControl(self.robotInterfaceHandlers[1],r2),
-                                      RobotControl(self.robotInterfaceHandlers[2],r3),
-                                      RobotControl(self.robotInterfaceHandlers[3],r4)]
+        self.robotProgramHandlers = [ RobotControl(self.robotInterfaceHandlers[0],robot1Module),
+                                      RobotControl(self.robotInterfaceHandlers[1],robot2Module),
+                                      RobotControl(self.robotInterfaceHandlers[2],robot3Module),
+                                      RobotControl(self.robotInterfaceHandlers[3],robot4Module)]
 
         self.referee = Referee(self)
 
@@ -262,6 +271,7 @@ class Game:
         self.ball.draw()
         for robot in self.robots:
             robot.draw()
+        self.debugOutput.draw()
 
     # schliest alle Threads die im Hintergrund laufen
     def shutdown(self):

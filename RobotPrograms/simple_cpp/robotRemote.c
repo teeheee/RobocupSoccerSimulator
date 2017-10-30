@@ -6,6 +6,7 @@
 struct ActuatorValueType actuatorValue;
 struct SensorValueType sensorValue;
 void (*threadWaiting)(void);
+int accessFlag;
 
 struct ActuatorValueType getActuatorValues()
 {

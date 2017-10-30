@@ -14,8 +14,11 @@ class ActuatorType(Structure):
     _fields_ = [
         ("motors", c_int*4),
         ("kick", c_int)]
-
-mainDLL = CDLL('./Team2/robot2/robot.so')
+try:
+    mainDLL = CDLL('RobotPrograms/simple_cpp/robot.so') #TODO make this relative somehow!!!
+except:
+    print("ERROR: C++ was not compiled correctly!!!")
+    exit(1)
 
 # This function is called every tick to update the SensorValues with the ones in RobotRemote Object
 # It should be save because it is only called when the _main_ function is sleeping

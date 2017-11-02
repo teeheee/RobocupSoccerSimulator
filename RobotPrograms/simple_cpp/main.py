@@ -3,11 +3,11 @@ from ctypes import *
 
 class SensorType(Structure):
     _fields_ = [
-        ("infrared", c_int*16),
         ("line", c_int*16),
-        ("ball", c_int),
-        ("compass", c_int),
-        ("lightbarrier", c_int)]
+        ("ball", c_int*16),
+        ("ultrasonic", c_int*4),
+        ("kompass", c_int),
+        ("lightBarrier", c_int)]
 
 
 class ActuatorType(Structure):
@@ -25,11 +25,11 @@ except:
 def newOnUpdate(self):
     sensorValue = SensorType();
     for i in range(16):
-        sensorValue.infrared[i] = c_int(int(self.irsensors[i]))
+        sensorValue.ball[i] = c_int(int(self.irsensors[i]))
     for i in range(16):
         sensorValue.line[i] = c_int(int(self.bodensensor[i]))
-    sensorValue.compass = c_int(self.kompass)
-    sensorValue.lightbarrier = c_int(self.lightBarrier)
+    sensorValue.kompass = c_int(self.kompass)
+    sensorValue.lightBarrier = c_int(self.lightBarrier)
     mainDLL.setSensorValues(sensorValue)
     actuatorValue = mainDLL.getActuatorValues()
     self.m0 = actuatorValue.motors[0]

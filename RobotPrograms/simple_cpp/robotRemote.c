@@ -3,17 +3,18 @@
 
 #include "robotRemote.h"
 
-struct ActuatorValueType actuatorValue;
-struct SensorValueType sensorValue;
+ActuatorValueType actuatorValue;
+SensorValueType sensorValue;
 void (*threadWaiting)(void);
 int accessFlag;
 
-struct ActuatorValueType getActuatorValues()
+ActuatorValueType getActuatorValues()
 {
+    accessFlag = 0;
     return actuatorValue;
 }
 
-void setSensorValues(struct SensorValueType aSensorValue)
+void setSensorValues(SensorValueType aSensorValue)
 {
     sensorValue = aSensorValue;
 }
@@ -58,7 +59,9 @@ void setMotorSpeed(int m0, int m1, int m2, int m3)
     actuatorValue.motors[1] = m1;
     actuatorValue.motors[2] = m2;
     actuatorValue.motors[3] = m3;
-    threadWaiting();
+    accessFlag=1;
+    while(accessFlag);
+    //threadWaiting();
 }
 
 void kick()

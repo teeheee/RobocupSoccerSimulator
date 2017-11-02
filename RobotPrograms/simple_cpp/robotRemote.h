@@ -76,24 +76,24 @@ void restartGame();
 
 /*** PRIVATE STUFF DON'T USE THIS ****/
 
-struct SensorValueType{
+typedef struct  __attribute__((__packed__)){
     int line[16];
     int ball[16];
     int ultrasonic[4];
     int kompass;
     int lightBarrier;
-};
+} SensorValueType;
 
-struct ActuatorValueType{
+typedef struct  __attribute__((__packed__)){
     int motors[4];
     int kick;
-};
+}ActuatorValueType ;
 
 void setThreadWaitingCallback(void (*functionPtr)(void));
 
-struct ActuatorValueType getActuatorValues();
+ActuatorValueType getActuatorValues();
 
-void setSensorValues(struct SensorValueType sensorValuesDictionary);
+void setSensorValues(SensorValueType sensorValuesDictionary);
 
 void _main_();
 

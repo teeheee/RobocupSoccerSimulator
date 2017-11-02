@@ -13,10 +13,11 @@ if platform.system() == 'Windows':
                              "include_files": [
                                  os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tk86t.dll'),
                                  os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tcl86t.dll'),
-                                 "chipmunk.dll", "RobotPrograms", "config.yml", "LICENSE", "README.md"]}}
+                                 "chipmunk.dll", "RobotPrograms", "config.yml", "LICENSE", "README.md", "StartSimulation.bat", "codeblocks"]}}
 else:
     setupOptions = {"build_exe": {"packages": ["pygame", "numpy", "pymunk", "yaml"],
-                    "include_files": ["libchipmunk.so", "RobotPrograms", "config.yml", "LICENSE", "README.md"]}}
+                    		"include_files": ["libchipmunk.so", "RobotPrograms", "config.yml", "LICENSE", "README.md"],
+				"optimize": 2,}}
 
 
 setup(

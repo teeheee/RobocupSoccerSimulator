@@ -1,3 +1,3 @@
-cd E:\RobocupSoccerSimulator
-E:/python36/python.exe robotsimul.py
+cd %~dp0
+robotsimul.exe
 pause

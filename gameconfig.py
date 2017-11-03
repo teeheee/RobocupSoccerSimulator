@@ -4,8 +4,13 @@ CONFIG_FILE_PATH = "config.yml"
 
 class configFile:
     def __init__(self):
+        pass
+
+    def load(self,path):
+        if path == None:
+            path = CONFIG_FILE_PATH
         try:
-            configFile = open(CONFIG_FILE_PATH, 'r')
+            configFile = open(path, 'r')
             self.config = yaml.load(configFile)
             self.FIELD = self.config["Field"]
             self.ROBOTS = list()

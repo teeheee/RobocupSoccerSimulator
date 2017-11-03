@@ -1,0 +1,64 @@
+# This should not be changed unless you realy want to mess with the game
+# Those are the field dimensions in cm
+
+#1 vs 1
+#Field:
+#  TouchlineActive: False
+#  TouchlineLength: 183
+#  TouchlineWidth: 122
+#  GoalDepth: 8
+#  GoalWidth: 60
+#  BorderLength: 183
+#  BorderWidth: 122
+
+#2 vs 2
+Field:
+  TouchlineActive: True
+  TouchlineLength: 183
+  TouchlineWidth: 122
+  GoalDepth: 8
+  GoalWidth: 60
+  GoalDistanceFromCenter:
+  BorderLength: 243
+  BorderWidth: 182
+
+# Gui is for configuring the userinterface. It should not effect the game dynamics.
+# Just speed up the simulation calculation
+Gui:
+  Commandline: false
+  Debugger: false
+  SamplingRate: 20
+  Fast: true
+  ShowTiming: false
+
+# Robotx is for configuring special modes for the diffrent Robots.
+#TEAM 1
+Robot0:
+  Active: true
+  Stable: false
+  MainPath: "RobotPrograms/simple_cpp/main.py"
+Robot1:
+  Active: true
+  Stable: false
+  MainPath: "RobotPrograms/simple_python/main.py"
+#TEAM 2
+Robot2:
+  Active: true
+  Stable: false
+  MainPath: "RobotPrograms/simple_python/main.py"
+Robot3:
+  Active: true
+  Stable: false
+  MainPath: "RobotPrograms/simple_python/main.py"
+
+# With Rules you can control the behavior of the referee
+Rules:
+  # To make a referee like at robocup junior, activate the following settings
+  DoubleDefense: True
+  LagOfProgress: 5000 #in ms
+  LagOfProgressActive: True
+  OutOfBounce: True
+  DefektTime: 60000  #in ms
+  Pushing: True
+  # The following settings are for testing
+  TestMode: 0 #Set this to 0 for no special TestMode

@@ -3,6 +3,8 @@
 from game import *
 from debugger import Debugger
 from gameconfig import gc
+from popup_menu import *
+import sys
 
 #TODO more comments
 
@@ -18,6 +20,35 @@ class App:
 
         self._display_surf = None # dubble buffered display to minimize lag
         self.size = self.width, self.height = 243*3, 182*3 # Window size is fixed TODO: variable window size
+
+        self.menu_data = (
+            'Robot Simulator',
+            (
+                'Robot 1',
+                'Activate',
+                'Disable',
+            ),
+            (
+                'Robot 2',
+                'Activate',
+                'Disable',
+            ),
+            (
+                'Robot 3',
+                'Activate',
+                'Disable',
+            ),
+            (
+                'Robot 4',
+                'Activate',
+                'Disable',
+            ),
+            'Pause',
+            'Resume',
+            'Restart',
+            'Quit',
+        )
+        self.menu = NonBlockingPopupMenu(self.menu_data)
 
     def on_init(self):
         pygame.init()
@@ -44,8 +75,13 @@ class App:
         pygame.mixer.quit()
 
     def on_event(self, event):
-        if event.type == pygame.QUIT:
-            self._running = False
+        for e in self.menu.handle_events(event):
+            if e.type == USEREVENT:
+                print('Menu event: %s.%d: %s' % (e.name, e.item_id, e.text))
+            elif e.type == MOUSEBUTTONUP:
+                self.menu.show()
+            elif e.type == pygame.QUIT:
+                self._running = False
 
     def on_loop(self):
         if not self.pause:
@@ -106,6 +142,7 @@ class App:
         self._display_surf.blit(self._game_display,(0, 0))
         if gc.GUI["Debugger"]:
             self.debugger.draw()
+        self.menu.draw()
         pygame.display.update()
 
     def on_cleanup(self):
@@ -117,8 +154,7 @@ class App:
             self._running = False
         while(self._running):
 
-            for event in pygame.event.get():
-                self.on_event(event)
+            self.on_event(pygame.event.get())
 
             self.on_loop()
             self.on_render()
@@ -126,5 +162,11 @@ class App:
         self.on_cleanup()
 
 if __name__ == "__main__":
+    #load config file
+    if len(sys.argv) == 2:
+        gc.load(str(sys.argv[1]))
+    else:
+        gc.load(None)
+
     theApp = App()
     theApp.on_execute()

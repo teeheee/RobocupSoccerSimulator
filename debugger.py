@@ -10,7 +10,10 @@ class Debugger:
         self._display = display
         self._robots = robots
         self._id = 0
-        self.ppcm = self._display.get_height() / gc.OUTER_FIELD_WIDTH
+
+        self.field_width = self._display.get_height();
+        self.field_height = self._display.get_width()-self._display.get_height();
+        self.ppcm = self._display.get_height() / self.field_width
         self.font = pygame.font.SysFont('Calibri', 20, True, False)
         self.polygonList = [[3,5],[5,3],[3,1],[3,-1],[5,-3],[3,-5],[-3,-5],[-5,-3],[-5,3],[-3,5]]
         self._pixyModeFlag = False
@@ -26,8 +29,8 @@ class Debugger:
         BLACK = 0, 0, 0
         BLUE = 0, 0, 255
 
-        pos = int((gc.OUTER_FIELD_LENGTH + gc.OUTER_FIELD_WIDTH / 2) * self.ppcm), \
-              int(gc.OUTER_FIELD_WIDTH / 2 * self.ppcm)
+        pos = int((self.field_height + self.field_width / 2) * self.ppcm), \
+              int(self.field_width / 2 * self.ppcm)
 
         # ID
         tmp = (pos[0] - 20, pos[1] - 250)
@@ -45,8 +48,8 @@ class Debugger:
 
 
         # ROBOT
-        pos = int((gc.OUTER_FIELD_LENGTH+gc.OUTER_FIELD_WIDTH/2) * self.ppcm), \
-              int(gc.OUTER_FIELD_WIDTH/2* self.ppcm)
+        pos = int((self.field_height+self.field_width/2) * self.ppcm), \
+              int(self.field_width/2* self.ppcm)
         newpolygon = []
         scale = 15 * self.ppcm
         for p in self.polygonList:

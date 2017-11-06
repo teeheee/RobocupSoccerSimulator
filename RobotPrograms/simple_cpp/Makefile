@@ -1,4 +1,4 @@
-FLAGS = -shared -fPIC
+FLAGS = -shared -fPIC -Wall -lm
 
 all: robot.so
 

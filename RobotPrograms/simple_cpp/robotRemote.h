@@ -1,19 +1,21 @@
 #ifndef _ROBOTREMOTE_H_
 #define _ROBOTREMOTE_H_
 
+#define MAX_PIXY_BLOCKS 10
 
-struct PixyBlockType{
+typedef struct __attribute__((__packed__)){
     int signature;
     int x;
     int y;
-};
+    int x_size;
+    int y_size;
+} PixyBlockType;
 
-struct PixyType{
+typedef struct __attribute__((__packed__)){
     int size;
-    struct PixyBlockType* block;
-};
+    PixyBlockType block[MAX_PIXY_BLOCKS];
+} Blocks;
 
-#define BLOCKS struct PixyType
 
 /*returns an Array with the values of 16 line sensors
 * 1 means there is a white line (no black line)
@@ -35,7 +37,7 @@ int* getUltraschall();
 * blocks.block[i].x is the up down position on the camera vision
 * blocks.block[i].y is the left right position on the camera vision
 */
-BLOCKS pixyGetBlocks();
+Blocks pixyGetBlocks();
 
 /*returns an Array with the values of the ir sensors
 * Values decrease with distance to ball
@@ -46,6 +48,9 @@ int* getIRBall();
 * 180° is enemy goal
 */
 int getKompass();
+
+/*returns an 2D vektor with length = acceleration in the given direction*/
+int* getAccelerometer();
 
 /* returns 1 if the ball is in the ball capturing zone
 * kick() is only possible when the ball is in the ball capturing zone
@@ -61,17 +66,9 @@ void kick();
 //prints some text in the format of printf to the stdio
 void print(const char * format, ... );
 
-//plots the Array data, with the size datasize and pauses the game
-void plot(int* data, int datasize);
-
-//appends data to an live plot
-void plotLive(int data);
-
 // returns the game state (like defekt, active, goal... )
 int getRobotState();
 
-//restarts the game
-void restartGame();
 
 
 /*** PRIVATE STUFF DON'T USE THIS ****/
@@ -82,14 +79,16 @@ typedef struct  __attribute__((__packed__)){
     int ultrasonic[4];
     int kompass;
     int lightBarrier;
+    int accelerometer[2];
+    Blocks pixyBlocks;
+    int robotState;
 } SensorValueType;
 
 typedef struct  __attribute__((__packed__)){
     int motors[4];
     int kick;
+    int dribbler;
 }ActuatorValueType ;
-
-void setThreadWaitingCallback(void (*functionPtr)(void));
 
 ActuatorValueType getActuatorValues();
 

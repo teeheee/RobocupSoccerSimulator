@@ -2,31 +2,31 @@
 # Those are the field dimensions in cm
 
 #1 vs 1
-#Field:
-#  TouchlineActive: False
-#  TouchlineLength: 183
-#  TouchlineWidth: 122
-#  GoalDepth: 8
-#  GoalWidth: 60
-#  BorderLength: 183
-#  BorderWidth: 122
-
-#2 vs 2
 Field:
-  TouchlineActive: True
+  TouchlineActive: False
   TouchlineLength: 183
   TouchlineWidth: 122
   GoalDepth: 8
   GoalWidth: 60
-  GoalDistanceFromCenter:
-  BorderLength: 243
-  BorderWidth: 182
+  BorderLength: 183
+  BorderWidth: 122
+
+#2 vs 2
+#Field:
+#  TouchlineActive: True
+#  TouchlineLength: 183
+#  TouchlineWidth: 122
+#  GoalDepth: 8
+#  GoalWidth: 60
+#  GoalDistanceFromCenter:
+#  BorderLength: 243
+#  BorderWidth: 182
 
 # Gui is for configuring the userinterface. It should not effect the game dynamics.
 # Just speed up the simulation calculation
 Gui:
   Commandline: false
-  Debugger: false
+  Debugger: true
   SamplingRate: 20
   Fast: true
   ShowTiming: false
@@ -38,7 +38,7 @@ Robot0:
   Stable: false
   MainPath: "RobotPrograms/simple_cpp/main.py"
 Robot1:
-  Active: true
+  Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
 #TEAM 2
@@ -47,7 +47,7 @@ Robot2:
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
 Robot3:
-  Active: true
+  Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
 

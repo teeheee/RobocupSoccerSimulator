@@ -5,8 +5,10 @@ from debugger import Debugger
 from gameconfig import gc
 from popup_menu import *
 import sys
+import time
 
 #TODO more comments
+#TODO clean up this mess
 
 class App:
     def __init__(self):
@@ -69,7 +71,7 @@ class App:
         self.game = Game(game_display_data)
 
         if gc.GUI["Debugger"]:
-            self.debugger = Debugger(self._display_surf, self.game.robotInterfaceHandlers)
+            self.debugger = Debugger(self._display_surf, self.game.robotProgramHandlers)
             self.debugger.setFocusedRobot(self.focusedrobot)
 
         pygame.mixer.quit()
@@ -77,7 +79,15 @@ class App:
     def on_event(self, event):
         for e in self.menu.handle_events(event):
             if e.type == USEREVENT:
-                print('Menu event: %s.%d: %s' % (e.name, e.item_id, e.text))
+                if e.code == 'MENU':
+                    if e.name is None:
+                        self.menu.hide()
+                    elif e.text == "Quit":
+                        self._running = False
+                    elif e.text == "Restart":
+                        self.game.restart()
+                    else:
+                        print('TODO: handle this Menu event: %s' % (e.text)) #TODO menu handling
             elif e.type == MOUSEBUTTONUP:
                 self.menu.show()
             elif e.type == pygame.QUIT:
@@ -157,12 +167,14 @@ class App:
             self.on_event(pygame.event.get())
 
             self.on_loop()
+            if gc.GUI["Fast"] == False:
+                time.sleep(0.03)
             self.on_render()
 
         self.on_cleanup()
 
 if __name__ == "__main__":
-    #load config file
+    #load config file if it is given as argument
     if len(sys.argv) == 2:
         gc.load(str(sys.argv[1]))
     else:

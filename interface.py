@@ -189,6 +189,9 @@ class RobotInterface:
                 return True
         return False
 
+    def getAccelerometer(self): #TODO add Accelerometer
+        return (0,0)
+
     # See class State(Enum) for diffrent states
     def getRobotState(self):
         if len(self._stateQueue) == 0:

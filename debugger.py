@@ -5,6 +5,8 @@ import numpy as np
 # This is an optional visualisation of the sensor values of an specific robot.
 # It can be disabled via the config.yml Gui->Debugger->False
 
+
+
 class Debugger:
     def __init__(self, display, robots):
         self._display = display
@@ -64,7 +66,7 @@ class Debugger:
 
 
         # Motors
-        motors = self._robots[self._id].motors*100
+        motors = self._robots[self._id]._motors*100
         tmp = (pos[0] + 120-20, pos[1] + 120)
         text = self.font.render("m0: "+str(int(motors[0])), True, BLACK)
         self._display.blit(text, tmp)
@@ -79,7 +81,7 @@ class Debugger:
         self._display.blit(text, tmp)
 
         #Boden Sensors
-        boden = self._robots[self._id].getLineSensors()
+        boden = self._robots[self._id].getBodenSensors()
         for i in range(0,16):
             winkel = np.deg2rad(i*360/16)
             tmp = (pos[0]+np.cos(winkel)*100-20, pos[1]+np.sin(winkel)*100)
@@ -101,7 +103,7 @@ class Debugger:
         self._display.blit(text, tmp)
 
         #ultraschall
-        US = self._robots[self._id].getUltrasonic()
+        US = self._robots[self._id].getUltraschall()
         for i in range(0,4):
             winkel = np.deg2rad(i*360/4)
             tmp = (pos[0]+np.cos(winkel)*200-30, pos[1]+np.sin(winkel)*160+20)

@@ -5,6 +5,11 @@ from grafik import *
 from physik import *
 from robotRemote import RobotControl
 
+#TODO no robot in field problem
+#TODO neutral spot bug (ball is still moving)
+#TODO game modes
+#TODO Max Game Time
+
 def loadRobotModule(path):
     robotSpec = importlib.util.spec_from_file_location("main", path)
     robotModule = importlib.util.module_from_spec(robotSpec)

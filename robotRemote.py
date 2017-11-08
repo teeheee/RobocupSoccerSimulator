@@ -17,11 +17,9 @@ class RobotControl:
         self._robotInterface = robotInterface
 
         # control attributes
+        self.delayTimer = 0
         self.blocked = False
-        self.m0 = 0
-        self.m1 = 0
-        self.m2 = 0
-        self.m3 = 0
+        self._motors = (0,0,0,0)
         self.kickFlag = 0
         self.timeinms = 0
         self.restartFlag = False
@@ -32,7 +30,18 @@ class RobotControl:
         self.irsensors = self._robotInterface.getIRBall()
         self.bodensensor = self._robotInterface.getLineSensors()
         self.lightBarrier = self._robotInterface.getLightBarrier()
-        self.circleList = list()
+        self.accelerometer = self._robotInterface.getAccelerometer()
+
+        # in ms. has to be multiple of 10 because of update functino only checking every 10 ms.
+        # this can be changed
+        self.sensorTiming = {"compass" : 40,
+                             "ultrasonic" : 100,
+                             "pixy":   20,
+                             "ir": 100,
+                             "line": 10,
+                             "lightBarrier": 10,
+                             "accelerometer": 40}
+
 
         # threading attributes
         self.threadLock = threading.Condition()
@@ -44,30 +53,45 @@ class RobotControl:
 
     # this function updates the sensorvalues for the main robot control thread in a pre defined frequency
     # dt is the tick time in ms
-    # #TODO better configurable timing
-    # #TODO this function takes to much time!!!!
+
     def update(self, dt):
+
         self.timeinms += dt
-        if self.timeinms%5 == 0:
+
+        if self.delayTimer > 0:
+            self.delayTimer -= 1
+            return
+
+        if self.timeinms % 10 == 0: #
             self.threadLock.acquire()
-            if self.onUpdate:
-                self.onUpdate(self)
             self.state = self._robotInterface.getRobotState()
-            self.bodensensor = self._robotInterface.getLineSensors()
-            self.kompass = self._robotInterface.getKompass()
-            if self.timeinms%20 == 0:
+            if self.timeinms%self.sensorTiming["line"] == 0:
+                self.bodensensor = self._robotInterface.getLineSensors()
+            if self.timeinms%self.sensorTiming["compass"] == 0:
+                self.kompass = self._robotInterface.getKompass()
+            if self.timeinms%self.sensorTiming["ultrasonic"] == 0:
                 self.US = self._robotInterface.getUltrasonic()
+            if self.timeinms%self.sensorTiming["pixy"] == 0:
                 self.pixy = self._robotInterface.getPixy()
+            if self.timeinms%self.sensorTiming["ir"] == 0:
                 self.irsensors = self._robotInterface.getIRBall()
+            if self.timeinms%self.sensorTiming["lightBarrier"] == 0:
                 self.lightBarrier = self._robotInterface.getLightBarrier()
+            if self.timeinms%self.sensorTiming["accelerometer"] == 0:
+                self.accelerometer = self._robotInterface.getAccelerometer()
+
+
+            if self.onUpdate: #check if there is a function Callback registered for C++ interface
+                self.onUpdate(self)
+
             if self.blocked == False:
-                    self._robotInterface.setMotorSpeed(self.m0,self.m1,self.m2,self.m3)
-                    if self.kickFlag == 1:
-                        self._robotInterface.kick()
-                        self.kickFlag = 0
-                    if self.restartFlag:
-                        self._robotInterface.restartGame()
-                        self.restartFlag = False
+                self._robotInterface.setMotorSpeed(self._motors[0],self._motors[1],self._motors[2],self._motors[3])
+                if self.kickFlag == 1:
+                    self._robotInterface.kick()
+                    self.kickFlag = 0
+                if self.restartFlag:
+                    self._robotInterface.restartGame()
+                    self.restartFlag = False
             self.threadLock.notify()
             self.threadLock.release()
 
@@ -86,6 +110,11 @@ class RobotControl:
         self.threadLock.notify()
         self.threadLock.release()
 
+    def delay(self,ms):
+        self.threadLock.acquire()
+        self.delayTimer = ms
+        self.threadLock.notify()
+        self.threadLock.release()
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
@@ -137,14 +166,17 @@ class RobotControl:
         self.threadLock.release()
         return tmp
 
+    def getAccelerometer(self):
+        self.threadLock.acquire()
+        tmp = self.accelerometer
+        self.threadLock.release()
+        return tmp
+
     # Sets the Motor speeds to this Value Motors rotate the Robot counter clockwise.
     # Numbering starts at the front and goes clockwise
     def setMotorSpeed(self,m0,m1,m2,m3):
         self.threadLock.acquire()
-        self.m0 = m0
-        self.m1 = m1
-        self.m2 = m2
-        self.m3 = m3
+        self._motors = (m0,m1,m2,m3)
         self.threadLock.wait()
         self.threadLock.release()
 

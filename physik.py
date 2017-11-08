@@ -24,9 +24,9 @@ class RobotPhysik:
         # mass of the robot in kg
         self.mass = 2000
         # maximum velocity in m/ms TODO check this????
-        self.vmax = 0.1
+        self.vmax = 0.2
         # maximum torque for all wheels combined in Nm
-        self.fmax = 0.3
+        self.fmax = 0.8
         # motor speed array
         self.motor = np.array([0, 0, 0, 0])
         # indicator if the robot is "defekt"

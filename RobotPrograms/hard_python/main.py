@@ -2,6 +2,7 @@ import numpy as np
 from robotRemote import RobotControl
 
 
+#TODO make a realy good robot program
 
 class Position:
     def __init__(self,x,y,px,py):

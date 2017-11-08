@@ -1,6 +1,10 @@
 from robotRemote import RobotControl
 import numpy as np
 
+
+def cosDeg(degree):
+    return np.cos(np.deg2rad(degree))
+
 def main(robot:RobotControl):
     last_kompass = 0
     i_kompass = 0
@@ -12,7 +16,6 @@ def main(robot:RobotControl):
         kompass = robot.getKompass()
         boden = robot.getBodenSensors()
         ultraschall = robot.getUltraschall()
-        state = robot.getRobotState()
 
         if robot.getLightBarrier():
             robot.kick()
@@ -29,9 +32,9 @@ def main(robot:RobotControl):
         ballrichtung = -1  # finale fahrrtichtung für ballsensor
         for i in range(0, 16):
             if ballsensors[i] > 0:
-                ballrichtung = (i * 360 / 16 + 180 + 10) % 360
+                ballrichtung = (i * 360 / 16 + 180) % 360
                 if ultraschall[2] > 30:
-                    if np.absolute(ballrichtung - 180) > 20:  # umfahren
+                    if np.absolute(ballrichtung - 180) > 30 and ballsensors[i] > 50:  # umfahren
                         if ballrichtung > 180:
                             ballrichtung = (ballrichtung + 90) % 360
                         else:
@@ -47,9 +50,9 @@ def main(robot:RobotControl):
 
         # calculate driving direction 180 is front
 
-        p_faktor = 4
-        d_faktor = 10
-        i_faktor = 0# 0.1
+        p_faktor = 1
+        d_faktor = 3
+        i_faktor = 0.01
 
         e_kompass = (180 - kompass)
         d_kompass = last_kompass - kompass
@@ -60,11 +63,10 @@ def main(robot:RobotControl):
 
 
 
-        fahrtrichtung = np.deg2rad(fahrtrichtung)
-        robot.setMotorSpeed(-geschwindigkeit * np.cos(fahrtrichtung - 135) + drall,
-                            -geschwindigkeit * np.cos(fahrtrichtung - 225) + drall,
-                            -geschwindigkeit * np.cos(fahrtrichtung - 315) + drall,
-                            -geschwindigkeit * np.cos(fahrtrichtung - 45) + drall)
+        robot.setMotorSpeed(-geschwindigkeit * cosDeg(fahrtrichtung - 135) + drall,
+                            -geschwindigkeit * cosDeg(fahrtrichtung - 225) + drall,
+                            -geschwindigkeit * cosDeg(fahrtrichtung - 315) + drall,
+                            -geschwindigkeit * cosDeg(fahrtrichtung - 45) + drall)
 
 
 

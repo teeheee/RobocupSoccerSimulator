@@ -19,7 +19,7 @@ class RobotControl:
         # control attributes
         self.delayTimer = 0
         self.blocked = False
-        self._motors = (0,0,0,0)
+        self._motors = [0,0,0,0]
         self.kickFlag = 0
         self.timeinms = 0
         self.restartFlag = False

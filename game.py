@@ -5,11 +5,6 @@ from grafik import *
 from physik import *
 from robotRemote import RobotControl
 
-#TODO no robot in field problem
-#TODO neutral spot bug (ball is still moving)
-#TODO game modes
-#TODO Max Game Time
-
 def loadRobotModule(path):
     robotSpec = importlib.util.spec_from_file_location("main", path)
     robotModule = importlib.util.module_from_spec(robotSpec)
@@ -57,20 +52,24 @@ class Robot:
 
     # bewegt den Roboter an Position x,y mit der richtung d
     def moveto(self, x, y, d):
-        self.physik.moveto(x, y, d)
-        self.grafik.moveto(x, y, d)
+        if gc.ROBOTS[self.id-1]["Active"]:
+            self.physik.moveto(x, y, d)
+            self.grafik.moveto(x, y, d)
+            self.pos = np.array([self.physik.body.position.x,
+                                 self.physik.body.position.y])
 
     # Spieltick wird ausgefuehrt. Roboter Position wird aktualisiert
     def tick(self):
         if gc.ROBOTS[self.id-1]["Active"]:
             if gc.ROBOTS[self.id-1]["Stable"]:
-                self.physik.tick(True)
+                self.physik.tick(True) #Rotation stable physics mode
             else:
-                self.physik.tick(False)
+                self.physik.tick(False) #unstable physics mode
             self.pos = np.array([self.physik.body.position.x,
                                  self.physik.body.position.y])
             self.orientation = np.rad2deg(self.physik.body.angle)
-        else:
+        else: # Robot inactive
+            self.isDefektFlag = True
             self.physik.moveto(1000, 1000*self.id, 0)
 
     # Zeichnet den Roboter
@@ -130,6 +129,7 @@ class Ball:
     def moveto(self, x, y):
         self.physik.moveto(x, y)
         self.grafik.moveto(x, y)
+        self.pos = np.array(self.physik.body.position)
 
     # Ball zeichnen
     def draw(self):
@@ -172,7 +172,7 @@ class NeutralSpot:
 
     # gibt die Distanz von dem objekt (ball oder roboter) zu dem neutralen Punkt
     def distance(self, object):
-        return np.linalg.norm(self.pos - object.pos)
+        return np.linalg.norm(self.pos - object.pos[0:2])
 
     # gibt True zurueck wenn einer der roboter in robots
     # oder der ball den neutralen Punkt besetzen
@@ -191,7 +191,7 @@ class NeutralSpot:
 
 class Game:
     def __init__(self, _display):
-        self.time = 0
+        self.time = 0 #spielzeit in ms
         self.display = _display
 
         self.space = pymunk.Space()
@@ -219,6 +219,9 @@ class Game:
                        Robot(self.display, self.space, 3, RED, 0),
                        Robot(self.display, self.space, 4, RED, 0)]
 
+
+        self.referee = Referee(self)
+
         # move robot to starting position
         self.putEverythingOnStartPosition(1)
 
@@ -238,7 +241,6 @@ class Game:
                                       RobotControl(self.robotInterfaceHandlers[2],robot3Module),
                                       RobotControl(self.robotInterfaceHandlers[3],robot4Module)]
 
-        self.referee = Referee(self)
 
     def _physikTick(self,dt):
         for i in range(dt):
@@ -283,12 +285,17 @@ class Game:
         pass
 
     def restart(self):
+        self.time = 0
         for robot in self.robots:
             robot.setDefekt(False)
         self.referee = Referee(self)
         self.putEverythingOnStartPosition(1)
 
     def putEverythingOnStartPosition(self,lastgoalteam):
+        self.robots[0].setDefekt(False)
+        self.robots[1].setDefekt(False)
+        self.robots[2].setDefekt(False)
+        self.robots[3].setDefekt(False)
         if gc.RULES["TestMode"] == 0:
             if lastgoalteam == 1:
                 self.robots[0].moveto(13, random.gauss(0,2), 180)
@@ -302,11 +309,14 @@ class Game:
                 self.robots[3].moveto(-80, random.gauss(0,2), 0)
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
         if gc.RULES["TestMode"] == 1:
+            self.referee.putBallOnNeutralSpot()
             self.referee.putRobotOnNeutralSpot(self.robots[0])
             self.referee.putRobotOnNeutralSpot(self.robots[1])
             self.referee.putRobotOnNeutralSpot(self.robots[2])
             self.referee.putRobotOnNeutralSpot(self.robots[3])
-            self.referee.putBallOnNeutralSpot()
+
+    def end(self):
+        self.restart()
 
 
 class Referee:
@@ -325,12 +335,19 @@ class Referee:
 
 
     def tick(self,dt):
+        defectCounter = 0
         for robot in self._robots:
             if gc.RULES["OutOfBounce"] and gc.FIELD["TouchlineActive"]:
                 if robot.isDefekt():
+                    defectCounter = defectCounter + 1
                     if self._defektTimer[robot.id-1] < self._game.time:
                         robot.setDefekt(False)
-                        self.putRobotBackInGame(robot)
+                        self.putRobotOnNeutralSpot(robot)
+                    if defectCounter == 4: # all robots are defekt ...
+                        self._defektTimer = [0,0,0,0]
+                        self._game.putEverythingOnStartPosition(self._lastGoalTeam)
+                        self._refereeShout("all Robots Defekt restart!")
+
                 else:
                     if self.isOutOfBounce(robot):  # roboter auf OutofBounce testen
                         self._defektTimer[robot.id-1] = self._game.time+gc.RULES["DefektTime"]
@@ -354,6 +371,13 @@ class Referee:
             self._game.field.setScore(self._score[1], self._score[0])
             self._refereeShout("new Score" + str(self._score))
 
+        if self._game.time > 60*10*1000:
+            self._refereeShout("GAME OVER!!!")
+            self._refereeShout("Score" + str(self._score))
+            self._score = [0,0]
+            self._defektTimer = [0,0,0,0]
+            self._game.end()
+
 
 
     # setzt den Ball auf den naechsten neutralen Punkt, der nicht besetzt ist
@@ -367,28 +391,22 @@ class Referee:
         pos = bestspot.pos
         self._game.ball.moveto(pos[0], pos[1])
 
-    # setzt den Roboter auf den naechsten neutralen Punkt, der nicht besetzt ist
+    # setzt den Roboter auf den naechsten neutralen Punkt,
+    # der am weitesten vom Ball entfernt ist und nicht besetzt ist
     def putRobotOnNeutralSpot(self, robot:Robot):
         random.shuffle(self._game.nspots)
         bestspot = self._game.nspots[0]
         for nspot in self._game.nspots:
-            if nspot.distance(robot) < bestspot.distance(robot) \
+            if nspot.distance(self._game.ball) > bestspot.distance(self._game.ball) \
                     and not nspot.isOccupied(self._robots, self._ball):
                 bestspot = nspot
         pos = bestspot.pos
+        if robot.id == 1:
+            print("---------")
+            print("ball: " + str(self._ball.pos))
+            print("robot: " + str(pos))
+            print("---------")
         robot.moveto(pos[0], pos[1], robot.playDirection)
-
-    # setzt den Roboter auf den neutralen Punkt,
-    # der am weitesten vom Ball entfernt ist und nicht besetzt ist
-    def putRobotBackInGame(self, robot:Robot):
-        random.shuffle(self._game.nspots)
-        bestspot = self._game.nspots[0]
-        for nspot in self._game.nspots:
-            if nspot.distance(self._ball) > bestspot.distance(self._ball) \
-                    and not nspot.isOccupied(self._robots, self._ball):
-                bestspot = nspot
-        pos = bestspot.pos
-        robot.moveto(pos[0], pos[1], robot.playDirection+180)
 
     # bei zu wenig Ballbewegung wird putBallOnNeutralSpot() ausgefuehrt
     def lagofProgress(self):

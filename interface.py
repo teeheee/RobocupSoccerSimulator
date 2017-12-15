@@ -24,11 +24,14 @@ class RobotInterface:
         self._body = self._robot.physik.body
         self._space = self._robot.physik.space
         self._stateQueue = list()
+        self._lastVelocity = 0
+        self._accelerationSampleTime = 0
         self.motors = (0,0,0,0)
+
 
     # Returns a list of 16 Analog Sensor Values representing Black and White and Green lines
     # Numbering starts at the front and goes clockwise
-    def getLineSensors(self): #TODO line corners are crosses
+    def getLineSensors(self):
         bodensensor = np.zeros(16)
         if gc.FIELD["TouchlineActive"] == False:
             return bodensensor
@@ -50,11 +53,13 @@ class RobotInterface:
                 dt = np.sqrt(R - LEC)
                 F = (t - dt) * D + A
                 G = (t + dt) * D + A
-                #TODO check if F and G are in the field (corner porblem)
-                points.append(F - C)
-                points.append(G - C)
+                if(np.linalg.norm(F) < np.linalg.norm(A)):
+                    points.append(F - C)
+                if(np.linalg.norm(G) < np.linalg.norm(A)):
+                    points.append(G - C)
             elif LEC == R:
-                points.append(E - C)
+                if(np.linalg.norm(E) < np.linalg.norm(A)):
+                    points.append(E - C)
         i=0
         for p in points:
             p /= 4
@@ -189,8 +194,13 @@ class RobotInterface:
                 return True
         return False
 
-    def getAccelerometer(self): #TODO add Accelerometer
-        return (0,0)
+    # returns an x y acceleration in m/(ms*ms)
+    def getAccelerometer(self):
+        dt = self._accelerationSampleTime - self._game.time
+        acceleration = (self._robot.physik.body.velocity - self._lastVelocity) * dt
+        self._lastVelocity = self._robot.physik.body.velocity
+        self._accelerationSampleTime = self._game.time
+        return acceleration
 
     # See class State(Enum) for diffrent states
     def getRobotState(self):

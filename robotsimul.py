@@ -25,28 +25,6 @@ class App:
 
         self.menu_data = (
             'Robot Simulator',
-            (
-                'Robot 1',
-                'Activate',
-                'Disable',
-            ),
-            (
-                'Robot 2',
-                'Activate',
-                'Disable',
-            ),
-            (
-                'Robot 3',
-                'Activate',
-                'Disable',
-            ),
-            (
-                'Robot 4',
-                'Activate',
-                'Disable',
-            ),
-            'Pause',
-            'Resume',
             'Restart',
             'Quit',
         )

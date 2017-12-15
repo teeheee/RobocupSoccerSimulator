@@ -15,6 +15,8 @@ collision_types = {
 
 class RobotPhysik:
     def __init__(self, _space, _robotgrafik):
+
+        self._id = _robotgrafik._id
         # For updateing the robot position
         self.robotgrafik = _robotgrafik
         # pymunk space
@@ -23,10 +25,10 @@ class RobotPhysik:
         self.radius = 10
         # mass of the robot in kg
         self.mass = 2000
-        # maximum velocity in m/ms TODO check this????
-        self.vmax = 0.2
+        # maximum velocity in m/ms
+        self.vmax = gc.ROBOTS[self._id-1]["vmax"]
         # maximum torque for all wheels combined in Nm
-        self.fmax = 0.8
+        self.fmax = gc.ROBOTS[self._id-1]["fmax"]
         # motor speed array
         self.motor = np.array([0, 0, 0, 0])
         # indicator if the robot is "defekt"
@@ -36,7 +38,7 @@ class RobotPhysik:
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, self.radius, (0, 0)))
         self.body.position = ((self.robotgrafik._x_position, self.robotgrafik._y_position))
         self.body.angle = np.radians(self.robotgrafik._orientation)
-        self.body.name = "robot" + str(self.robotgrafik._id)
+        self.body.name = "robot" + str(self._id)
         self.startAngle = self.body.angle
 
         # generate the special shape of the robot.

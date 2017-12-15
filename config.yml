@@ -2,25 +2,25 @@
 # Those are the field dimensions in cm
 
 #1 vs 1
-#Field:
-#  TouchlineActive: False
-#  TouchlineLength: 183
-#  TouchlineWidth: 122
-#  GoalDepth: 8
-#  GoalWidth: 60
-#  BorderLength: 183
-#  BorderWidth: 122
-
-#2 vs 2
 Field:
-  TouchlineActive: True
+  TouchlineActive: False
   TouchlineLength: 183
   TouchlineWidth: 122
   GoalDepth: 8
   GoalWidth: 60
-  GoalDistanceFromCenter:
-  BorderLength: 243
-  BorderWidth: 182
+  BorderLength: 183
+  BorderWidth: 122
+
+#2 vs 2
+#Field:
+#  TouchlineActive: True
+#  TouchlineLength: 183
+#  TouchlineWidth: 122
+#  GoalDepth: 8
+#  GoalWidth: 60
+#  GoalDistanceFromCenter:
+#  BorderLength: 243
+#  BorderWidth: 182
 
 # Gui is for configuring the userinterface. It should not effect the game dynamics.
 # Just speed up the simulation calculation
@@ -32,24 +32,37 @@ Gui:
   ShowTiming: false
 
 # Robotx is for configuring special modes for the diffrent Robots.
+# Active flag removes the robot from the Game
+# Stable makes the robot rotational stable towards the oppend goal
+# Mainpath ist the directory of the robot program main.py
+# vmax is the maximum velocity the robot can reach
+# fmax is the maximum force the robot can generate when starting from zero velocity
 #TEAM 1
 Robot0:
   Active: true
   Stable: false
-  MainPath: "RobotPrograms/simple_python/main.py"
+  MainPath: "RobotPrograms/simple_goldboard_cpp/main.py"
+  vmax: 0.2
+  fmax: 0.5
 Robot1:
   Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
+  vmax: 0.2
+  fmax: 0.5
 #TEAM 2
 Robot2:
   Active: true
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
+  vmax: 0.2
+  fmax: 0.5
 Robot3:
   Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
+  vmax: 0.2
+  fmax: 0.5
 
 # With Rules you can control the behavior of the referee
 Rules:

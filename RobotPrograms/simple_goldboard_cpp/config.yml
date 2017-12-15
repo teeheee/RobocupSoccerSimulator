@@ -36,7 +36,7 @@ Gui:
 Robot0:
   Active: true
   Stable: false
-  MainPath: "RobotPrograms/simple_cpp/main.py"
+  MainPath: "RobotPrograms/simple_c/main.py"
 Robot1:
   Active: true
   Stable: false

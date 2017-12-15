@@ -84,12 +84,12 @@ try:
     # subdirectories by type.
     import data
 except:
-    print('warning: no data.py in module path: proceeding without it')
+    pass#print('warning: no data.py in module path: proceeding without it') #TODO maybe fix this menu thing
 finally:
     try:
         font = pygame.font.Font(data.filepath('font', 'Vera.ttf'), 14)
     except:
-        print('warning: cannot load font Vera.ttf: using system default')
+        pass#print('warning: cannot load font Vera.ttf: using system default')#TODO maybe fix this menu thing
         font = pygame.font.SysFont(None, 20)
 
 bg_color = Color('grey')

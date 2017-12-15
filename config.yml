@@ -40,7 +40,7 @@ Gui:
 #TEAM 1
 Robot0:
   Active: true
-  Stable: false
+  Stable: true
   MainPath: "RobotPrograms/simple_goldboard_cpp/main.py"
   vmax: 0.2
   fmax: 0.5

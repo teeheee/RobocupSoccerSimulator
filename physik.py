@@ -92,7 +92,7 @@ class RobotPhysik:
             v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
             f = R.dot(f)
             f_soll = (f - (self.fmax / self.vmax) * v)
-            self.body.torque = (self.startAngle-self.body.angle)*10
+            self.body.torque = (self.startAngle-self.body.angle)*5
             self.body.force = tuple(f_soll[0:2])
         else:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))

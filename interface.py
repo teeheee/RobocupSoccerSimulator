@@ -112,18 +112,41 @@ class RobotInterface:
     # 2 is own Goal
     # 3 is opponent Goal
     # 4-9 are the Landmarks
-    def getPixy(self):  # TODO pixy is not implemented very good
-        ballRelativeToRobot = np.subtract(self._game.ball.pos,self._robot.pos[0:2])
-        ballDirection = (np.degrees(np.arctan2(ballRelativeToRobot[0], ballRelativeToRobot[1])) + 270) % 360
-        ballDirection = (ballDirection + self._robot.orientation + 180) % 360
-        ballDirection = 180-ballDirection
-        ballDistance = np.linalg.norm(ballRelativeToRobot)
+    def getPixy(self):
         blocks = list()
-        if ballDirection < 35 and ballDirection > -35:
+        imageCoordinates = self._pixyTransformation(self._game.ball.pos)
+        if imageCoordinates is not None:
             blocks.append({"signature": 1,
-                           "x": ballDistance,
-                           "y": ballDirection})
+                               "x": imageCoordinates[0],
+                               "y": imageCoordinates[1]})
+        imageCoordinates = self._pixyTransformation(self._game.field.getGoalPos(1))
+        if imageCoordinates is not None:
+            blocks.append({"signature": 2,
+                               "x": imageCoordinates[0],
+                               "y": imageCoordinates[1]})
+        imageCoordinates = self._pixyTransformation(self._game.field.getGoalPos(2))
+        if imageCoordinates is not None:
+            blocks.append({"signature": 3,
+                               "x": imageCoordinates[0],
+                               "y": imageCoordinates[1]})
+
+
         return blocks
+
+    def _pixyTransformation(self,ObjectPosition):
+        objectRelativeToRobot = np.subtract(ObjectPosition, self._robot.pos[0:2])
+        objectDirection = (np.degrees(np.arctan2(objectRelativeToRobot[0], objectRelativeToRobot[1])) + 270) % 360
+        objectDirection = (objectDirection + self._robot.orientation + 180) % 360
+        objectDirection = 180 - objectDirection
+        objectDistance = np.linalg.norm(objectRelativeToRobot)
+        if objectDirection < 35 and objectDirection > -35:
+            y = 320 * (objectDirection + 35) / 70
+            x = max(min(3000 / objectDistance, 200)-0.05*abs(objectDirection*objectDirection),10)
+            xWithErrors = min(max(x + np.random.randint(-5,5),0),200)
+            yWithErrors = min(max(y + np.random.randint(-5, 5), 0), 320)
+            return [xWithErrors,yWithErrors]
+        else:
+            return None
 
     # Returns a list of 16 IR sensors. Value corresponds to distance from the Ball
     # Numbering starts at the front and goes clockwise

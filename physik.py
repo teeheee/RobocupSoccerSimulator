@@ -68,7 +68,19 @@ class RobotPhysik:
         # add shapes to Body
         self.space.add(self.body, self.shape1 ,self.shape2)
 
+    def _clampOne(self,n):
+        if n < -1:
+            return -1
+        elif n > 1:
+            return 1
+        else:
+            return n
+
     def motorSpeed(self, a, b, c, d):
+        a = self._clampOne(a)
+        b = self._clampOne(b)
+        c = self._clampOne(c)
+        d = self._clampOne(d)
         self.motor = np.array([a, b, c, d])
 
     def moveto(self, x, y, d):
@@ -77,35 +89,28 @@ class RobotPhysik:
         self.startAngle = np.radians(d)
         self.space.reindex_shapes_for_body(self.body)
 
-    def tick(self,stable): #TODO there ist still something wrong with this
+    def tick(self,stable):
         if self.defekt:
             self.motor = np.array([0, 0, 0, 0])
             self.body.torque = 0
             self.body.force = (0, 0)
-        elif stable:
-            self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
-            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])*self.fmax
-            f = A.dot(self.motor)
-            theta = self.body.angle - np.deg2rad(45 + 180)
-            c, s = np.cos(theta), np.sin(theta)
-            R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
-            v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
-            f = R.dot(f)
-            f_soll = (f - (self.fmax / self.vmax) * v)
-            self.body.torque = (self.startAngle-self.body.angle)*5
-            self.body.force = tuple(f_soll[0:2])
         else:
             self.robotgrafik.moveto((self.body.position.x), (self.body.position.y), -np.degrees(self.body.angle))
-            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [10, 10, 10, 10]])*self.fmax
-            f = A.dot(self.motor)
+            fMotor = self.motor * self.fmax
+            A = np.array([[1, 0, -1, 0], [0, 1, 0, -1], [8, 8, 8, 8]])
+            f = A.dot(fMotor)
             theta = self.body.angle - np.deg2rad(45 + 180)
             c, s = np.cos(theta), np.sin(theta)
             R = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
             v = np.array([self.body.velocity[0], self.body.velocity[1], self.body.angular_velocity])
             f = R.dot(f)
-            f_soll = (f - (self.fmax / self.vmax) * v)
-            self.body.torque = f_soll[2]
+            f_soll = (f - (self.fmax / self.vmax) * v) - 0.1*np.sign(v) # Motor kraft - Reibung
+            if stable:
+                self.body.torque = (self.startAngle-self.body.angle)*100 + self.body.angular_velocity*10
+            else:
+                self.body.torque = f_soll[2]
             self.body.force = tuple(f_soll[0:2])
+
 
     def isPushedByRobot(self, robot):
         #every robot has two shapes so 4 collisions need to be checkt between each robot
@@ -157,6 +162,7 @@ class BallPhysik:
     def moveto(self, x, y):
         self.body.position = (x, y)
         self.body.velocity = (0, 0)
+        self.body.force = (0, 0)
         self.space.reindex_shapes_for_body(self.body)
 
     def tick(self):
@@ -239,7 +245,10 @@ class TorPhysik:
         self._inner_size = (gc.FIELD["TouchlineLength"],
                             gc.FIELD["TouchlineWidth"])
         self._goal_size = (gc.FIELD["GoalDepth"], gc.FIELD["GoalWidth"])
-        
+
+        self.goal_center_1 = [gc.FIELD["TouchlineLength"]/2 , 0]
+        self.goal_center_2 = [-gc.FIELD["TouchlineLength"]/2 , 0]
+
         self.isgoal = False
         self.space = _space
         static_body = self.space.static_body

@@ -43,9 +43,18 @@ class Debugger:
 
         if self._pixyModeFlag:
             blocks = self._robots[self._id].getPixy()
+            #Resolution is 320x200
+            topleft = [int(pos[0]+100-320),int(pos[1]+100-200)]
+            Rect = [topleft[0],topleft[1],320,200]
+            pygame.draw.rect(self._display,BLACK,Rect,1)
             for block in blocks:
-                point = [int(pos[0]+block["y"]*3),int(pos[1]+200-block["x"]*2)]
-                pygame.draw.circle(self._display, RED, point , int(4 * self.ppcm))
+                point = [int(topleft[0]+block["y"]),int(topleft[1]+block["x"])]
+                if block["signature"] == 1:
+                    pygame.draw.circle(self._display, RED, point , int(10 * self.ppcm))
+                elif block["signature"] == 2:
+                    pygame.draw.rect(self._display, BLACK, [point[0]-5,point[1]-5,10,10])
+                elif block["signature"] == 3:
+                    pygame.draw.rect(self._display, BLACK,[point[0]-5,point[1]-5,10,10])
             return
 
 

@@ -153,6 +153,13 @@ class Field:
     def tick(self):
         pass
 
+    def getGoalPos(self,id):
+        if id == 1:
+            return self.physik.tor.goal_center_1
+        if id == 2:
+            return self.physik.tor.goal_center_2
+        return None
+
     # Feld Zeichnen
     def draw(self):
         self.grafik.draw()
@@ -298,14 +305,14 @@ class Game:
         self.robots[3].setDefekt(False)
         if gc.RULES["TestMode"] == 0:
             if lastgoalteam == 1:
-                self.robots[0].moveto(13, random.gauss(0,2), 180)
-                self.robots[1].moveto(80, random.gauss(0,2), 180)
-                self.robots[2].moveto(-40,random.gauss(0,2), 0)
-                self.robots[3].moveto(-80, random.gauss(0,2), 0)
-            else:
                 self.robots[0].moveto(40, random.gauss(0,2), 180)
                 self.robots[1].moveto(80, random.gauss(0,2), 180)
                 self.robots[2].moveto(-13, random.gauss(0,2), 0)
+                self.robots[3].moveto(-80, random.gauss(0,2), 0)
+            else:
+                self.robots[0].moveto(13, random.gauss(0,2), 180)
+                self.robots[1].moveto(80, random.gauss(0,2), 180)
+                self.robots[2].moveto(-40,random.gauss(0,2), 0)
                 self.robots[3].moveto(-80, random.gauss(0,2), 0)
             self.ball.moveto(0, 0)  # Ball in die Mitte legen
         if gc.RULES["TestMode"] == 1:

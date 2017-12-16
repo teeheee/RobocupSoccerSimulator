@@ -35,34 +35,34 @@ Gui:
 # Active flag removes the robot from the Game
 # Stable makes the robot rotational stable towards the oppend goal
 # Mainpath ist the directory of the robot program main.py
-# vmax is the maximum velocity the robot can reach
-# fmax is the maximum force the robot can generate when starting from zero velocity
+# vmax is rotation per second * wheel radius
+# fmax is (motor stall torque) / (wheel radius)
 #TEAM 1
 Robot0:
   Active: true
-  Stable: true
+  Stable: false
   MainPath: "RobotPrograms/simple_goldboard_cpp/main.py"
-  vmax: 0.2
-  fmax: 0.5
+  vmax: 10
+  fmax: 0.3
 Robot1:
   Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
-  vmax: 0.2
-  fmax: 0.5
+  vmax: 10
+  fmax: 0.3
 #TEAM 2
 Robot2:
-  Active: true
+  Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
-  vmax: 0.2
-  fmax: 0.5
+  vmax: 10
+  fmax: 0.3
 Robot3:
   Active: false
   Stable: false
   MainPath: "RobotPrograms/simple_python/main.py"
-  vmax: 0.2
-  fmax: 0.5
+  vmax: 10
+  fmax: 0.3
 
 # With Rules you can control the behavior of the referee
 Rules:

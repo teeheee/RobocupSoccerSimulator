@@ -2,6 +2,7 @@
 
 from game import *
 from debugger import Debugger
+from logSaver import Logger
 from gameconfig import gc
 from popup_menu import *
 import sys
@@ -52,6 +53,10 @@ class App:
             self.debugger = Debugger(self._display_surf, self.game.robotProgramHandlers)
             self.debugger.setFocusedRobot(self.focusedrobot)
 
+        if gc.GUI["Logger"]:
+            self.logger = Logger(self.game)
+            self.logger.startLogging()
+
         pygame.mixer.quit()
 
     def on_event(self, event):
@@ -73,6 +78,7 @@ class App:
 
     def on_loop(self):
         if not self.pause:
+            self.logger.tick()
             self.game.tick(30) #calculate in ms steps
         speed = 0.5
         motor = np.array([0.0, 0.0, 0.0, 0.0])

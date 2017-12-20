@@ -30,6 +30,7 @@ Gui:
   SamplingRate: 20
   Fast: false
   ShowTiming: false
+  Logger: True
 
 # Robotx is for configuring special modes for the diffrent Robots.
 # Active flag removes the robot from the Game
